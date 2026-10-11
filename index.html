@@ -442,7 +442,7 @@ td.name{font-weight:700;max-width:130px;overflow:hidden;text-overflow:ellipsis;w
     <div class="auth-panel show" id="panelLogin">
       <div class="info-hero">
         <div class="info-hero-icon"><i class="fas fa-cubes"></i></div>
-        <h3>Masuk ke StockFlow</h3>
+        <h3>Masuk ke Tokoku</h3>
         <p>Masuk untuk mengakses &amp; menyinkronkan data toko Anda.</p>
       </div>
       <div class="field">
@@ -2143,7 +2143,7 @@ function buildPDFHtml(type, chartImages){
   html += `
     <div class="pdf-header">
       <div class="pdf-brand">
-        <div class="pdf-logo">SF</div>
+        <div class="pdf-logo">TK</div>
         <div>
           <div class="pdf-shop-name">${escapeHtml(shopName)}</div>
           <div class="pdf-shop-desc">${escapeHtml(shopDesc)}</div>
@@ -2429,7 +2429,7 @@ async function doLogout(){
 }
 
 let splashDone = false;
-Splash.renderTitle('StockFlow');
+Splash.renderTitle('Tokoku');
 Splash.setProgress(15, 'Menghubungkan ke server...');
 
 onAuthStateChanged(auth, async user => {
