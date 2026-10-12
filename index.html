@@ -246,6 +246,7 @@ body.app-ready .app{opacity:1;transform:translateY(0) scale(1);pointer-events:au
 .chart-title i{color:var(--blue);font-size:10.5px}
 .chart-title .hint{font-weight:500;color:var(--text-mute);text-transform:none;letter-spacing:0;font-size:9.5px;margin-left:auto}
 .chart-card canvas{width:100% !important;height:210px !important;display:block}
+.chart-select{font-family:inherit;font-size:10px;font-weight:700;padding:4px 8px;border-radius:8px;border:none;background:var(--blue-pale);color:var(--blue-deep);cursor:pointer;outline:none;margin-left:auto;max-width:130px;letter-spacing:-0.01em}
 
 .table-wrap{background:var(--surface);border-radius:var(--r-md);box-shadow:var(--shadow-sm);overflow:hidden}
 .table-scroll{overflow-x:auto;overflow-y:auto;max-height:460px;-webkit-overflow-scrolling:touch}
@@ -254,6 +255,7 @@ body.app-ready .app{opacity:1;transform:translateY(0) scale(1);pointer-events:au
 table{width:100%;border-collapse:separate;border-spacing:0;font-size:11px;min-width:420px}
 thead th{position:sticky;top:0;z-index:3;background:linear-gradient(180deg,#f8fbff 0%,#eef6ff 100%);padding:11px 12px;font-size:9px;font-weight:800;color:var(--text-soft);text-transform:uppercase;letter-spacing:0.6px;border-bottom:1.5px solid var(--line);white-space:nowrap;text-align:left}
 thead th.num{text-align:right}
+thead th.center{text-align:center}
 tbody tr{transition:background .15s}
 tbody tr:nth-child(even){background:rgba(248,251,255,.55)}
 tbody tr:hover{background:var(--blue-pale)}
@@ -283,6 +285,56 @@ td.name{font-weight:700;max-width:130px;overflow:hidden;text-overflow:ellipsis;w
 .table-foot .tf-label i{color:var(--blue);font-size:10px}
 .table-foot .tf-value{font-size:12.5px;font-weight:800;color:var(--blue-deep);font-variant-numeric:tabular-nums;letter-spacing:-0.02em}
 
+/* Matrix table */
+.matrix-table{min-width:100%}
+.matrix-table thead th:first-child{position:sticky;left:0;z-index:4;background:linear-gradient(180deg,#f8fbff,#eef6ff);box-shadow:2px 0 4px rgba(15,23,42,.04)}
+.matrix-table tbody td:first-child{position:sticky;left:0;z-index:2;background:#fff;box-shadow:2px 0 4px rgba(15,23,42,.04)}
+.matrix-table tbody tr:nth-child(even) td:first-child{background:#fafcff}
+.matrix-cell{padding:9px 10px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:11px;letter-spacing:-0.01em}
+.matrix-cell.best{color:var(--green-deep);background:rgba(16,185,129,.10)}
+.matrix-cell.worst{color:var(--rose-deep);background:rgba(244,63,94,.10)}
+.matrix-cell.same{color:var(--blue-deep);background:rgba(59,130,246,.08)}
+.matrix-cell.empty{color:var(--text-mute);font-weight:500;font-style:italic;text-align:center;background:transparent}
+.matrix-cell .crown{font-size:8px;margin-right:3px}
+.matrix-item{padding:9px 10px;font-weight:700;font-size:11.5px;letter-spacing:-0.01em;white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.matrix-item .it-unit{display:block;font-size:9px;font-weight:600;color:var(--text-mute);margin-top:1px}
+.matrix-store{text-align:center;font-size:9.5px}
+.matrix-store .st-name{display:block;font-weight:800;color:var(--text);letter-spacing:-0.01em;max-width:90px;margin:0 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.matrix-store .st-addr{display:block;font-size:8.5px;color:var(--text-mute);font-weight:600;margin-top:1px;max-width:90px;margin-left:auto;margin-right:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.matrix-sum{text-align:right;font-weight:800;font-variant-numeric:tabular-nums;font-size:10.5px;white-space:nowrap}
+.matrix-sum.min{color:var(--green-deep)}
+.matrix-sum.max{color:var(--rose-deep)}
+.matrix-sum.diff{color:var(--blue-deep)}
+
+/* Filter panel */
+.filter-panel{background:var(--surface);border-radius:var(--r-md);padding:12px;margin-bottom:10px;box-shadow:var(--shadow-sm)}
+.fp-header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.fp-header h3{font-size:12px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;letter-spacing:-0.015em}
+.fp-header h3 i{color:var(--blue);font-size:11px}
+.fp-header .fp-reset{font-family:inherit;font-size:10px;font-weight:700;padding:4px 9px;border-radius:8px;border:none;background:var(--surface-3);color:var(--text-soft);cursor:pointer;letter-spacing:-0.01em;transition:all .15s}
+.fp-header .fp-reset:hover{background:var(--blue-pale);color:var(--blue-deep)}
+.fp-section{margin-bottom:10px}
+.fp-section:last-child{margin-bottom:0}
+.fp-label{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.fp-label > span{font-size:10px;font-weight:800;color:var(--text-mute);text-transform:uppercase;letter-spacing:0.6px;display:flex;align-items:center;gap:5px}
+.fp-label > span i{font-size:9px;color:var(--blue)}
+.fp-label .fp-count{font-size:9.5px;font-weight:700;color:var(--blue-deep);background:var(--blue-pale);padding:2px 7px;border-radius:999px;letter-spacing:-0.01em}
+.fp-actions{display:flex;gap:4px}
+.fp-actions button{font-family:inherit;font-size:9.5px;font-weight:700;padding:3px 8px;border-radius:6px;border:none;background:var(--surface-3);color:var(--text-soft);cursor:pointer;transition:all .15s;letter-spacing:-0.01em}
+.fp-actions button:hover{background:var(--blue-pale);color:var(--blue-deep)}
+.fp-actions button:active{transform:scale(.95)}
+.chip-select{display:flex;flex-wrap:wrap;gap:6px;max-height:132px;overflow-y:auto;padding:2px}
+.chip-select::-webkit-scrollbar{width:4px}
+.chip-select::-webkit-scrollbar-thumb{background:#bfdbfe;border-radius:99px}
+.chip-select .empty-chips{font-size:11px;color:var(--text-mute);font-style:italic;padding:6px 2px}
+.sel-chip{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--text-soft);font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;transition:all .18s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;letter-spacing:-0.01em;max-width:100%}
+.sel-chip:hover{border-color:var(--blue-pale);background:var(--surface-2)}
+.sel-chip.active{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 4px 10px rgba(59,130,246,.35)}
+.sel-chip:active{transform:scale(.96)}
+.sel-chip .check{width:13px;height:13px;border-radius:50%;border:1.5px solid currentColor;display:grid;place-items:center;font-size:7px;flex-shrink:0;transition:all .15s}
+.sel-chip.active .check{background:#fff;color:var(--blue);border-color:#fff}
+.sel-chip .nm{overflow:hidden;text-overflow:ellipsis;max-width:120px}
+
 .export-grid{display:grid;gap:6px}
 .export-item{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:12px;background:var(--surface);box-shadow:var(--shadow-sm);cursor:pointer;transition:all .18s;border:1.5px solid transparent}
 .export-item:hover{background:var(--surface-2);border-color:var(--blue-pale);transform:translateY(-1px);box-shadow:var(--shadow)}
@@ -291,9 +343,11 @@ td.name{font-weight:700;max-width:130px;overflow:hidden;text-overflow:ellipsis;w
 .export-item .ex-icon.blue{background:var(--blue-pale);color:var(--blue-deep)}
 .export-item .ex-icon.green{background:var(--green-pale);color:var(--green-deep)}
 .export-item .ex-icon.red{background:var(--rose-pale);color:var(--rose-deep)}
+.export-item .ex-icon.pdf{background:linear-gradient(135deg,#ffe4e6,#fecdd3);color:#be123c}
 .export-item .ex-text{flex:1;min-width:0}
 .export-item .ex-text h4{font-size:11.5px;font-weight:700;color:var(--text);letter-spacing:-0.015em;display:flex;align-items:center;gap:5px}
 .export-item .ex-text h4 .badge-new{font-size:8px;font-weight:800;padding:1.5px 5px;border-radius:4px;background:var(--green-pale);color:var(--green-deep);letter-spacing:0.3px;text-transform:uppercase}
+.export-item .ex-text h4 .badge-pdf{font-size:8px;font-weight:800;padding:1.5px 5px;border-radius:4px;background:#fee2e2;color:#be123c;letter-spacing:0.3px;text-transform:uppercase}
 .export-item .ex-text p{font-size:10px;color:var(--text-mute);margin-top:2px;font-weight:500}
 .export-item .ex-arrow{color:var(--text-mute);font-size:11px;flex-shrink:0}
 
@@ -356,6 +410,9 @@ td.name{font-weight:700;max-width:130px;overflow:hidden;text-overflow:ellipsis;w
 .btn-danger{background:var(--rose);color:#fff;box-shadow:0 10px 20px rgba(244,63,94,.4), inset 0 1px 0 rgba(255,255,255,.25)}
 .btn-danger:hover{background:var(--rose-deep);box-shadow:0 12px 24px rgba(244,63,94,.45)}
 .btn-danger:active{transform:scale(.97)}
+.btn-pdf{background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;box-shadow:0 10px 20px rgba(220,38,38,.35), inset 0 1px 0 rgba(255,255,255,.25)}
+.btn-pdf:hover{background:linear-gradient(135deg,#b91c1c,#991b1b)}
+.btn-pdf:active{transform:scale(.97)}
 .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
 .total-preview{background:var(--blue-pale);border-radius:11px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
 .total-preview .lbl{font-size:10px;font-weight:700;color:var(--blue-deep);letter-spacing:0.5px;text-transform:uppercase;opacity:.8}
@@ -567,10 +624,31 @@ td.name{font-weight:700;max-width:130px;overflow:hidden;text-overflow:ellipsis;w
 
     <!-- ===== REPORTS ===== -->
     <section class="view" id="view-reports">
-      <div class="field" style="margin-top:6px">
-        <label class="field-label">Barang untuk Analisis</label>
-        <div class="field-wrap"><i class="fas fa-chart-simple"></i>
-          <select class="select" id="reportItemSelect"></select>
+      <!-- Filter Panel -->
+      <div class="filter-panel" id="filterPanel">
+        <div class="fp-header">
+          <h3><i class="fas fa-sliders"></i> Pilih Perbandingan</h3>
+          <button class="fp-reset" onclick="resetReportFilters()"><i class="fas fa-rotate-left"></i> Reset</button>
+        </div>
+        <div class="fp-section">
+          <div class="fp-label">
+            <span><i class="fas fa-store"></i> Toko <span class="fp-count" id="storeFilterCount">0</span></span>
+            <div class="fp-actions">
+              <button onclick="setAllFilter('store', true)">Semua</button>
+              <button onclick="setAllFilter('store', false)">Kosong</button>
+            </div>
+          </div>
+          <div class="chip-select" id="storeFilterChips"></div>
+        </div>
+        <div class="fp-section">
+          <div class="fp-label">
+            <span><i class="fas fa-box"></i> Barang <span class="fp-count" id="itemFilterCount">0</span></span>
+            <div class="fp-actions">
+              <button onclick="setAllFilter('item', true)">Semua</button>
+              <button onclick="setAllFilter('item', false)">Kosong</button>
+            </div>
+          </div>
+          <div class="chip-select" id="itemFilterChips"></div>
         </div>
       </div>
 
@@ -596,7 +674,7 @@ td.name{font-weight:700;max-width:130px;overflow:hidden;text-overflow:ellipsis;w
       <div class="profit-banner" id="profitBanner">
         <div class="profit-icon"><i class="fas fa-scale-balanced"></i></div>
         <div class="profit-text">
-          <div class="profit-label">Selisih Harga</div>
+          <div class="profit-label">Total Potensi Hemat</div>
           <div class="profit-value" id="repDiff">Rp 0</div>
         </div>
         <div class="profit-stock">
@@ -607,37 +685,34 @@ td.name{font-weight:700;max-width:130px;overflow:hidden;text-overflow:ellipsis;w
 
       <div class="section-head">
         <h2><i class="fas fa-chart-column"></i> Visualisasi Data</h2>
+        <span class="count" id="vizCount">0 data</span>
       </div>
 
       <div class="chart-card">
         <div class="chart-title">
-          <i class="fas fa-chart-simple"></i> Perbandingan Harga per Toko
-          <span class="hint">barang terpilih</span>
+          <i class="fas fa-chart-simple"></i> Perbandingan Harga
+          <span class="hint" id="cmpHint">barang × toko</span>
         </div>
         <canvas id="chartCompare"></canvas>
       </div>
 
       <div class="chart-card">
-        <div class="chart-title"><i class="fas fa-arrow-trend-up"></i> Tren Harga dari Waktu ke Waktu</div>
+        <div class="chart-title">
+          <i class="fas fa-arrow-trend-up"></i> Tren Harga
+          <select class="chart-select" id="trendItemSelect"></select>
+        </div>
         <canvas id="chartTrend"></canvas>
       </div>
 
       <div class="section-head">
-        <h2><i class="fas fa-table-list"></i> Ringkasan Harga Semua Barang</h2>
+        <h2><i class="fas fa-table-list"></i> Tabel Perbandingan Harga</h2>
+        <span class="count" id="matrixCount">—</span>
       </div>
 
       <div class="table-wrap" id="tableWrap">
         <div class="table-scroll">
-          <table id="summaryTable">
-            <thead>
-              <tr>
-                <th>Barang</th>
-                <th class="num">Terendah</th>
-                <th class="num">Tertinggi</th>
-                <th class="num">Selisih</th>
-                <th class="num">Toko</th>
-              </tr>
-            </thead>
+          <table class="matrix-table" id="summaryTable">
+            <thead></thead>
             <tbody></tbody>
           </table>
           <div id="summaryEmpty" class="empty" style="padding:24px 10px;display:none">
@@ -654,6 +729,14 @@ td.name{font-weight:700;max-width:130px;overflow:hidden;text-overflow:ellipsis;w
         <h2><i class="fas fa-file-export"></i> Export Data</h2>
       </div>
       <div class="export-grid">
+        <div class="export-item" onclick="exportPDF()">
+          <div class="ex-icon pdf"><i class="fas fa-file-pdf"></i></div>
+          <div class="ex-text">
+            <h4>Laporan PDF Lengkap <span class="badge-pdf">Baru</span></h4>
+            <p>Tabel matriks, ringkasan, dan analisis sesuai filter</p>
+          </div>
+          <i class="fas fa-chevron-right ex-arrow"></i>
+        </div>
         <div class="export-item" onclick="exportCSV('all')">
           <div class="ex-icon blue"><i class="fas fa-table"></i></div>
           <div class="ex-text">
@@ -857,7 +940,7 @@ td.name{font-weight:700;max-width:130px;overflow:hidden;text-overflow:ellipsis;w
   </div>
 </div>
 
-<!-- ===== DETAIL SHEET (item / store) ===== -->
+<!-- ===== DETAIL SHEET ===== -->
 <div class="scrim" id="detailModal">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -914,7 +997,7 @@ td.name{font-weight:700;max-width:130px;overflow:hidden;text-overflow:ellipsis;w
         <div class="list-item" style="cursor:default">
           <div class="list-avatar prod"><i class="fas fa-chart-pie"></i></div>
           <div class="list-body"><div class="list-title">Visual</div></div>
-          <div class="list-trailing"><div class="list-amount" style="font-size:11px;color:var(--text-mute)">Chart.js</div></div>
+          <div class="list-trailing"><div class="list-amount" style="font-size:11px;color:var(--text-mute)">Chart.js + jsPDF</div></div>
         </div>
       </div>
       <button class="btn btn-outlined" style="margin-top:12px" onclick="doLogout()">
@@ -928,6 +1011,8 @@ td.name{font-weight:700;max-width:130px;overflow:hidden;text-overflow:ellipsis;w
 <div id="snackbar-container"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
 import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-analytics.js";
@@ -1001,7 +1086,7 @@ const Splash = (() => {
 })();
 
 /* =========================================================
-   DATA LAYER (in-memory cache, synced to Firestore)
+   DATA LAYER
    ========================================================= */
 let uid = null;
 const cache = { stores: new Map(), items: new Map(), prices: new Map() };
@@ -1081,6 +1166,7 @@ function snack(msg, type='success'){
    ========================================================= */
 function getStore(id){ return dbGet('stores', id); }
 function getItem(id){ return dbGet('items', id); }
+function getPrice(id){ return dbGet('prices', id); }
 
 function latestPerStore(itemId){
   const entries = dbGetAll('prices')
@@ -1092,6 +1178,13 @@ function latestPerStore(itemId){
     .map(p => ({ ...p, store: getStore(p.storeId) }))
     .filter(r => r.store)
     .sort((a,b) => a.price - b.price);
+}
+
+function getLatestPrice(itemId, storeId){
+  const list = dbGetAll('prices')
+    .filter(p => p.itemId === itemId && p.storeId === storeId)
+    .sort((a,b) => a.date.localeCompare(b.date) || (a.id - b.id));
+  return list.length ? list[list.length - 1] : null;
 }
 
 function itemStats(itemId){
@@ -1139,8 +1232,63 @@ const state = {
   itemSearch: '',
   storeSearch: '',
   compareItemId: null,
-  reportItemId: null
+  reportItemId: null,
+  selectedStores: new Set(),
+  selectedItems: new Set(),
+  trendItemId: null
 };
+
+/* Filter helpers */
+function getFilteredStores(){
+  const all = [...dbGetAll('stores')].sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  if(state.selectedStores.size === 0) return all;
+  return all.filter(s => state.selectedStores.has(s.id));
+}
+function getFilteredItems(){
+  const all = [...dbGetAll('items')].sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  if(state.selectedItems.size === 0) return all;
+  return all.filter(i => state.selectedItems.has(i.id));
+}
+function toggleFilter(type, id){
+  const all = type === 'store' ? dbGetAll('stores') : dbGetAll('items');
+  const set = type === 'store' ? state.selectedStores : state.selectedItems;
+
+  // Normalize: if set empty (means "all"), start from full list, then toggle the clicked one off
+  if(set.size === 0){
+    all.forEach(x => { if(x.id !== id) set.add(x.id); });
+  } else if(set.has(id)){
+    set.delete(id);
+  } else {
+    set.add(id);
+    if(set.size >= all.length) set.clear(); // back to "all"
+  }
+  renderReports();
+  renderReportCharts();
+}
+function setAllFilter(type, on){
+  const all = type === 'store' ? dbGetAll('stores') : dbGetAll('items');
+  const set = type === 'store' ? state.selectedStores : state.selectedItems;
+  set.clear();
+  if(!on){
+    // Explicit "none" — impossible to represent with "empty = all".
+    // We use a sentinel: fill with dummy IDs so filter returns nothing.
+    // Simpler: keep empty meaning all, and let "Kosong" just clear individual = "all".
+    // For real "none", we add a special flag.
+    state[type === 'store' ? 'storeFilterNone' : 'itemFilterNone'] = true;
+  } else {
+    state[type === 'store' ? 'storeFilterNone' : 'itemFilterNone'] = false;
+  }
+  renderReports();
+  renderReportCharts();
+}
+function resetReportFilters(){
+  state.selectedStores.clear();
+  state.selectedItems.clear();
+  state.storeFilterNone = false;
+  state.itemFilterNone = false;
+  renderReports();
+  renderReportCharts();
+}
 
 /* =========================================================
    VIEW SWITCHING
@@ -1165,7 +1313,7 @@ function switchView(name){
   if(appEl) appEl.scrollTo({ top:0, behavior:'smooth' });
 
   renderAll();
-  if(name === 'reports') setTimeout(() => initReportCharts(), 130);
+  if(name === 'reports') setTimeout(() => { renderReportCharts(); }, 130);
 }
 
 /* =========================================================
@@ -1213,7 +1361,6 @@ function renderDashboard(){
   document.getElementById('infoStores').textContent = fmtNum(storeCount);
   document.getElementById('infoItems').textContent  = fmtNum(itemCount);
 
-  /* --- Harga termurah per barang --- */
   const cheapestEl = document.getElementById('cheapestList');
   const withPrice = itemsWithPrice()
     .map(i => ({ item:i, stats:itemStats(i.id) }))
@@ -1247,7 +1394,6 @@ function renderDashboard(){
     `).join('')}</div>`;
   }
 
-  /* --- Update terbaru --- */
   const recent = [...prices]
     .sort((a,b) => (b.date + String(b.id).padStart(16,'0')).localeCompare(a.date + String(a.id).padStart(16,'0')))
     .slice(0, 5);
@@ -1539,14 +1685,202 @@ function destroyReportCharts(){
 
 const CHART_COLORS = [
   '#3b82f6','#8b5cf6','#10b981','#f59e0b','#f43f5e',
-  '#38bdf8','#6366f1','#14b8a6','#ec4899','#0ea5e9'
+  '#38bdf8','#6366f1','#14b8a6','#ec4899','#0ea5e9',
+  '#a855f7','#84cc16','#f97316','#06b6d4','#ef4444'
 ];
 
-function buildTrendData(itemId){
+/* --- Filter chip rendering --- */
+function renderFilterPanel(){
+  const stores = [...dbGetAll('stores')].sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  const items  = [...dbGetAll('items')].sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+
+  const storeChips = document.getElementById('storeFilterChips');
+  const itemChips  = document.getElementById('itemFilterChips');
+
+  const allStoresMode = state.selectedStores.size === 0 && !state.storeFilterNone;
+  const allItemsMode  = state.selectedItems.size === 0 && !state.itemFilterNone;
+
+  const storesActive = allStoresMode ? stores.map(s=>s.id) : [...state.selectedStores];
+  const itemsActive  = allItemsMode  ? items.map(i=>i.id)  : [...state.selectedItems];
+
+  document.getElementById('storeFilterCount').textContent = storesActive.length;
+  document.getElementById('itemFilterCount').textContent  = itemsActive.length;
+
+  if(stores.length === 0){
+    storeChips.innerHTML = '<p class="empty-chips">Belum ada toko</p>';
+  } else {
+    storeChips.innerHTML = stores.map(s => {
+      const active = storesActive.includes(s.id);
+      return `<button class="sel-chip ${active?'active':''}" onclick="toggleFilter('store', ${s.id})">
+        <span class="check"><i class="fas fa-check"></i></span>
+        <span class="nm">${esc(s.name)}</span>
+      </button>`;
+    }).join('');
+  }
+
+  if(items.length === 0){
+    itemChips.innerHTML = '<p class="empty-chips">Belum ada barang</p>';
+  } else {
+    itemChips.innerHTML = items.map(i => {
+      const active = itemsActive.includes(i.id);
+      return `<button class="sel-chip ${active?'active':''}" onclick="toggleFilter('item', ${i.id})">
+        <span class="check"><i class="fas fa-check"></i></span>
+        <span class="nm">${esc(i.name)}</span>
+      </button>`;
+    }).join('');
+  }
+
+  // Trend selector
+  const trendSel = document.getElementById('trendItemSelect');
+  const itemList = getFilteredItems();
+  if(itemList.length === 0){
+    trendSel.innerHTML = '<option value="">—</option>';
+    state.trendItemId = null;
+  } else {
+    if(!state.trendItemId || !itemList.some(i => i.id === state.trendItemId)){
+      state.trendItemId = itemList[0].id;
+    }
+    trendSel.innerHTML = itemList.map(i => `<option value="${i.id}" ${i.id===state.trendItemId?'selected':''}>${esc(i.name)}</option>`).join('');
+  }
+}
+
+/* --- Main reports render --- */
+function renderReports(){
+  renderFilterPanel();
+
+  const stores = getFilteredStores();
+  const items  = getFilteredItems();
+
+  // Aggregate stats across filter
+  let min = Infinity, max = -Infinity, sum = 0, cnt = 0;
+  let minInfo = null, maxInfo = null;
+  let totalPotensi = 0;
+
+  items.forEach(it => {
+    const stats = itemStats(it.id);
+    // filter to selected stores
+    const visible = stats.rows.filter(r => stores.some(s => s.id === r.storeId));
+    if(visible.length === 0) return;
+    const prices = visible.map(r => r.price);
+    const localMin = Math.min(...prices);
+    const localMax = Math.max(...prices);
+    if(localMin < min){ min = localMin; minInfo = { item: it, row: visible.find(r => r.price === localMin) }; }
+    if(localMax > max){ max = localMax; maxInfo = { item: it, row: visible.find(r => r.price === localMax) }; }
+    prices.forEach(p => { sum += p; cnt++; });
+    totalPotensi += (localMax - localMin);
+  });
+
+  const hasData = cnt > 0;
+
+  document.getElementById('repLow').textContent  = hasData ? fmtRp(min) : 'Rp 0';
+  document.getElementById('repHigh').textContent = hasData ? fmtRp(max) : 'Rp 0';
+  document.getElementById('repDiff').textContent = hasData ? fmtRp(totalPotensi) : 'Rp 0';
+  document.getElementById('repAvg').textContent  = hasData ? fmtRp(Math.round(sum / cnt)) : 'Rp 0';
+  document.getElementById('repLowStore').textContent  = hasData && minInfo ? `${esc(minInfo.item.name)} • ${esc(minInfo.row.store.name)}` : '—';
+  document.getElementById('repHighStore').textContent = hasData && maxInfo ? `${esc(maxInfo.item.name)} • ${esc(maxInfo.row.store.name)}` : '—';
+
+  const banner = document.getElementById('profitBanner');
+  banner.classList.toggle('neg', !hasData || totalPotensi === 0);
+
+  document.getElementById('vizCount').textContent = `${items.length} barang • ${stores.length} toko`;
+
+  renderMatrixTable(stores, items, totalPotensi);
+}
+
+/* --- Matrix table --- */
+function renderMatrixTable(stores, items, totalPotensi){
+  const table = document.getElementById('summaryTable');
+  const thead = table.querySelector('thead');
+  const tbody = table.querySelector('tbody');
+  const emptyEl = document.getElementById('summaryEmpty');
+  const footer  = document.getElementById('summaryFooter');
+
+  if(stores.length === 0 || items.length === 0 || totalPotensi === undefined){
+    thead.innerHTML = '';
+    tbody.innerHTML = '';
+    table.style.display = 'none';
+    emptyEl.style.display = 'block';
+    footer.style.display = 'none';
+    document.getElementById('matrixCount').textContent = '—';
+    return;
+  }
+
+  // Build rows first to detect which have data
+  const rows = items.map(item => {
+    const cells = stores.map(store => getLatestPrice(item.id, store.id));
+    const valid = cells.map((c, i) => c ? { storeId: stores[i].id, price: c.price } : null).filter(Boolean);
+    const prices = valid.map(v => v.price);
+    const min = prices.length ? Math.min(...prices) : null;
+    const max = prices.length ? Math.max(...prices) : null;
+    const diff = (min !== null && max !== null) ? max - min : 0;
+    return { item, cells, min, max, diff, hasData: prices.length > 0 };
+  }).filter(r => r.hasData);
+
+  if(rows.length === 0){
+    thead.innerHTML = '';
+    tbody.innerHTML = '';
+    table.style.display = 'none';
+    emptyEl.style.display = 'block';
+    footer.style.display = 'none';
+    document.getElementById('matrixCount').textContent = '0 barang';
+    return;
+  }
+
+  table.style.display = 'table';
+  emptyEl.style.display = 'none';
+  footer.style.display = 'flex';
+  document.getElementById('matrixCount').textContent = `${rows.length} barang × ${stores.length} toko`;
+
+  // Header
+  thead.innerHTML = `<tr>
+    <th style="min-width:140px">Barang</th>
+    ${stores.map(s => `<th class="center" style="min-width:90px">
+      <div class="matrix-store">
+        <span class="st-name" title="${esc(s.name)}">${esc(s.name)}</span>
+        ${s.address ? `<span class="st-addr">${esc(s.address)}</span>` : ''}
+      </div>
+    </th>`).join('')}
+    <th class="num" style="min-width:80px">Terendah</th>
+    <th class="num" style="min-width:80px">Tertinggi</th>
+    <th class="num" style="min-width:80px">Selisih</th>
+  </tr>`;
+
+  // Body
+  tbody.innerHTML = rows.map(r => {
+    const cellsHtml = r.cells.map((c, i) => {
+      if(!c) return `<td class="matrix-cell empty">—</td>`;
+      const isMin = c.price === r.min && r.min !== r.max;
+      const isMax = c.price === r.max && r.min !== r.max;
+      let cls = '';
+      if(isMin) cls = 'best';
+      else if(isMax) cls = 'worst';
+      else if(r.min === r.max) cls = 'same';
+      const crown = isMin ? '<i class="fas fa-crown crown"></i>' : '';
+      return `<td class="matrix-cell ${cls}">${crown}${fmtRp(c.price)}</td>`;
+    }).join('');
+
+    const diffClass = r.diff > 0 ? '' : 'style="color:var(--text-mute)"';
+    return `<tr>
+      <td class="matrix-item">
+        ${esc(r.item.name)}
+        <span class="it-unit">per ${esc(r.item.unit || 'pcs')}</span>
+      </td>
+      ${cellsHtml}
+      <td class="matrix-sum min">${fmtRp(r.min)}</td>
+      <td class="matrix-sum max">${fmtRp(r.max)}</td>
+      <td class="matrix-sum diff" ${diffClass}>${r.diff > 0 ? '+' + fmtRp(r.diff) : '—'}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('summaryTotal').textContent = fmtRp(totalPotensi);
+}
+
+/* --- Trend data builder --- */
+function buildTrendData(itemId, stores){
   const entries = dbGetAll('prices')
-    .filter(p => p.itemId === itemId)
+    .filter(p => p.itemId === itemId && stores.some(s => s.id === p.storeId))
     .sort((a,b) => a.date.localeCompare(b.date) || (a.id - b.id));
-  const storeIds = [...new Set(entries.map(e => e.storeId))];
+  const storeIds = stores.map(s => s.id).filter(sid => entries.some(e => e.storeId === sid));
   const labels = [...new Set(entries.map(e => e.date))].sort();
   const datasets = storeIds.map((sid, i) => {
     const s = getStore(sid);
@@ -1577,208 +1911,174 @@ const sharedTooltip = {
   displayColors: true, boxPadding: 5, caretSize: 6, caretPadding: 8
 };
 
-function initReportCharts(){
+/* --- Charts --- */
+function renderReportCharts(){
   if(typeof Chart === 'undefined') return;
   destroyReportCharts();
 
-  const itemId = state.reportItemId;
-  if(!itemId) return;
-  const item = getItem(itemId);
-  if(!item) return;
-  const stats = itemStats(itemId);
+  const stores = getFilteredStores();
+  const items = getFilteredItems();
+  if(stores.length === 0 || items.length === 0) return;
 
+  /* --- Compare chart: grouped bars --- */
   const ctx1 = document.getElementById('chartCompare');
   if(ctx1){
-    const ctx = ctx1.getContext('2d');
-    ctx.clearRect(0, 0, ctx1.width, ctx1.height);
-    if(stats.rows.length === 0){
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '600 12px Inter, sans-serif';
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText('Belum ada data harga', ctx1.width/2, ctx1.height/2);
+    const rows = items.map(it => {
+      const cells = stores.map(s => getLatestPrice(it.id, s.id));
+      return { item: it, cells };
+    }).filter(r => r.cells.some(c => c));
+
+    if(rows.length === 0){
+      drawEmptyCanvas(ctx1, 'Belum ada data harga');
     } else {
-      reportCharts.compare = new Chart(ctx1, {
-        type: 'bar',
-        data: {
-          labels: stats.rows.map(r => r.store.name.length > 10 ? r.store.name.slice(0,10)+'…' : r.store.name),
-          datasets: [{
-            label: 'Harga',
-            data: stats.rows.map(r => r.price),
-            backgroundColor: stats.rows.map((r, i) => {
-              if(stats.diff > 0 && r.price === stats.min) return 'rgba(16,185,129,.85)';
-              if(stats.diff > 0 && r.price === stats.max) return 'rgba(244,63,94,.85)';
-              return CHART_COLORS[i % CHART_COLORS.length] + 'D9';
-            }),
-            borderRadius: 8, borderSkipped: false, maxBarThickness: 34,
-            borderColor: 'rgba(255,255,255,.6)', borderWidth: 1
-          }]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false, animation: false,
-          layout: { padding: { top: 6, right: 4, left: 0, bottom: 0 } },
-          plugins: {
-            legend: { display: false },
-            tooltip: { ...sharedTooltip, callbacks: { label: c => ' Harga: ' + fmtRp(c.parsed.y) } }
+      // Single item → bars per store. Multiple items → grouped by item.
+      if(rows.length === 1){
+        const r = rows[0];
+        const prices = r.cells.map((c, i) => c ? c.price : 0);
+        const validPrices = prices.filter(p => p > 0);
+        const minP = Math.min(...validPrices);
+        const maxP = Math.max(...validPrices);
+        document.getElementById('cmpHint').textContent = 'harga per toko';
+        reportCharts.compare = new Chart(ctx1, {
+          type: 'bar',
+          data: {
+            labels: stores.map(s => s.name.length > 10 ? s.name.slice(0,10)+'…' : s.name),
+            datasets: [{
+              label: 'Harga',
+              data: prices,
+              backgroundColor: prices.map(p => {
+                if(!p) return 'rgba(148,163,184,.4)';
+                if(minP === maxP) return 'rgba(59,130,246,.85)';
+                if(p === minP) return 'rgba(16,185,129,.85)';
+                if(p === maxP) return 'rgba(244,63,94,.85)';
+                return 'rgba(245,158,11,.85)';
+              }),
+              borderRadius: 8, borderSkipped: false, maxBarThickness: 34,
+              borderColor: 'rgba(255,255,255,.6)', borderWidth: 1
+            }]
           },
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: {
-                color: '#94a3b8', font: { size: 9, family: 'Inter', weight: '600' }, padding: 6,
-                callback: v => v >= 1000000 ? (v/1000000).toFixed(1)+'jt' : v >= 1000 ? Math.round(v/1000)+'rb' : v
-              },
-              grid: { color: 'rgba(230,239,255,.9)', drawBorder: false, borderDash: [3,3] },
-              border: { display: false }
-            },
-            x: {
-              ticks: { color: '#475569', font: { size: 9.5, family: 'Inter', weight: '600' }, padding: 4 },
-              grid: { display: false }, border: { display: false }
-            }
-          }
-        }
-      });
+          options: chartBarOptions(false)
+        });
+      } else {
+        document.getElementById('cmpHint').textContent = `${items.length} barang × ${stores.length} toko`;
+        reportCharts.compare = new Chart(ctx1, {
+          type: 'bar',
+          data: {
+            labels: rows.map(r => r.item.name.length > 10 ? r.item.name.slice(0,10)+'…' : r.item.name),
+            datasets: stores.map((s, si) => {
+              const color = CHART_COLORS[si % CHART_COLORS.length];
+              return {
+                label: s.name,
+                data: rows.map(r => {
+                  const c = r.cells.find((_, i) => stores[i].id === s.id);
+                  return c ? c.price : 0;
+                }),
+                backgroundColor: color + 'E6',
+                borderRadius: 6,
+                borderSkipped: false,
+                maxBarThickness: 22,
+                borderColor: 'rgba(255,255,255,.5)',
+                borderWidth: 1
+              };
+            })
+          },
+          options: chartBarOptions(stores.length > 1)
+        });
+      }
     }
   }
 
+  /* --- Trend chart --- */
   const ctx2 = document.getElementById('chartTrend');
   if(ctx2){
-    const trend = buildTrendData(itemId);
-    if(trend.labels.length === 0){
-      const ctx = ctx2.getContext('2d');
-      ctx.clearRect(0, 0, ctx2.width, ctx2.height);
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '600 12px Inter, sans-serif';
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText('Belum ada data tren', ctx2.width/2, ctx2.height/2);
+    const trendItemId = state.trendItemId;
+    if(!trendItemId){
+      drawEmptyCanvas(ctx2, 'Pilih barang untuk melihat tren');
     } else {
-      reportCharts.trend = new Chart(ctx2, {
-        type: 'line',
-        data: { labels: trend.labels, datasets: trend.datasets },
-        options: {
-          responsive: true, maintainAspectRatio: false, animation: false,
-          interaction: { intersect: false, mode: 'index' },
-          layout: { padding: { top: 6, right: 4, left: 0, bottom: 0 } },
-          plugins: {
-            legend: {
-              display: trend.datasets.length > 1, position: 'top', align: 'end',
-              labels: {
-                boxWidth: 8, boxHeight: 8, padding: 10,
-                font: { size: 9, family: 'Inter', weight: '700' },
-                color: '#475569', usePointStyle: true, pointStyle: 'circle'
-              }
-            },
-            tooltip: { ...sharedTooltip, callbacks: { label: c => ` ${c.dataset.label}: ${fmtRp(c.parsed.y)}` } }
-          },
-          scales: {
-            y: {
-              beginAtZero: false,
-              ticks: {
-                color: '#94a3b8', font: { size: 9, family: 'Inter', weight: '600' }, padding: 6,
-                callback: v => v >= 1000000 ? (v/1000000).toFixed(1)+'jt' : v >= 1000 ? Math.round(v/1000)+'rb' : v
+      const trend = buildTrendData(trendItemId, stores);
+      if(trend.labels.length === 0){
+        drawEmptyCanvas(ctx2, 'Belum ada data tren');
+      } else {
+        reportCharts.trend = new Chart(ctx2, {
+          type: 'line',
+          data: { labels: trend.labels, datasets: trend.datasets },
+          options: {
+            responsive: true, maintainAspectRatio: false, animation: false,
+            interaction: { intersect: false, mode: 'index' },
+            layout: { padding: { top: 6, right: 4, left: 0, bottom: 0 } },
+            plugins: {
+              legend: {
+                display: trend.datasets.length > 1, position: 'top', align: 'end',
+                labels: {
+                  boxWidth: 8, boxHeight: 8, padding: 10,
+                  font: { size: 9, family: 'Inter', weight: '700' },
+                  color: '#475569', usePointStyle: true, pointStyle: 'circle'
+                }
               },
-              grid: { color: 'rgba(230,239,255,.9)', drawBorder: false, borderDash: [3,3] },
-              border: { display: false }
+              tooltip: { ...sharedTooltip, callbacks: { label: c => ` ${c.dataset.label}: ${fmtRp(c.parsed.y)}` } }
             },
-            x: {
-              ticks: { color: '#475569', font: { size: 8.5, family: 'Inter', weight: '600' }, padding: 4 },
-              grid: { display: false }, border: { display: false }
+            scales: {
+              y: {
+                beginAtZero: false,
+                ticks: {
+                  color: '#94a3b8', font: { size: 9, family: 'Inter', weight: '600' }, padding: 6,
+                  callback: v => v >= 1000000 ? (v/1000000).toFixed(1)+'jt' : v >= 1000 ? Math.round(v/1000)+'rb' : v
+                },
+                grid: { color: 'rgba(230,239,255,.9)', drawBorder: false, borderDash: [3,3] },
+                border: { display: false }
+              },
+              x: {
+                ticks: { color: '#475569', font: { size: 8.5, family: 'Inter', weight: '600' }, padding: 4 },
+                grid: { display: false }, border: { display: false }
+              }
             }
           }
-        }
-      });
+        });
+      }
     }
   }
 }
 
-function renderReports(){
-  const sel = document.getElementById('reportItemSelect');
-  const items = dbGetAll('items');
+function chartBarOptions(showLegend){
+  return {
+    responsive: true, maintainAspectRatio: false, animation: false,
+    layout: { padding: { top: 6, right: 4, left: 0, bottom: 0 } },
+    plugins: {
+      legend: showLegend ? {
+        display: true, position: 'top', align: 'end',
+        labels: {
+          boxWidth: 8, boxHeight: 8, padding: 10,
+          font: { size: 9, family: 'Inter', weight: '700' },
+          color: '#475569', usePointStyle: true, pointStyle: 'circle'
+        }
+      } : { display: false },
+      tooltip: { ...sharedTooltip, callbacks: { label: c => ' ' + (c.dataset.label || 'Harga') + ': ' + fmtRp(c.parsed.y) } }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          color: '#94a3b8', font: { size: 9, family: 'Inter', weight: '600' }, padding: 6,
+          callback: v => v >= 1000000 ? (v/1000000).toFixed(1)+'jt' : v >= 1000 ? Math.round(v/1000)+'rb' : v
+        },
+        grid: { color: 'rgba(230,239,255,.9)', drawBorder: false, borderDash: [3,3] },
+        border: { display: false }
+      },
+      x: {
+        ticks: { color: '#475569', font: { size: 9, family: 'Inter', weight: '600' }, padding: 4, maxRotation: 0, autoSkip: false },
+        grid: { display: false }, border: { display: false }
+      }
+    }
+  };
+}
 
-  if(items.length === 0){
-    sel.innerHTML = '<option value="">Belum ada barang</option>';
-    document.getElementById('repLow').textContent = 'Rp 0';
-    document.getElementById('repHigh').textContent = 'Rp 0';
-    document.getElementById('repDiff').textContent = 'Rp 0';
-    document.getElementById('repAvg').textContent = 'Rp 0';
-    document.getElementById('repLowStore').textContent = '—';
-    document.getElementById('repHighStore').textContent = '—';
-    document.getElementById('summaryTable').style.display = 'none';
-    document.getElementById('summaryEmpty').style.display = 'block';
-    document.getElementById('summaryFooter').style.display = 'none';
-    destroyReportCharts();
-    return;
-  }
-
-  if(!state.reportItemId || !getItem(state.reportItemId)){
-    state.reportItemId = itemsWithPrice().length
-      ? itemsWithPrice()[0].id
-      : [...items].sort((a,b)=>(a.name||'').localeCompare(b.name||''))[0].id;
-  }
-  populateItemSelect(sel, state.reportItemId);
-
-  const stats = itemStats(state.reportItemId);
-
-  document.getElementById('repLow').textContent  = stats.count ? fmtRp(stats.min) : 'Rp 0';
-  document.getElementById('repHigh').textContent = stats.count ? fmtRp(stats.max) : 'Rp 0';
-  document.getElementById('repDiff').textContent = stats.count ? fmtRp(stats.diff) : 'Rp 0';
-  document.getElementById('repAvg').textContent  = stats.count ? fmtRp(Math.round(stats.avg)) : 'Rp 0';
-  document.getElementById('repLowStore').textContent  = stats.cheapest ? stats.cheapest.store.name : '—';
-  document.getElementById('repHighStore').textContent = stats.priciest ? stats.priciest.store.name : '—';
-
-  const banner = document.getElementById('profitBanner');
-  banner.classList.toggle('neg', stats.diff === 0);
-
-  const table   = document.getElementById('summaryTable');
-  const emptyEl = document.getElementById('summaryEmpty');
-  const footer  = document.getElementById('summaryFooter');
-  const tbody   = table.querySelector('tbody');
-
-  const rows = [...items]
-    .map(i => ({ item:i, stats:itemStats(i.id) }))
-    .filter(r => r.stats.count > 0)
-    .sort((a,b) => (a.item.name||'').localeCompare(b.item.name||''));
-
-  if(rows.length === 0){
-    table.style.display = 'none';
-    emptyEl.style.display = 'block';
-    footer.style.display = 'none';
-    return;
-  }
-
-  table.style.display = 'table';
-  emptyEl.style.display = 'none';
-  footer.style.display = 'flex';
-
-  let totalDiff = 0;
-  const maxDiff = Math.max(...rows.map(r => r.stats.diff), 1);
-
-  tbody.innerHTML = rows.map((r, i) => {
-    totalDiff += r.stats.diff;
-    const pct = Math.max(6, (r.stats.diff / maxDiff) * 100);
-    const diffClass = r.stats.diff > 0 ? 'pos' : 'neutral';
-    return `<tr>
-      <td class="name">
-        <div class="row-name-wrap">
-          <span class="row-idx">${i+1}</span>
-          <div style="min-width:0;flex:1">
-            <span class="row-name" title="${esc(r.item.name)}">${esc(r.item.name)}</span>
-            <span class="row-sub">${esc(r.item.unit||'pcs')} • ${r.stats.count} toko</span>
-          </div>
-        </div>
-      </td>
-      <td class="num">${fmtRp(r.stats.min)}</td>
-      <td class="num">${fmtRp(r.stats.max)}</td>
-      <td class="num">
-        <div class="stock-cell">
-          <span class="stock-num" style="font-size:11px">${fmtRp(r.stats.diff)}</span>
-          <div class="stock-bar"><div class="stock-bar-fill ok" style="width:${pct}%"></div></div>
-        </div>
-      </td>
-      <td class="num"><span class="badge-diff ${diffClass}">${r.stats.count}</span></td>
-    </tr>`;
-  }).join('');
-
-  document.getElementById('summaryTotal').textContent = fmtRp(totalDiff);
+function drawEmptyCanvas(canvas, text){
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = '600 12px Inter, sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(text, canvas.width/2, canvas.height/2);
 }
 
 function renderAll(){
@@ -1790,7 +2090,7 @@ function renderAll(){
 }
 
 /* =========================================================
-   ITEM DETAIL
+   ITEM DETAIL / STORE DETAIL
    ========================================================= */
 function openItemDetail(itemId){
   const item = getItem(itemId);
@@ -1880,9 +2180,6 @@ function openItemDetail(itemId){
   openSheet('detailModal');
 }
 
-/* =========================================================
-   STORE DETAIL
-   ========================================================= */
 function openStoreDetail(storeId){
   const store = getStore(storeId);
   if(!store) return;
@@ -1998,7 +2295,7 @@ async function saveStore(e){
     }
     closeSheet('storeModal');
     renderAll();
-    if(state.view === 'reports') initReportCharts();
+    if(state.view === 'reports') renderReportCharts();
   } catch(err){
     console.error(err);
     snack('Gagal menyimpan toko', 'error');
@@ -2025,9 +2322,10 @@ function confirmDeleteStore(id){
       const related = dbGetAll('prices').filter(p => p.storeId === id);
       for(const p of related) await dbDelete('prices', p.id);
       await dbDelete('stores', id);
+      state.selectedStores.delete(id);
       closeSheet('confirmModal');
       renderAll();
-      if(state.view === 'reports') initReportCharts();
+      if(state.view === 'reports') renderReportCharts();
       snack('Toko berhasil dihapus');
     } catch(err){
       console.error(err);
@@ -2089,7 +2387,7 @@ async function saveItem(e){
     }
     closeSheet('itemModal');
     renderAll();
-    if(state.view === 'reports') initReportCharts();
+    if(state.view === 'reports') renderReportCharts();
   } catch(err){
     console.error(err);
     snack('Gagal menyimpan barang', 'error');
@@ -2116,11 +2414,13 @@ function confirmDeleteItem(id){
       const related = dbGetAll('prices').filter(p => p.itemId === id);
       for(const p of related) await dbDelete('prices', p.id);
       await dbDelete('items', id);
+      state.selectedItems.delete(id);
       if(state.compareItemId === id) state.compareItemId = null;
       if(state.reportItemId === id) state.reportItemId = null;
+      if(state.trendItemId === id) state.trendItemId = null;
       closeSheet('confirmModal');
       renderAll();
-      if(state.view === 'reports') initReportCharts();
+      if(state.view === 'reports') renderReportCharts();
       snack('Barang berhasil dihapus');
     } catch(err){
       console.error(err);
@@ -2187,8 +2487,6 @@ function openPriceModal(itemId, storeId, priceId){
   openSheet('priceModal');
 }
 
-function getPrice(id){ return dbGet('prices', id); }
-
 function updatePriceHint(){
   const itemId = Number(document.getElementById('prItem').value);
   const storeId = Number(document.getElementById('prStore').value);
@@ -2250,7 +2548,7 @@ async function savePrice(e){
     closeSheet('priceModal');
     state.compareItemId = itemId;
     renderAll();
-    if(state.view === 'reports') initReportCharts();
+    if(state.view === 'reports') renderReportCharts();
   } catch(err){
     console.error(err);
     snack('Gagal menyimpan harga', 'error');
@@ -2274,7 +2572,7 @@ function deletePriceFromModal(){
       await dbDelete('prices', id);
       closeSheet('confirmModal');
       renderAll();
-      if(state.view === 'reports') initReportCharts();
+      if(state.view === 'reports') renderReportCharts();
       snack('Catatan harga berhasil dihapus');
     } catch(err){
       console.error(err);
@@ -2361,6 +2659,370 @@ function exportCSV(type){
 }
 
 /* =========================================================
+   EXPORT PDF (super rapi)
+   ========================================================= */
+function exportPDF(){
+  if(!window.jspdf || !window.jspdf.jsPDF){
+    snack('Library PDF belum termuat. Cek koneksi lalu coba lagi.', 'error');
+    return;
+  }
+  const { jsPDF } = window.jspdf;
+
+  const stores = getFilteredStores();
+  const items  = getFilteredItems();
+
+  if(stores.length === 0 || items.length === 0){
+    snack('Pilih minimal 1 toko dan 1 barang', 'info');
+    return;
+  }
+
+  // Prepare data
+  const rows = items.map(item => {
+    const cells = stores.map(s => getLatestPrice(item.id, s.id));
+    const valid = cells.map((c, i) => c ? { store: stores[i], price: c.price, date: c.date } : null).filter(Boolean);
+    const prices = valid.map(v => v.price);
+    const min = prices.length ? Math.min(...prices) : null;
+    const max = prices.length ? Math.max(...prices) : null;
+    const diff = (min !== null && max !== null) ? max - min : 0;
+    return { item, cells, min, max, diff, hasData: prices.length > 0 };
+  }).filter(r => r.hasData);
+
+  if(rows.length === 0){
+    snack('Tidak ada data untuk diexport', 'info');
+    return;
+  }
+
+  // Aggregates
+  let totalPotensi = 0, grandMin = Infinity, grandMax = -Infinity, sum = 0, cnt = 0;
+  let minRef = null, maxRef = null;
+  rows.forEach(r => {
+    totalPotensi += r.diff;
+    r.cells.forEach((c, i) => {
+      if(!c) return;
+      sum += c.price; cnt++;
+      if(c.price < grandMin){ grandMin = c.price; minRef = { item: r.item, store: stores[i] }; }
+      if(c.price > grandMax){ grandMax = c.price; maxRef = { item: r.item, store: stores[i] }; }
+    });
+  });
+  const avg = cnt ? Math.round(sum / cnt) : 0;
+
+  // Orientation: landscape if many stores
+  const orientation = stores.length >= 4 ? 'landscape' : 'portrait';
+  const doc = new jsPDF({ orientation, unit:'mm', format:'a4' });
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+  const M = 12;
+
+  /* -------- HEADER BANNER -------- */
+  doc.setFillColor(37, 99, 235);
+  doc.rect(0, 0, pageW, 26, 'F');
+  // Decorative circles
+  doc.setFillColor(59, 130, 246);
+  doc.circle(pageW - 20, 4, 18, 'F');
+  doc.setFillColor(96, 165, 250);
+  doc.circle(pageW - 42, 22, 10, 'F');
+
+  // Logo badge
+  doc.setFillColor(255, 255, 255);
+  doc.roundedRect(M, 6, 14, 14, 3, 3, 'F');
+  doc.setTextColor(37, 99, 235);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(14);
+  doc.text('B', M + 4.2, 16);
+
+  // Title
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(17);
+  doc.text('bapok', M + 18, 12.5);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8.5);
+  doc.text('Laporan Perbandingan Harga Antar Toko', M + 18, 18.5);
+
+  // Date/time on right
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'bold');
+  const dateStr = new Date().toLocaleDateString('id-ID', { day:'2-digit', month:'long', year:'numeric' });
+  const timeStr = new Date().toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+  doc.text(dateStr, pageW - M, 12.5, { align:'right' });
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.5);
+  doc.text('Dicetak: ' + timeStr, pageW - M, 18.5, { align:'right' });
+
+  /* -------- SECTION: RINGKASAN -------- */
+  let y = 34;
+  doc.setTextColor(15, 23, 42);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.text('Ringkasan', M, y);
+  y += 2;
+  doc.setDrawColor(226, 232, 240);
+  doc.setLineWidth(0.3);
+  doc.line(M, y, pageW - M, y);
+  y += 5;
+
+  // Stat boxes (4)
+  const gap = 3;
+  const boxW = (pageW - 2*M - gap*3) / 4;
+  const boxH = 18;
+  const stats = [
+    { label: 'Jumlah Toko', value: String(stores.length), color: [37,99,235] },
+    { label: 'Jumlah Barang', value: String(rows.length), color: [124,58,237] },
+    { label: 'Harga Terendah', value: fmtRp(grandMin), color: [4,120,87] },
+    { label: 'Harga Tertinggi', value: fmtRp(grandMax), color: [190,18,60] }
+  ];
+  stats.forEach((s, i) => {
+    const x = M + i * (boxW + gap);
+    doc.setFillColor(248, 251, 255);
+    doc.roundedRect(x, y, boxW, boxH, 2, 2, 'F');
+    doc.setDrawColor(226, 232, 240);
+    doc.roundedRect(x, y, boxW, boxH, 2, 2, 'S');
+    // Left accent
+    doc.setFillColor(s.color[0], s.color[1], s.color[2]);
+    doc.rect(x, y, 1.2, boxH, 'F');
+    // Label
+    doc.setTextColor(100, 116, 139);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(6.5);
+    doc.text(s.label.toUpperCase(), x + 4, y + 6);
+    // Value
+    doc.setTextColor(s.color[0], s.color[1], s.color[2]);
+    doc.setFontSize(11);
+    doc.text(s.value, x + 4, y + 14);
+  });
+  y += boxH + 6;
+
+  // Second row: potensi hemat + rata-rata + info
+  const boxW2 = (pageW - 2*M - gap) / 2;
+  const stats2 = [
+    { label: 'Total Potensi Hemat', value: fmtRp(totalPotensi), color: [37,99,235], bg: [219,234,254] },
+    { label: 'Rata-rata Harga', value: fmtRp(avg), color: [15,23,42], bg: [240,247,255] }
+  ];
+  stats2.forEach((s, i) => {
+    const x = M + i * (boxW2 + gap);
+    doc.setFillColor(s.bg[0], s.bg[1], s.bg[2]);
+    doc.roundedRect(x, y, boxW2, 14, 2, 2, 'F');
+    doc.setTextColor(s.color[0], s.color[1], s.color[2]);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7);
+    doc.text(s.label.toUpperCase(), x + 4, y + 5);
+    doc.setFontSize(12);
+    doc.text(s.value, x + 4, y + 11.5);
+  });
+  y += 20;
+
+  // Info bar: item & store name summary
+  doc.setFillColor(255, 255, 255);
+  doc.setDrawColor(226, 232, 240);
+  doc.setLineWidth(0.2);
+  doc.roundedRect(M, y, pageW - 2*M, 12, 2, 2, 'S');
+  doc.setTextColor(71, 85, 105);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7);
+  doc.text('Toko:', M + 3, y + 4.5);
+  doc.text('Barang:', M + 3, y + 9);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(15, 23, 42);
+
+  const storeList = stores.map(s => s.name).join(', ');
+  const itemList = rows.map(r => r.item.name).join(', ');
+  const maxW = pageW - 2*M - 22;
+  doc.text(truncateToWidth(doc, storeList, maxW, 7.5), M + 20, y + 4.5);
+  doc.text(truncateToWidth(doc, itemList, maxW, 7.5), M + 20, y + 9);
+  y += 16;
+
+  /* -------- SECTION: TABEL MATRIKS -------- */
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.setTextColor(15, 23, 42);
+  doc.text('Tabel Perbandingan Harga', M, y);
+  y += 4;
+
+  // Build table
+  const head = [['#', 'Barang', 'Satuan', ...stores.map(s => s.name), 'Terendah', 'Tertinggi', 'Selisih']];
+  const body = rows.map((r, i) => {
+    const row = [
+      String(i + 1),
+      r.item.name,
+      r.item.unit || 'pcs'
+    ];
+    r.cells.forEach(c => {
+      row.push(c ? fmtRp(c.price) : '—');
+    });
+    row.push(r.min !== null ? fmtRp(r.min) : '—');
+    row.push(r.max !== null ? fmtRp(r.max) : '—');
+    row.push(r.diff > 0 ? '+' + fmtRp(r.diff) : '—');
+    return row;
+  });
+
+  const storeColStart = 3;
+  const storeColEnd = 3 + stores.length - 1;
+  const minColIdx = 3 + stores.length;
+  const maxColIdx = 4 + stores.length;
+  const diffColIdx = 5 + stores.length;
+
+  // Choose font size based on width
+  const baseFont = stores.length >= 6 ? 6.5 : stores.length >= 4 ? 7.5 : 8;
+  const cellPad = stores.length >= 6 ? 1.4 : 2;
+
+  doc.autoTable({
+    head,
+    body,
+    startY: y,
+    theme: 'grid',
+    margin: { left: M, right: M, top: 30 },
+    tableLineColor: [226, 232, 240],
+    tableLineWidth: 0.15,
+    styles: {
+      font: 'helvetica',
+      fontSize: baseFont,
+      cellPadding: cellPad,
+      textColor: [30, 41, 59],
+      valign: 'middle',
+      overflow: 'linebreak',
+      lineColor: [226, 232, 240],
+      lineWidth: 0.15,
+      fillColor: [255, 255, 255]
+    },
+    headStyles: {
+      fillColor: [37, 99, 235],
+      textColor: [255, 255, 255],
+      fontStyle: 'bold',
+      halign: 'center',
+      fontSize: baseFont,
+      cellPadding: cellPad + 0.4
+    },
+    alternateRowStyles: { fillColor: [248, 251, 255] },
+    columnStyles: {
+      0: { halign: 'center', cellWidth: 7, fontStyle: 'bold', textColor: [100, 116, 139] },
+      1: { fontStyle: 'bold', cellWidth: 'auto', minCellWidth: 26 },
+      2: { halign: 'center', cellWidth: 12, textColor: [100, 116, 139] }
+    },
+    didParseCell: (data) => {
+      if(data.section === 'head'){
+        // Right-align store headers
+        if(data.column.index >= storeColStart && data.column.index <= storeColEnd){
+          data.cell.styles.halign = 'center';
+        }
+        return;
+      }
+      if(data.section !== 'body') return;
+
+      // Store columns: right-align + highlight min/max
+      if(data.column.index >= storeColStart && data.column.index <= storeColEnd){
+        data.cell.styles.halign = 'right';
+        data.cell.styles.fontStyle = 'bold';
+        const raw = data.row.raw;
+        const cellVal = raw[data.column.index];
+        const minVal = raw[minColIdx];
+        const maxVal = raw[maxColIdx];
+        if(cellVal !== '—' && minVal !== '—' && maxVal !== '—' && minVal !== maxVal){
+          if(cellVal === minVal){
+            data.cell.styles.fillColor = [209, 250, 229];
+            data.cell.styles.textColor = [4, 120, 87];
+          } else if(cellVal === maxVal){
+            data.cell.styles.fillColor = [255, 228, 230];
+            data.cell.styles.textColor = [190, 18, 60];
+          }
+        }
+      }
+      // Summary columns
+      if(data.column.index === minColIdx || data.column.index === maxColIdx || data.column.index === diffColIdx){
+        data.cell.styles.halign = 'right';
+        data.cell.styles.fontStyle = 'bold';
+      }
+      if(data.column.index === minColIdx) data.cell.styles.textColor = [4, 120, 87];
+      if(data.column.index === maxColIdx) data.cell.styles.textColor = [190, 18, 60];
+      if(data.cell.raw === '—'){
+        data.cell.styles.textColor = [148, 163, 184];
+        data.cell.styles.fontStyle = 'normal';
+      }
+    },
+    didDrawPage: (data) => {
+      // Page footer
+      const pageNum = doc.internal.getCurrentPageInfo().pageNumber;
+      const totalPages = doc.internal.getNumberOfPages();
+      doc.setFontSize(7);
+      doc.setTextColor(148, 163, 184);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Halaman ${pageNum} dari ${totalPages}`, pageW / 2, pageH - 5, { align: 'center' });
+      doc.text('Dibuat oleh bapok — Perbandingan Harga Toko', M, pageH - 5);
+      doc.text('Sumber data: catatan pengguna', pageW - M, pageH - 5, { align: 'right' });
+    }
+  });
+
+  /* -------- SECTION: REKOMENDASI -------- */
+  let afterY = doc.lastAutoTable.finalY + 6;
+  if(afterY > pageH - 40){
+    doc.addPage();
+    afterY = 20;
+  }
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.setTextColor(15, 23, 42);
+  doc.text('Rekomendasi Belanja Termurah', M, afterY);
+  afterY += 4;
+
+  // For each item, cheapest store
+  const recs = rows.map(r => {
+    let cheapest = null;
+    r.cells.forEach((c, i) => {
+      if(!c) return;
+      if(!cheapest || c.price < cheapest.price) cheapest = { store: stores[i], price: c.price };
+    });
+    return { item: r.item, store: cheapest ? cheapest.store : null, price: cheapest ? cheapest.price : null, max: r.max, diff: r.diff };
+  });
+
+  const recHead = [['Barang', 'Belanja di', 'Harga Terbaik', 'Hemat vs Tertinggi']];
+  const recBody = recs.map(rec => [
+    rec.item.name + (rec.item.unit ? ' / ' + rec.item.unit : ''),
+    rec.store ? rec.store.name : '—',
+    rec.price !== null ? fmtRp(rec.price) : '—',
+    rec.diff > 0 ? fmtRp(rec.diff) : '—'
+  ]);
+
+  doc.autoTable({
+    head: recHead,
+    body: recBody,
+    startY: afterY,
+    theme: 'striped',
+    margin: { left: M, right: M },
+    styles: {
+      font: 'helvetica', fontSize: 8, cellPadding: 2.5,
+      textColor: [30, 41, 59], lineColor: [226, 232, 240],
+      lineWidth: 0.15
+    },
+    headStyles: {
+      fillColor: [16, 185, 129], textColor: [255, 255, 255],
+      fontStyle: 'bold', halign: 'left', fontSize: 8, cellPadding: 2.9
+    },
+    alternateRowStyles: { fillColor: [240, 253, 244] },
+    columnStyles: {
+      0: { fontStyle: 'bold' },
+      1: { textColor: [37, 99, 235], fontStyle: 'bold' },
+      2: { halign: 'right', fontStyle: 'bold', textColor: [4, 120, 87] },
+      3: { halign: 'right', fontStyle: 'bold', textColor: [37, 99, 235] }
+    }
+  });
+
+  /* -------- SAVE -------- */
+  const filename = `Laporan_bapok_${todayStr()}.pdf`;
+  doc.save(filename);
+  snack('PDF berhasil diunduh');
+}
+
+function truncateToWidth(doc, text, maxWidth, fontSize){
+  doc.setFontSize(fontSize);
+  let t = text;
+  if(doc.getTextWidth(t) <= maxWidth) return t;
+  while(t.length > 3 && doc.getTextWidth(t + '…') > maxWidth){
+    t = t.slice(0, -1);
+  }
+  return t + '…';
+}
+
+/* =========================================================
    EVENT BINDINGS
    ========================================================= */
 document.querySelectorAll('.nav-item').forEach(btn => {
@@ -2381,10 +3043,9 @@ document.getElementById('compareItemSelect').addEventListener('change', e => {
   state.compareItemId = Number(e.target.value);
   renderCompare();
 });
-document.getElementById('reportItemSelect').addEventListener('change', e => {
-  state.reportItemId = Number(e.target.value);
-  renderReports();
-  initReportCharts();
+document.getElementById('trendItemSelect').addEventListener('change', e => {
+  state.trendItemId = Number(e.target.value);
+  renderReportCharts();
 });
 
 ['loginEmail','loginPass'].forEach(id => {
@@ -2490,10 +3151,14 @@ window.deleteItemFromModal = deleteItemFromModal;
 window.deleteStoreFromModal = deleteStoreFromModal;
 window.deletePriceFromModal = deletePriceFromModal;
 window.exportCSV = exportCSV;
+window.exportPDF = exportPDF;
 window.doAuth = doAuth;
 window.doReset = doReset;
 window.doLogout = doLogout;
 window.setAuthMode = setAuthMode;
+window.toggleFilter = toggleFilter;
+window.setAllFilter = setAllFilter;
+window.resetReportFilters = resetReportFilters;
 
 /* =========================================================
    BOOT
@@ -2512,7 +3177,7 @@ onAuthStateChanged(auth, async user => {
       Splash.setProgress(50, 'Memuat data...');
       await loadAll();
       renderAll();
-      setTimeout(() => initReportCharts(), 200);
+      setTimeout(() => renderReportCharts(), 200);
     } catch(err){
       console.error('Gagal memuat data:', err);
       snack('Gagal memuat data. Cek koneksi atau Firestore rules.', 'error');
@@ -2530,7 +3195,6 @@ onAuthStateChanged(auth, async user => {
     await Splash.finish();
   }
 });
-
 </script>
 </body>
 </html>
