@@ -285,6 +285,67 @@ td.name{font-weight:700;max-width:130px;overflow:hidden;text-overflow:ellipsis;w
 .table-foot .tf-label i{color:var(--blue);font-size:10px}
 .table-foot .tf-value{font-size:12.5px;font-weight:800;color:var(--blue-deep);font-variant-numeric:tabular-nums;letter-spacing:-0.02em}
 
+/* ===== COMPARE CARDS (menu Bandingkan) ===== */
+.cmp-hero{background:linear-gradient(135deg,#10b981 0%,#047857 100%);border-radius:var(--r-md);padding:14px 16px;color:#fff;display:flex;align-items:center;gap:12px;box-shadow:0 14px 30px rgba(16,185,129,.32);margin-bottom:12px;position:relative;overflow:hidden}
+.cmp-hero.tied{background:linear-gradient(135deg,var(--blue) 0%,var(--blue-deep) 100%);box-shadow:var(--shadow-blue)}
+.cmp-hero::before{content:'';position:absolute;top:-40px;right:-30px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle, rgba(255,255,255,.25), transparent 65%);pointer-events:none}
+.cmp-hero-icon{width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,.22);display:grid;place-items:center;font-size:20px;flex-shrink:0;border:1px solid rgba(255,255,255,.25);position:relative;z-index:1;box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+.cmp-hero-text{flex:1;min-width:0;position:relative;z-index:1}
+.cmp-hero-label{font-size:9.5px;font-weight:700;opacity:.85;text-transform:uppercase;letter-spacing:0.5px}
+.cmp-hero-name{font-size:15px;font-weight:800;letter-spacing:-0.03em;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmp-hero-price{text-align:right;position:relative;z-index:1;flex-shrink:0}
+.cmp-hero-price .p{font-size:16px;font-weight:800;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;margin-top:3px}
+
+.cmp-list{display:flex;flex-direction:column;gap:8px}
+.cmp-card{background:var(--surface);border-radius:var(--r-md);padding:12px 14px;box-shadow:var(--shadow-sm);border-left:3px solid var(--line);transition:all .22s cubic-bezier(.34,1.56,.64,1);position:relative;overflow:hidden;cursor:pointer}
+.cmp-card:hover{box-shadow:var(--shadow);transform:translateY(-1px)}
+.cmp-card:active{transform:scale(.99)}
+.cmp-card.best{border-left-color:var(--green);background:linear-gradient(90deg, rgba(16,185,129,.07), rgba(255,255,255,0) 45%)}
+.cmp-card.worst{border-left-color:var(--rose);background:linear-gradient(90deg, rgba(244,63,94,.07), rgba(255,255,255,0) 45%)}
+.cmp-card.mid{border-left-color:var(--amber);background:linear-gradient(90deg, rgba(245,158,11,.07), rgba(255,255,255,0) 45%)}
+.cmp-top{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.cmp-rank{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-weight:800;font-size:12.5px;flex-shrink:0;font-variant-numeric:tabular-nums;letter-spacing:-0.02em}
+.cmp-rank i{font-size:14px}
+.cmp-rank.gold{background:linear-gradient(135deg,#fcd34d,#f59e0b);color:#fff;box-shadow:0 6px 14px rgba(245,158,11,.45), inset 0 1px 0 rgba(255,255,255,.4)}
+.cmp-rank.silver{background:linear-gradient(135deg,#e2e8f0,#94a3b8);color:#fff;box-shadow:0 6px 14px rgba(148,163,184,.4), inset 0 1px 0 rgba(255,255,255,.4)}
+.cmp-rank.bronze{background:linear-gradient(135deg,#d97706,#92400e);color:#fff;box-shadow:0 6px 14px rgba(146,64,14,.4), inset 0 1px 0 rgba(255,255,255,.3)}
+.cmp-rank.normal{background:var(--surface-3);color:var(--text-mute);border:1px solid var(--line)}
+.cmp-info{flex:1;min-width:0}
+.cmp-name{font-size:12.5px;font-weight:700;color:var(--text);letter-spacing:-0.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.cmp-addr{font-size:9.5px;color:var(--text-mute);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;display:flex;align-items:center;gap:5px}
+.cmp-addr i{font-size:8.5px}
+.cmp-price-col{text-align:right;flex-shrink:0;padding-left:8px}
+.cmp-price{font-size:14px;font-weight:800;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;line-height:1.1}
+.cmp-price.best{color:var(--green-deep)}
+.cmp-price.worst{color:var(--rose-deep)}
+.cmp-price.mid{color:var(--text)}
+.cmp-price.tie{color:var(--blue-deep)}
+.cmp-diff{font-size:9.5px;font-weight:800;margin-top:4px;letter-spacing:-0.01em;white-space:nowrap}
+.cmp-diff.pos{color:var(--green-deep)}
+.cmp-diff.neg{color:var(--rose-deep)}
+.cmp-diff.neutral{color:var(--amber-deep)}
+.cmp-diff.tie{color:var(--blue-deep)}
+.cmp-bar-wrap{margin-top:10px;height:6px;border-radius:99px;background:var(--line);overflow:hidden;position:relative}
+.cmp-bar{height:100%;border-radius:99px;transition:width .6s cubic-bezier(.16,1,.3,1);position:relative;overflow:hidden}
+.cmp-bar::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg, transparent, rgba(255,255,255,.5), transparent);animation:cmpBarShine 2.4s ease-in-out infinite}
+@keyframes cmpBarShine{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.cmp-bar.best{background:linear-gradient(90deg,#34d399,#10b981);box-shadow:0 0 10px rgba(16,185,129,.45)}
+.cmp-bar.mid{background:linear-gradient(90deg,#fbbf24,#f59e0b);box-shadow:0 0 10px rgba(245,158,11,.35)}
+.cmp-bar.worst{background:linear-gradient(90deg,#fb7185,#f43f5e);box-shadow:0 0 10px rgba(244,63,94,.4)}
+.cmp-bar.tie{background:linear-gradient(90deg,#60a5fa,#3b82f6);box-shadow:0 0 10px rgba(59,130,246,.4)}
+
+.cmp-footer{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
+.cmp-stat{background:var(--surface);border-radius:var(--r-md);padding:10px 12px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:3px;min-width:0;position:relative;overflow:hidden}
+.cmp-stat::before{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:var(--line)}
+.cmp-stat.avg::before{background:linear-gradient(90deg,var(--blue),var(--blue-deep))}
+.cmp-stat.range::before{background:linear-gradient(90deg,var(--amber),var(--amber-deep))}
+.cmp-stat.save::before{background:linear-gradient(90deg,var(--green),var(--green-deep))}
+.cmp-stat-label{font-size:8.5px;color:var(--text-mute);font-weight:800;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmp-stat-value{font-size:12px;font-weight:800;color:var(--text);letter-spacing:-0.03em;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmp-stat-value.blue{color:var(--blue-deep)}
+.cmp-stat-value.amber{color:var(--amber-deep)}
+.cmp-stat-value.green{color:var(--green-deep)}
+
 /* Matrix table */
 .matrix-table{min-width:100%}
 .matrix-table thead th:first-child{position:sticky;left:0;z-index:4;background:linear-gradient(180deg,#f8fbff,#eef6ff);box-shadow:2px 0 4px rgba(15,23,42,.04)}
@@ -440,6 +501,38 @@ td.name{font-weight:700;max-width:130px;overflow:hidden;text-overflow:ellipsis;w
 .info-hero-icon{width:60px;height:60px;border-radius:20px;margin:0 auto 12px;background:var(--blue);color:#fff;display:grid;place-items:center;font-size:24px;box-shadow:0 16px 32px rgba(59,130,246,.45), inset 0 1px 0 rgba(255,255,255,.3)}
 .info-hero h3{font-size:15px;font-weight:800;letter-spacing:-0.03em;color:var(--text)}
 .info-hero p{font-size:11px;color:var(--text-mute);margin-top:5px;line-height:1.55;padding:0 10px;font-weight:500}
+
+/* ===== BULK INPUT PER TOKO ===== */
+.bulk-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 0 8px}
+.bulk-toolbar .bt-count{font-size:10.5px;font-weight:700;color:var(--text-mute);letter-spacing:-0.01em}
+.bulk-toolbar .bt-count b{color:var(--blue-deep);font-size:12px}
+.bulk-toolbar .bt-actions{display:flex;gap:5px}
+.bulk-toolbar button{font-family:inherit;font-size:10px;font-weight:700;padding:5px 9px;border-radius:8px;border:none;background:var(--surface-3);color:var(--text-soft);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:4px;letter-spacing:-0.01em}
+.bulk-toolbar button:hover{background:var(--blue-pale);color:var(--blue-deep)}
+.bulk-toolbar button:active{transform:scale(.95)}
+.bulk-list{max-height:44vh;overflow-y:auto;padding:2px;margin-bottom:10px;border-radius:12px;overscroll-behavior:contain}
+.bulk-list::-webkit-scrollbar{width:4px}
+.bulk-list::-webkit-scrollbar-thumb{background:#bfdbfe;border-radius:99px}
+.bulk-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;background:var(--surface-2);margin-bottom:6px;border:1.5px solid transparent;transition:all .2s}
+.bulk-row.filled{border-color:rgba(16,185,129,.45);background:#fff;box-shadow:0 2px 8px rgba(16,185,129,.1)}
+.bulk-row .br-main{flex:1;min-width:0}
+.bulk-row .br-name{font-size:11.5px;font-weight:700;color:var(--text);letter-spacing:-0.015em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bulk-row .br-sub{font-size:9.5px;color:var(--text-mute);font-weight:600;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bulk-row .br-sub .fill-last{color:var(--blue-deep);cursor:pointer;font-weight:700;text-decoration:underline dotted;text-underline-offset:2px}
+.bulk-input{width:104px;flex-shrink:0;padding:8px 9px;border-radius:10px;border:1.5px solid var(--line);background:#fff;font-family:inherit;font-size:11.5px;font-weight:700;color:var(--text);text-align:right;outline:none;font-variant-numeric:tabular-nums;transition:all .18s;-webkit-appearance:none;appearance:none;letter-spacing:-0.01em}
+.bulk-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+.bulk-input::placeholder{font-weight:500;color:var(--text-mute)}
+.bulk-input::-webkit-outer-spin-button,.bulk-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.bulk-add{display:flex;gap:6px;align-items:center;margin-bottom:10px}
+.bulk-add .input-plain{flex:1;padding:9px 11px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface-2);font-family:inherit;font-size:11.5px;font-weight:600;color:var(--text);outline:none;min-width:0;letter-spacing:-0.01em}
+.bulk-add .input-plain:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+.bulk-add .input-plain::placeholder{color:var(--text-mute);font-weight:500}
+.bulk-add .unit-plain{width:58px;flex-shrink:0;text-align:center}
+.bulk-add button{width:38px;height:36px;flex-shrink:0;border-radius:10px;border:none;background:var(--blue);color:#fff;font-size:12px;cursor:pointer;display:grid;place-items:center;box-shadow:0 6px 14px rgba(59,130,246,.35);transition:all .18s}
+.bulk-add button:hover{background:var(--blue-deep)}
+.bulk-add button:active{transform:scale(.92)}
+.bulk-note{font-size:10px;color:var(--text-mute);font-weight:600;line-height:1.5;margin-bottom:10px;display:flex;gap:6px;align-items:flex-start;padding:8px 10px;background:var(--surface-2);border-radius:10px}
+.bulk-note i{color:var(--blue);font-size:10.5px;margin-top:1px}
 
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-thumb{background:#bfdbfe;border-radius:99px}
@@ -770,7 +863,6 @@ td.name{font-weight:700;max-width:130px;overflow:hidden;text-overflow:ellipsis;w
 
 <nav class="dock">
   <button class="nav-item active" data-view="dashboard"><i class="fas fa-house"></i><span>Dashboard</span></button>
-  <button class="nav-item" data-view="items"><i class="fas fa-box"></i><span>Barang</span></button>
   <button class="nav-item" data-view="stores"><i class="fas fa-store"></i><span>Toko</span></button>
   <button class="nav-item" data-view="compare"><i class="fas fa-right-left"></i><span>Bandingkan</span></button>
   <button class="nav-item" data-view="reports"><i class="fas fa-chart-simple"></i><span>Laporan</span></button>
@@ -782,9 +874,13 @@ td.name{font-weight:700;max-width:130px;overflow:hidden;text-overflow:ellipsis;w
     <div class="sheet-handle"></div>
     <div class="sheet-header"><i class="fas fa-bolt"></i><h2>Aksi Cepat</h2></div>
     <div class="sheet-body">
+      <div class="action-item" onclick="openBulkModal()">
+        <i class="ic-blue fas fa-layer-group"></i>
+        <div class="action-text"><h4>Input Massal per Toko</h4><p>Isi banyak barang sekaligus dalam satu toko</p></div>
+      </div>
       <div class="action-item" onclick="openPriceModal()">
         <i class="ic-blue fas fa-tag"></i>
-        <div class="action-text"><h4>Catat Harga</h4><p>Simpan harga barang di sebuah toko</p></div>
+        <div class="action-text"><h4>Catat Harga (Satuan)</h4><p>Simpan satu harga barang di sebuah toko</p></div>
       </div>
       <div class="action-item" onclick="openItemModal()">
         <i class="ic-violet fas fa-cube"></i>
@@ -793,6 +889,10 @@ td.name{font-weight:700;max-width:130px;overflow:hidden;text-overflow:ellipsis;w
       <div class="action-item" onclick="openStoreModal()">
         <i class="ic-green fas fa-store"></i>
         <div class="action-text"><h4>Tambah Toko</h4><p>Daftarkan toko pembanding baru</p></div>
+      </div>
+      <div class="action-item" onclick="closeSheet('actionSheet'); switchView('items');">
+        <i class="ic-violet fas fa-boxes-stacked"></i>
+        <div class="action-text"><h4>Lihat Daftar Barang</h4><p>Kelola semua barang yang dipantau</p></div>
       </div>
       <div class="action-item" onclick="closeSheet('actionSheet'); switchView('compare');">
         <i class="ic-red fas fa-right-left"></i>
@@ -936,6 +1036,68 @@ td.name{font-weight:700;max-width:130px;overflow:hidden;text-overflow:ellipsis;w
         </div>
         <button type="button" class="btn btn-danger" id="btnDeletePrice" style="margin-top:8px;display:none" onclick="deletePriceFromModal()"><i class="fas fa-trash"></i> Hapus Catatan Harga</button>
       </form>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BULK INPUT PER TOKO ===== -->
+<div class="scrim" id="bulkModal">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header"><i class="fas fa-layer-group"></i><h2>Input Massal per Toko</h2></div>
+    <div class="sheet-body">
+      <div class="bulk-note">
+        <i class="fas fa-circle-info"></i>
+        <span>Pilih satu toko, lalu isi harga untuk barang apa saja yang tersedia di toko tersebut. Kolom yang dibiarkan kosong tidak akan disimpan.</span>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Toko <span class="req">*</span></label>
+        <div class="field-wrap"><i class="fas fa-store"></i>
+          <select class="select" id="bulkStore"></select>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">Tanggal</label>
+          <div class="field-wrap"><i class="fas fa-calendar"></i>
+            <input type="date" class="input" id="bulkDate">
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Cari Barang</label>
+          <div class="field-wrap"><i class="fas fa-magnifying-glass"></i>
+            <input type="text" class="input" id="bulkSearch" placeholder="Filter..." autocomplete="off">
+          </div>
+        </div>
+      </div>
+
+      <div class="bulk-toolbar">
+        <span class="bt-count" id="bulkCount"><b>0</b> barang siap disimpan</span>
+        <div class="bt-actions">
+          <button type="button" onclick="bulkFillLast()"><i class="fas fa-clock-rotate-left"></i> Isi Terakhir</button>
+          <button type="button" onclick="bulkClear()"><i class="fas fa-eraser"></i> Kosongkan</button>
+        </div>
+      </div>
+
+      <div class="bulk-list" id="bulkList"></div>
+
+      <div class="bulk-add">
+        <input type="text" class="input-plain" id="bulkNewItem" placeholder="Barang baru belum ada? Tulis di sini..." maxlength="40">
+        <input type="text" class="input-plain unit-plain" id="bulkNewUnit" value="kg" maxlength="12" placeholder="kg">
+        <button type="button" onclick="bulkAddItem()" aria-label="Tambah barang"><i class="fas fa-plus"></i></button>
+      </div>
+
+      <div class="total-preview">
+        <span class="lbl">Total Harga Terisi</span>
+        <span class="val" id="bulkTotal">Rp 0</span>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn btn-outlined" onclick="closeSheet('bulkModal')">Batal</button>
+        <button type="button" class="btn btn-filled" id="bulkSaveBtn" onclick="saveBulk()"><i class="fas fa-check"></i> Simpan Semua</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1235,49 +1397,49 @@ const state = {
   reportItemId: null,
   selectedStores: new Set(),
   selectedItems: new Set(),
-  trendItemId: null
+  trendItemId: null,
+  bulkDraft: {},
+  bulkSearch: ''
 };
 
 /* Filter helpers */
 function getFilteredStores(){
   const all = [...dbGetAll('stores')].sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  if(state.storeFilterNone) return [];
   if(state.selectedStores.size === 0) return all;
   return all.filter(s => state.selectedStores.has(s.id));
 }
 function getFilteredItems(){
   const all = [...dbGetAll('items')].sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  if(state.itemFilterNone) return [];
   if(state.selectedItems.size === 0) return all;
   return all.filter(i => state.selectedItems.has(i.id));
 }
 function toggleFilter(type, id){
   const all = type === 'store' ? dbGetAll('stores') : dbGetAll('items');
   const set = type === 'store' ? state.selectedStores : state.selectedItems;
+  const noneFlag = type === 'store' ? 'storeFilterNone' : 'itemFilterNone';
 
-  // Normalize: if set empty (means "all"), start from full list, then toggle the clicked one off
+  if(state[noneFlag]){
+    state[noneFlag] = false;
+    set.clear();
+  }
   if(set.size === 0){
     all.forEach(x => { if(x.id !== id) set.add(x.id); });
   } else if(set.has(id)){
     set.delete(id);
   } else {
     set.add(id);
-    if(set.size >= all.length) set.clear(); // back to "all"
+    if(set.size >= all.length) set.clear();
   }
   renderReports();
   renderReportCharts();
 }
 function setAllFilter(type, on){
-  const all = type === 'store' ? dbGetAll('stores') : dbGetAll('items');
   const set = type === 'store' ? state.selectedStores : state.selectedItems;
+  const noneFlag = type === 'store' ? 'storeFilterNone' : 'itemFilterNone';
   set.clear();
-  if(!on){
-    // Explicit "none" — impossible to represent with "empty = all".
-    // We use a sentinel: fill with dummy IDs so filter returns nothing.
-    // Simpler: keep empty meaning all, and let "Kosong" just clear individual = "all".
-    // For real "none", we add a special flag.
-    state[type === 'store' ? 'storeFilterNone' : 'itemFilterNone'] = true;
-  } else {
-    state[type === 'store' ? 'storeFilterNone' : 'itemFilterNone'] = false;
-  }
+  state[noneFlag] = !on;
   renderReports();
   renderReportCharts();
 }
@@ -1373,7 +1535,7 @@ function renderDashboard(){
       <div class="empty-icon" style="width:52px;height:52px;font-size:20px"><i class="fas fa-tags"></i></div>
       <h3>Belum Ada Harga</h3>
       <p>Catat harga barang di beberapa toko untuk mulai membandingkan.</p>
-      <button class="btn-text" onclick="openPriceModal()"><i class="fas fa-plus"></i> Catat Harga</button>
+      <button class="btn-text" onclick="openBulkModal()"><i class="fas fa-layer-group"></i> Input Massal</button>
     </div></div>`;
   } else {
     cheapestEl.innerHTML = `<div class="list">${withPrice.map(({item, stats}) => `
@@ -1596,76 +1758,129 @@ function renderCompare(){
   }
 
   const maxPrice = stats.max || 1;
-  let summaryHtml = '';
+  const tied = stats.diff === 0 && stats.count > 1;
+
+  let heroHtml = '';
   if(stats.count >= 2){
-    summaryHtml = `
-      <div class="profit-banner" style="margin-bottom:10px">
-        <div class="profit-icon"><i class="fas fa-trophy"></i></div>
-        <div class="profit-text">
-          <div class="profit-label">Termurah di</div>
-          <div class="profit-value" style="font-size:15px">${esc(stats.cheapest.store.name)}</div>
-        </div>
-        <div class="profit-stock">
-          <div class="profit-label">Harga</div>
-          <div class="profit-value-sm">${fmtRp(stats.min)}</div>
-        </div>
-      </div>`;
+    if(tied){
+      heroHtml = `
+        <div class="cmp-hero tied">
+          <div class="cmp-hero-icon"><i class="fas fa-equals"></i></div>
+          <div class="cmp-hero-text">
+            <div class="cmp-hero-label">Harga sama di ${stats.count} toko</div>
+            <div class="cmp-hero-name">Tidak ada yang lebih murah</div>
+          </div>
+          <div class="cmp-hero-price">
+            <div class="cmp-hero-label">Harga</div>
+            <div class="p">${fmtRp(stats.min)}</div>
+          </div>
+        </div>`;
+    } else {
+      const cheapest = stats.cheapest;
+      heroHtml = `
+        <div class="cmp-hero">
+          <div class="cmp-hero-icon"><i class="fas fa-trophy"></i></div>
+          <div class="cmp-hero-text">
+            <div class="cmp-hero-label">Paling murah di</div>
+            <div class="cmp-hero-name">${esc(cheapest.store.name)}</div>
+          </div>
+          <div class="cmp-hero-price">
+            <div class="cmp-hero-label">Hemat</div>
+            <div class="p">${fmtRp(stats.diff)}</div>
+          </div>
+        </div>`;
+    }
   }
 
-  const rowsHtml = stats.rows.map((r, idx) => {
+  const cardsHtml = stats.rows.map((r, idx) => {
+    const rank = idx + 1;
     const diff = r.price - stats.min;
-    const pct = Math.max(6, (r.price / maxPrice) * 100);
-    let barClass = 'ok', diffClass = 'pos', diffLabel = 'Termurah';
-    if(diff === 0){ barClass = 'ok'; diffClass = 'pos'; diffLabel = 'Termurah'; }
-    else if(r.price === stats.max && stats.diff > 0){ barClass = 'empty'; diffClass = 'neg'; diffLabel = 'Tertinggi'; }
-    else { barClass = 'low'; diffClass = 'neutral'; diffLabel = 'Sedang'; }
-    return `<tr>
-      <td class="name">
-        <div class="row-name-wrap">
-          <span class="row-idx">${idx+1}</span>
-          <div style="min-width:0;flex:1">
-            <span class="row-name" title="${esc(r.store.name)}">${esc(r.store.name)}</span>
-            <span class="row-sub">${r.store.address ? esc(r.store.address) : 'Diperbarui ' + fmtDate(r.date)}</span>
-          </div>
+    const pct = stats.min > 0 ? ((r.price - stats.min) / stats.min * 100) : 0;
+    const barPct = Math.max(8, Math.min(100, (r.price / maxPrice) * 100));
+
+    const isBest = rank === 1 && !tied;
+    const isWorst = rank === stats.count && stats.count > 1 && stats.diff > 0;
+
+    let cardClass = 'mid';
+    if(tied) cardClass = 'best';
+    else if(isBest) cardClass = 'best';
+    else if(isWorst) cardClass = 'worst';
+    else cardClass = 'mid';
+
+    let rankClass = 'normal';
+    if(tied) rankClass = 'normal';
+    else if(rank === 1) rankClass = 'gold';
+    else if(rank === 2) rankClass = 'silver';
+    else if(rank === 3) rankClass = 'bronze';
+
+    const rankContent = (rank === 1 && !tied) ? '<i class="fas fa-crown"></i>' : rank;
+
+    let barClass = 'mid';
+    if(tied) barClass = 'tie';
+    else if(isBest) barClass = 'best';
+    else if(isWorst) barClass = 'worst';
+
+    let priceClass = cardClass;
+    if(tied) priceClass = 'tie';
+
+    let diffText = '', diffClass = '';
+    if(tied){
+      diffText = 'Harga sama';
+      diffClass = 'tie';
+    } else if(diff === 0){
+      diffText = 'Termurah';
+      diffClass = 'pos';
+    } else {
+      diffText = '+' + fmtRp(diff) + '  (+' + pct.toFixed(1) + '%)';
+      diffClass = isWorst ? 'neg' : 'neutral';
+    }
+
+    const addrHtml = r.store.address
+      ? `<i class="fas fa-location-dot"></i> ${esc(r.store.address)}`
+      : `<i class="fas fa-clock-rotate-left"></i> Diperbarui ${fmtDate(r.date)}`;
+
+    return `<div class="cmp-card ${cardClass}">
+      <div class="cmp-top">
+        <div class="cmp-rank ${rankClass}">${rankContent}</div>
+        <div class="cmp-info">
+          <div class="cmp-name">${esc(r.store.name)}</div>
+          <div class="cmp-addr">${addrHtml}</div>
         </div>
-      </td>
-      <td class="num">
-        <div class="stock-cell">
-          <span class="stock-num">${fmtRp(r.price)}</span>
-          <div class="stock-bar"><div class="stock-bar-fill ${barClass}" style="width:${pct}%"></div></div>
+        <div class="cmp-price-col">
+          <div class="cmp-price ${priceClass}">${fmtRp(r.price)}</div>
+          <div class="cmp-diff ${diffClass}">${diffText}</div>
         </div>
-      </td>
-      <td class="num">
-        <span class="badge-diff ${diffClass}">${diff === 0 ? diffLabel : '+' + fmtRp(diff)}</span>
-      </td>
-    </tr>`;
+      </div>
+      <div class="cmp-bar-wrap">
+        <div class="cmp-bar ${barClass}" style="width:${barPct}%"></div>
+      </div>
+    </div>`;
   }).join('');
 
+  const rangeText = stats.diff > 0 ? fmtRp(stats.diff) : '—';
+
   content.innerHTML = `
-    ${summaryHtml}
+    ${heroHtml}
     <div class="section-head" style="margin-top:6px">
       <h2><i class="fas fa-list-ol"></i> Urutan Harga ${esc(item.name)}</h2>
       <span class="count">${stats.count} toko</span>
     </div>
-    <div class="table-wrap">
-      <div class="table-scroll">
-        <table>
-          <thead>
-            <tr>
-              <th>Toko</th>
-              <th class="num">Harga / ${esc(item.unit||'pcs')}</th>
-              <th class="num">Selisih</th>
-            </tr>
-          </thead>
-          <tbody>${rowsHtml}</tbody>
-        </table>
+    <div class="cmp-list">${cardsHtml}</div>
+    <div class="cmp-footer">
+      <div class="cmp-stat avg">
+        <div class="cmp-stat-label">Rata-rata</div>
+        <div class="cmp-stat-value blue">${fmtRp(Math.round(stats.avg))}</div>
       </div>
-      <div class="table-foot">
-        <div class="tf-label"><i class="fas fa-calculator"></i> Rata-rata</div>
-        <div class="tf-value">${fmtRp(Math.round(stats.avg))}</div>
+      <div class="cmp-stat range">
+        <div class="cmp-stat-label">Selisih</div>
+        <div class="cmp-stat-value amber">${rangeText}</div>
+      </div>
+      <div class="cmp-stat save">
+        <div class="cmp-stat-label">Hemat</div>
+        <div class="cmp-stat-value green">${stats.diff > 0 ? 'Rp ' + Number(stats.diff).toLocaleString('id-ID') : '—'}</div>
       </div>
     </div>
-    <div class="btn-row" style="margin-top:10px">
+    <div class="btn-row" style="margin-top:12px">
       <button class="btn btn-outlined" onclick="openItemDetail(${item.id})"><i class="fas fa-circle-info"></i> Detail Barang</button>
       <button class="btn btn-filled" onclick="openPriceModal(${item.id})"><i class="fas fa-plus"></i> Catat Harga</button>
     </div>
@@ -1689,7 +1904,6 @@ const CHART_COLORS = [
   '#a855f7','#84cc16','#f97316','#06b6d4','#ef4444'
 ];
 
-/* --- Filter chip rendering --- */
 function renderFilterPanel(){
   const stores = [...dbGetAll('stores')].sort((a,b)=>(a.name||'').localeCompare(b.name||''));
   const items  = [...dbGetAll('items')].sort((a,b)=>(a.name||'').localeCompare(b.name||''));
@@ -1700,8 +1914,8 @@ function renderFilterPanel(){
   const allStoresMode = state.selectedStores.size === 0 && !state.storeFilterNone;
   const allItemsMode  = state.selectedItems.size === 0 && !state.itemFilterNone;
 
-  const storesActive = allStoresMode ? stores.map(s=>s.id) : [...state.selectedStores];
-  const itemsActive  = allItemsMode  ? items.map(i=>i.id)  : [...state.selectedItems];
+  const storesActive = state.storeFilterNone ? [] : (allStoresMode ? stores.map(s=>s.id) : [...state.selectedStores]);
+  const itemsActive  = state.itemFilterNone  ? [] : (allItemsMode  ? items.map(i=>i.id)  : [...state.selectedItems]);
 
   document.getElementById('storeFilterCount').textContent = storesActive.length;
   document.getElementById('itemFilterCount').textContent  = itemsActive.length;
@@ -1730,7 +1944,6 @@ function renderFilterPanel(){
     }).join('');
   }
 
-  // Trend selector
   const trendSel = document.getElementById('trendItemSelect');
   const itemList = getFilteredItems();
   if(itemList.length === 0){
@@ -1744,21 +1957,18 @@ function renderFilterPanel(){
   }
 }
 
-/* --- Main reports render --- */
 function renderReports(){
   renderFilterPanel();
 
   const stores = getFilteredStores();
   const items  = getFilteredItems();
 
-  // Aggregate stats across filter
   let min = Infinity, max = -Infinity, sum = 0, cnt = 0;
   let minInfo = null, maxInfo = null;
   let totalPotensi = 0;
 
   items.forEach(it => {
     const stats = itemStats(it.id);
-    // filter to selected stores
     const visible = stats.rows.filter(r => stores.some(s => s.id === r.storeId));
     if(visible.length === 0) return;
     const prices = visible.map(r => r.price);
@@ -1787,7 +1997,6 @@ function renderReports(){
   renderMatrixTable(stores, items, totalPotensi);
 }
 
-/* --- Matrix table --- */
 function renderMatrixTable(stores, items, totalPotensi){
   const table = document.getElementById('summaryTable');
   const thead = table.querySelector('thead');
@@ -1795,7 +2004,7 @@ function renderMatrixTable(stores, items, totalPotensi){
   const emptyEl = document.getElementById('summaryEmpty');
   const footer  = document.getElementById('summaryFooter');
 
-  if(stores.length === 0 || items.length === 0 || totalPotensi === undefined){
+  if(stores.length === 0 || items.length === 0){
     thead.innerHTML = '';
     tbody.innerHTML = '';
     table.style.display = 'none';
@@ -1805,7 +2014,6 @@ function renderMatrixTable(stores, items, totalPotensi){
     return;
   }
 
-  // Build rows first to detect which have data
   const rows = items.map(item => {
     const cells = stores.map(store => getLatestPrice(item.id, store.id));
     const valid = cells.map((c, i) => c ? { storeId: stores[i].id, price: c.price } : null).filter(Boolean);
@@ -1831,7 +2039,6 @@ function renderMatrixTable(stores, items, totalPotensi){
   footer.style.display = 'flex';
   document.getElementById('matrixCount').textContent = `${rows.length} barang × ${stores.length} toko`;
 
-  // Header
   thead.innerHTML = `<tr>
     <th style="min-width:140px">Barang</th>
     ${stores.map(s => `<th class="center" style="min-width:90px">
@@ -1845,9 +2052,8 @@ function renderMatrixTable(stores, items, totalPotensi){
     <th class="num" style="min-width:80px">Selisih</th>
   </tr>`;
 
-  // Body
   tbody.innerHTML = rows.map(r => {
-    const cellsHtml = r.cells.map((c, i) => {
+    const cellsHtml = r.cells.map((c) => {
       if(!c) return `<td class="matrix-cell empty">—</td>`;
       const isMin = c.price === r.min && r.min !== r.max;
       const isMax = c.price === r.max && r.min !== r.max;
@@ -1859,7 +2065,7 @@ function renderMatrixTable(stores, items, totalPotensi){
       return `<td class="matrix-cell ${cls}">${crown}${fmtRp(c.price)}</td>`;
     }).join('');
 
-    const diffClass = r.diff > 0 ? '' : 'style="color:var(--text-mute)"';
+    const diffStyle = r.diff > 0 ? '' : 'style="color:var(--text-mute)"';
     return `<tr>
       <td class="matrix-item">
         ${esc(r.item.name)}
@@ -1868,14 +2074,14 @@ function renderMatrixTable(stores, items, totalPotensi){
       ${cellsHtml}
       <td class="matrix-sum min">${fmtRp(r.min)}</td>
       <td class="matrix-sum max">${fmtRp(r.max)}</td>
-      <td class="matrix-sum diff" ${diffClass}>${r.diff > 0 ? '+' + fmtRp(r.diff) : '—'}</td>
+      <td class="matrix-sum diff" ${diffStyle}>${r.diff > 0 ? '+' + fmtRp(r.diff) : '—'}</td>
     </tr>`;
   }).join('');
 
   document.getElementById('summaryTotal').textContent = fmtRp(totalPotensi);
 }
 
-/* --- Trend data builder --- */
+/* --- Trend data builder (bar-friendly) --- */
 function buildTrendData(itemId, stores){
   const entries = dbGetAll('prices')
     .filter(p => p.itemId === itemId && stores.some(s => s.id === p.storeId))
@@ -1890,12 +2096,13 @@ function buildTrendData(itemId, stores){
     return {
       label: s ? s.name : 'Toko',
       data: labels.map(l => map.has(l) ? map.get(l) : null),
-      borderColor: color,
-      backgroundColor: color + '22',
-      fill: false, tension: 0.4, spanGaps: true,
-      pointBackgroundColor: color, pointBorderColor: '#fff',
-      pointBorderWidth: 2, pointRadius: 3.5, pointHoverRadius: 6,
-      borderWidth: 2.5, borderCapStyle: 'round'
+      backgroundColor: color + 'E6',
+      hoverBackgroundColor: color,
+      borderRadius: 6,
+      borderSkipped: false,
+      maxBarThickness: 28,
+      borderColor: 'rgba(255,255,255,.6)',
+      borderWidth: 1
     };
   });
   return { labels: labels.map(fmtDateShort), datasets };
@@ -1911,7 +2118,6 @@ const sharedTooltip = {
   displayColors: true, boxPadding: 5, caretSize: 6, caretPadding: 8
 };
 
-/* --- Charts --- */
 function renderReportCharts(){
   if(typeof Chart === 'undefined') return;
   destroyReportCharts();
@@ -1920,7 +2126,7 @@ function renderReportCharts(){
   const items = getFilteredItems();
   if(stores.length === 0 || items.length === 0) return;
 
-  /* --- Compare chart: grouped bars --- */
+  /* --- Compare chart (bar) --- */
   const ctx1 = document.getElementById('chartCompare');
   if(ctx1){
     const rows = items.map(it => {
@@ -1931,10 +2137,9 @@ function renderReportCharts(){
     if(rows.length === 0){
       drawEmptyCanvas(ctx1, 'Belum ada data harga');
     } else {
-      // Single item → bars per store. Multiple items → grouped by item.
       if(rows.length === 1){
         const r = rows[0];
-        const prices = r.cells.map((c, i) => c ? c.price : 0);
+        const prices = r.cells.map(c => c ? c.price : 0);
         const validPrices = prices.filter(p => p > 0);
         const minP = Math.min(...validPrices);
         const maxP = Math.max(...validPrices);
@@ -1970,7 +2175,8 @@ function renderReportCharts(){
               return {
                 label: s.name,
                 data: rows.map(r => {
-                  const c = r.cells.find((_, i) => stores[i].id === s.id);
+                  const idx = stores.findIndex(x => x.id === s.id);
+                  const c = idx >= 0 ? r.cells[idx] : null;
                   return c ? c.price : 0;
                 }),
                 backgroundColor: color + 'E6',
@@ -1988,7 +2194,7 @@ function renderReportCharts(){
     }
   }
 
-  /* --- Trend chart --- */
+  /* --- Trend chart (NOW BAR) --- */
   const ctx2 = document.getElementById('chartTrend');
   if(ctx2){
     const trendItemId = state.trendItemId;
@@ -2000,7 +2206,7 @@ function renderReportCharts(){
         drawEmptyCanvas(ctx2, 'Belum ada data tren');
       } else {
         reportCharts.trend = new Chart(ctx2, {
-          type: 'line',
+          type: 'bar',
           data: { labels: trend.labels, datasets: trend.datasets },
           options: {
             responsive: true, maintainAspectRatio: false, animation: false,
@@ -2087,6 +2293,213 @@ function renderAll(){
   renderStores();
   renderCompare();
   renderReports();
+}
+
+/* =========================================================
+   BULK INPUT PER TOKO
+   ========================================================= */
+function openBulkModal(storeId){
+  closeSheet('actionSheet');
+  closeSheet('detailModal');
+
+  const stores = dbGetAll('stores');
+  const items  = dbGetAll('items');
+
+  if(stores.length === 0){
+    snack('Tambahkan toko terlebih dahulu', 'info');
+    openStoreModal();
+    return;
+  }
+  if(items.length === 0){
+    snack('Tambahkan barang terlebih dahulu', 'info');
+    openItemModal();
+    return;
+  }
+
+  const sel = document.getElementById('bulkStore');
+  const sorted = [...stores].sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  sel.innerHTML = sorted.map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join('');
+  if(storeId) sel.value = String(storeId);
+
+  document.getElementById('bulkDate').value = todayStr();
+  document.getElementById('bulkSearch').value = '';
+  document.getElementById('bulkNewItem').value = '';
+  document.getElementById('bulkNewUnit').value = 'kg';
+
+  state.bulkDraft = {};
+  state.bulkSearch = '';
+
+  renderBulkList();
+  openSheet('bulkModal');
+}
+
+function renderBulkList(){
+  const storeSel = document.getElementById('bulkStore');
+  const storeId = Number(storeSel.value);
+  const q = (state.bulkSearch || '').toLowerCase().trim();
+
+  let items = [...dbGetAll('items')].sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  if(q) items = items.filter(i =>
+    (i.name||'').toLowerCase().includes(q) ||
+    (i.category||'').toLowerCase().includes(q)
+  );
+
+  const wrap = document.getElementById('bulkList');
+
+  if(items.length === 0){
+    wrap.innerHTML = `<div class="empty" style="padding:24px 10px">
+      <p style="margin:0">${q ? 'Barang tidak ditemukan' : 'Belum ada barang'}</p>
+    </div>`;
+    updateBulkCount();
+    updateBulkTotal();
+    return;
+  }
+
+  wrap.innerHTML = items.map(i => {
+    const last = storeId ? getLatestPrice(i.id, storeId) : null;
+    const draft = state.bulkDraft[i.id] ?? '';
+    const filled = draft !== '' && Number(draft) > 0;
+    const subLast = last
+      ? `terakhir <span class="fill-last" onclick="bulkFillOne(${i.id})">${fmtRp(last.price)}</span>`
+      : `<span style="font-style:italic">belum ada harga</span>`;
+    return `<div class="bulk-row ${filled?'filled':''}">
+      <div class="br-main">
+        <div class="br-name">${esc(i.name)}</div>
+        <div class="br-sub">per ${esc(i.unit||'pcs')} • ${subLast}</div>
+      </div>
+      <input class="bulk-input" type="number" inputmode="numeric" min="0" placeholder="0"
+        value="${esc(draft)}" data-item="${i.id}" oninput="onBulkInput(this)"
+        onfocus="this.select()" aria-label="Harga ${esc(i.name)}">
+    </div>`;
+  }).join('');
+
+  updateBulkCount();
+  updateBulkTotal();
+}
+
+function onBulkInput(el){
+  const key = String(el.dataset.item);
+  const v = el.value.trim();
+  if(v === '') delete state.bulkDraft[key];
+  else state.bulkDraft[key] = v;
+
+  const row = el.closest('.bulk-row');
+  if(row) row.classList.toggle('filled', v !== '' && Number(v) > 0);
+
+  updateBulkCount();
+  updateBulkTotal();
+}
+
+function bulkFillOne(itemId){
+  const storeId = Number(document.getElementById('bulkStore').value);
+  if(!storeId) return;
+  const last = getLatestPrice(itemId, storeId);
+  if(!last){ snack('Belum ada harga sebelumnya di toko ini', 'info'); return; }
+  state.bulkDraft[String(itemId)] = String(last.price);
+  renderBulkList();
+}
+
+function bulkFillLast(){
+  const storeId = Number(document.getElementById('bulkStore').value);
+  if(!storeId) return;
+  let n = 0;
+  dbGetAll('items').forEach(i => {
+    if(state.bulkDraft[String(i.id)]) return;
+    const last = getLatestPrice(i.id, storeId);
+    if(last){ state.bulkDraft[String(i.id)] = String(last.price); n++; }
+  });
+  renderBulkList();
+  snack(n ? `${n} harga terakhir diisi` : 'Tidak ada harga sebelumnya', n ? 'success' : 'info');
+}
+
+function bulkClear(){
+  state.bulkDraft = {};
+  renderBulkList();
+}
+
+function updateBulkCount(){
+  const n = Object.values(state.bulkDraft).filter(v => v !== '' && Number(v) > 0).length;
+  const el = document.getElementById('bulkCount');
+  if(el) el.innerHTML = `<b>${n}</b> barang siap disimpan`;
+  const btn = document.getElementById('bulkSaveBtn');
+  if(btn) btn.disabled = n === 0;
+}
+
+function updateBulkTotal(){
+  const sum = Object.values(state.bulkDraft).reduce((a,v) => a + (Number(v)||0), 0);
+  const el = document.getElementById('bulkTotal');
+  if(el) el.textContent = fmtRp(sum);
+}
+
+async function bulkAddItem(){
+  const nameEl = document.getElementById('bulkNewItem');
+  const unitEl = document.getElementById('bulkNewUnit');
+  const name = nameEl.value.trim();
+  if(!name){ snack('Nama barang wajib diisi', 'error'); return; }
+
+  try {
+    await dbAdd('items', {
+      name,
+      unit: unitEl.value.trim() || 'pcs',
+      category: '',
+      note: ''
+    });
+    nameEl.value = '';
+    unitEl.value = 'kg';
+    renderBulkList();
+    renderItems();
+    renderDashboard();
+    snack('Barang ditambahkan — isi harganya di kolom kanan');
+    nameEl.focus();
+  } catch(err){
+    console.error(err);
+    snack('Gagal menambah barang', 'error');
+  }
+}
+
+async function saveBulk(){
+  const storeId = Number(document.getElementById('bulkStore').value);
+  const date = document.getElementById('bulkDate').value || todayStr();
+  const entries = Object.entries(state.bulkDraft)
+    .filter(([, v]) => v !== '' && Number(v) > 0);
+
+  if(!storeId){ snack('Pilih toko terlebih dahulu', 'error'); return; }
+  if(entries.length === 0){ snack('Belum ada harga yang diisi', 'error'); return; }
+
+  const btn = document.getElementById('bulkSaveBtn');
+  const oldHtml = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+
+  let saved = 0, updated = 0;
+  try {
+    for(const [itemIdStr, val] of entries){
+      const itemId = Number(itemIdStr);
+      const price = Number(val);
+      const existing = dbGetAll('prices').find(p =>
+        p.itemId === itemId && p.storeId === storeId && p.date === date
+      );
+      if(existing){
+        await dbPut('prices', { ...existing, price });
+        updated++;
+      } else {
+        await dbAdd('prices', { itemId, storeId, price, date, note: '' });
+      }
+      saved++;
+    }
+    closeSheet('bulkModal');
+    state.bulkDraft = {};
+    state.compareItemId = Number(entries[0][0]);
+    renderAll();
+    if(state.view === 'reports') renderReportCharts();
+    snack(`${saved} harga tersimpan${updated ? ' • ' + updated + ' diperbarui' : ''}`);
+  } catch(err){
+    console.error(err);
+    snack('Gagal menyimpan sebagian data. Coba lagi.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = oldHtml;
+  }
 }
 
 /* =========================================================
@@ -2234,9 +2647,12 @@ function openStoreDetail(storeId){
   }
 
   html += `
-    <div class="btn-row" style="margin-top:12px">
+    <button class="btn btn-filled" style="margin-top:12px" onclick="closeSheet('detailModal'); openBulkModal(${storeId})">
+      <i class="fas fa-layer-group"></i> Input Massal di Toko Ini
+    </button>
+    <div class="btn-row" style="margin-top:8px">
       <button class="btn btn-outlined" onclick="closeSheet('detailModal'); openStoreModal(${storeId})"><i class="fas fa-pen"></i> Edit Toko</button>
-      <button class="btn btn-filled" onclick="closeSheet('detailModal'); openPriceModal(null, ${storeId})"><i class="fas fa-plus"></i> Catat Harga</button>
+      <button class="btn btn-tonal" onclick="closeSheet('detailModal'); openPriceModal(null, ${storeId})"><i class="fas fa-plus"></i> Catat Harga</button>
     </div>
   `;
 
@@ -2415,6 +2831,7 @@ function confirmDeleteItem(id){
       for(const p of related) await dbDelete('prices', p.id);
       await dbDelete('items', id);
       state.selectedItems.delete(id);
+      delete state.bulkDraft[String(id)];
       if(state.compareItemId === id) state.compareItemId = null;
       if(state.reportItemId === id) state.reportItemId = null;
       if(state.trendItemId === id) state.trendItemId = null;
@@ -2659,7 +3076,7 @@ function exportCSV(type){
 }
 
 /* =========================================================
-   EXPORT PDF (super rapi)
+   EXPORT PDF
    ========================================================= */
 function exportPDF(){
   if(!window.jspdf || !window.jspdf.jsPDF){
@@ -2676,7 +3093,6 @@ function exportPDF(){
     return;
   }
 
-  // Prepare data
   const rows = items.map(item => {
     const cells = stores.map(s => getLatestPrice(item.id, s.id));
     const valid = cells.map((c, i) => c ? { store: stores[i], price: c.price, date: c.date } : null).filter(Boolean);
@@ -2692,37 +3108,31 @@ function exportPDF(){
     return;
   }
 
-  // Aggregates
   let totalPotensi = 0, grandMin = Infinity, grandMax = -Infinity, sum = 0, cnt = 0;
-  let minRef = null, maxRef = null;
   rows.forEach(r => {
     totalPotensi += r.diff;
-    r.cells.forEach((c, i) => {
+    r.cells.forEach((c) => {
       if(!c) return;
       sum += c.price; cnt++;
-      if(c.price < grandMin){ grandMin = c.price; minRef = { item: r.item, store: stores[i] }; }
-      if(c.price > grandMax){ grandMax = c.price; maxRef = { item: r.item, store: stores[i] }; }
+      if(c.price < grandMin) grandMin = c.price;
+      if(c.price > grandMax) grandMax = c.price;
     });
   });
   const avg = cnt ? Math.round(sum / cnt) : 0;
 
-  // Orientation: landscape if many stores
   const orientation = stores.length >= 4 ? 'landscape' : 'portrait';
   const doc = new jsPDF({ orientation, unit:'mm', format:'a4' });
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
   const M = 12;
 
-  /* -------- HEADER BANNER -------- */
   doc.setFillColor(37, 99, 235);
   doc.rect(0, 0, pageW, 26, 'F');
-  // Decorative circles
   doc.setFillColor(59, 130, 246);
   doc.circle(pageW - 20, 4, 18, 'F');
   doc.setFillColor(96, 165, 250);
   doc.circle(pageW - 42, 22, 10, 'F');
 
-  // Logo badge
   doc.setFillColor(255, 255, 255);
   doc.roundedRect(M, 6, 14, 14, 3, 3, 'F');
   doc.setTextColor(37, 99, 235);
@@ -2730,7 +3140,6 @@ function exportPDF(){
   doc.setFontSize(14);
   doc.text('B', M + 4.2, 16);
 
-  // Title
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(17);
@@ -2739,7 +3148,6 @@ function exportPDF(){
   doc.setFontSize(8.5);
   doc.text('Laporan Perbandingan Harga Antar Toko', M + 18, 18.5);
 
-  // Date/time on right
   doc.setFontSize(8);
   doc.setFont('helvetica', 'bold');
   const dateStr = new Date().toLocaleDateString('id-ID', { day:'2-digit', month:'long', year:'numeric' });
@@ -2749,7 +3157,6 @@ function exportPDF(){
   doc.setFontSize(7.5);
   doc.text('Dicetak: ' + timeStr, pageW - M, 18.5, { align:'right' });
 
-  /* -------- SECTION: RINGKASAN -------- */
   let y = 34;
   doc.setTextColor(15, 23, 42);
   doc.setFont('helvetica', 'bold');
@@ -2761,7 +3168,6 @@ function exportPDF(){
   doc.line(M, y, pageW - M, y);
   y += 5;
 
-  // Stat boxes (4)
   const gap = 3;
   const boxW = (pageW - 2*M - gap*3) / 4;
   const boxH = 18;
@@ -2777,22 +3183,18 @@ function exportPDF(){
     doc.roundedRect(x, y, boxW, boxH, 2, 2, 'F');
     doc.setDrawColor(226, 232, 240);
     doc.roundedRect(x, y, boxW, boxH, 2, 2, 'S');
-    // Left accent
     doc.setFillColor(s.color[0], s.color[1], s.color[2]);
     doc.rect(x, y, 1.2, boxH, 'F');
-    // Label
     doc.setTextColor(100, 116, 139);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(6.5);
     doc.text(s.label.toUpperCase(), x + 4, y + 6);
-    // Value
     doc.setTextColor(s.color[0], s.color[1], s.color[2]);
     doc.setFontSize(11);
     doc.text(s.value, x + 4, y + 14);
   });
   y += boxH + 6;
 
-  // Second row: potensi hemat + rata-rata + info
   const boxW2 = (pageW - 2*M - gap) / 2;
   const stats2 = [
     { label: 'Total Potensi Hemat', value: fmtRp(totalPotensi), color: [37,99,235], bg: [219,234,254] },
@@ -2811,7 +3213,6 @@ function exportPDF(){
   });
   y += 20;
 
-  // Info bar: item & store name summary
   doc.setFillColor(255, 255, 255);
   doc.setDrawColor(226, 232, 240);
   doc.setLineWidth(0.2);
@@ -2831,24 +3232,16 @@ function exportPDF(){
   doc.text(truncateToWidth(doc, itemList, maxW, 7.5), M + 20, y + 9);
   y += 16;
 
-  /* -------- SECTION: TABEL MATRIKS -------- */
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
   doc.setTextColor(15, 23, 42);
   doc.text('Tabel Perbandingan Harga', M, y);
   y += 4;
 
-  // Build table
   const head = [['#', 'Barang', 'Satuan', ...stores.map(s => s.name), 'Terendah', 'Tertinggi', 'Selisih']];
   const body = rows.map((r, i) => {
-    const row = [
-      String(i + 1),
-      r.item.name,
-      r.item.unit || 'pcs'
-    ];
-    r.cells.forEach(c => {
-      row.push(c ? fmtRp(c.price) : '—');
-    });
+    const row = [String(i + 1), r.item.name, r.item.unit || 'pcs'];
+    r.cells.forEach(c => { row.push(c ? fmtRp(c.price) : '—'); });
     row.push(r.min !== null ? fmtRp(r.min) : '—');
     row.push(r.max !== null ? fmtRp(r.max) : '—');
     row.push(r.diff > 0 ? '+' + fmtRp(r.diff) : '—');
@@ -2861,36 +3254,24 @@ function exportPDF(){
   const maxColIdx = 4 + stores.length;
   const diffColIdx = 5 + stores.length;
 
-  // Choose font size based on width
   const baseFont = stores.length >= 6 ? 6.5 : stores.length >= 4 ? 7.5 : 8;
   const cellPad = stores.length >= 6 ? 1.4 : 2;
 
   doc.autoTable({
-    head,
-    body,
+    head, body,
     startY: y,
     theme: 'grid',
     margin: { left: M, right: M, top: 30 },
     tableLineColor: [226, 232, 240],
     tableLineWidth: 0.15,
     styles: {
-      font: 'helvetica',
-      fontSize: baseFont,
-      cellPadding: cellPad,
-      textColor: [30, 41, 59],
-      valign: 'middle',
-      overflow: 'linebreak',
-      lineColor: [226, 232, 240],
-      lineWidth: 0.15,
-      fillColor: [255, 255, 255]
+      font: 'helvetica', fontSize: baseFont, cellPadding: cellPad,
+      textColor: [30, 41, 59], valign: 'middle', overflow: 'linebreak',
+      lineColor: [226, 232, 240], lineWidth: 0.15, fillColor: [255, 255, 255]
     },
     headStyles: {
-      fillColor: [37, 99, 235],
-      textColor: [255, 255, 255],
-      fontStyle: 'bold',
-      halign: 'center',
-      fontSize: baseFont,
-      cellPadding: cellPad + 0.4
+      fillColor: [37, 99, 235], textColor: [255, 255, 255],
+      fontStyle: 'bold', halign: 'center', fontSize: baseFont, cellPadding: cellPad + 0.4
     },
     alternateRowStyles: { fillColor: [248, 251, 255] },
     columnStyles: {
@@ -2900,7 +3281,6 @@ function exportPDF(){
     },
     didParseCell: (data) => {
       if(data.section === 'head'){
-        // Right-align store headers
         if(data.column.index >= storeColStart && data.column.index <= storeColEnd){
           data.cell.styles.halign = 'center';
         }
@@ -2908,7 +3288,6 @@ function exportPDF(){
       }
       if(data.section !== 'body') return;
 
-      // Store columns: right-align + highlight min/max
       if(data.column.index >= storeColStart && data.column.index <= storeColEnd){
         data.cell.styles.halign = 'right';
         data.cell.styles.fontStyle = 'bold';
@@ -2926,7 +3305,6 @@ function exportPDF(){
           }
         }
       }
-      // Summary columns
       if(data.column.index === minColIdx || data.column.index === maxColIdx || data.column.index === diffColIdx){
         data.cell.styles.halign = 'right';
         data.cell.styles.fontStyle = 'bold';
@@ -2938,8 +3316,7 @@ function exportPDF(){
         data.cell.styles.fontStyle = 'normal';
       }
     },
-    didDrawPage: (data) => {
-      // Page footer
+    didDrawPage: () => {
       const pageNum = doc.internal.getCurrentPageInfo().pageNumber;
       const totalPages = doc.internal.getNumberOfPages();
       doc.setFontSize(7);
@@ -2951,7 +3328,6 @@ function exportPDF(){
     }
   });
 
-  /* -------- SECTION: REKOMENDASI -------- */
   let afterY = doc.lastAutoTable.finalY + 6;
   if(afterY > pageH - 40){
     doc.addPage();
@@ -2964,14 +3340,13 @@ function exportPDF(){
   doc.text('Rekomendasi Belanja Termurah', M, afterY);
   afterY += 4;
 
-  // For each item, cheapest store
   const recs = rows.map(r => {
     let cheapest = null;
     r.cells.forEach((c, i) => {
       if(!c) return;
       if(!cheapest || c.price < cheapest.price) cheapest = { store: stores[i], price: c.price };
     });
-    return { item: r.item, store: cheapest ? cheapest.store : null, price: cheapest ? cheapest.price : null, max: r.max, diff: r.diff };
+    return { item: r.item, store: cheapest ? cheapest.store : null, price: cheapest ? cheapest.price : null, diff: r.diff };
   });
 
   const recHead = [['Barang', 'Belanja di', 'Harga Terbaik', 'Hemat vs Tertinggi']];
@@ -2983,15 +3358,13 @@ function exportPDF(){
   ]);
 
   doc.autoTable({
-    head: recHead,
-    body: recBody,
+    head: recHead, body: recBody,
     startY: afterY,
     theme: 'striped',
     margin: { left: M, right: M },
     styles: {
       font: 'helvetica', fontSize: 8, cellPadding: 2.5,
-      textColor: [30, 41, 59], lineColor: [226, 232, 240],
-      lineWidth: 0.15
+      textColor: [30, 41, 59], lineColor: [226, 232, 240], lineWidth: 0.15
     },
     headStyles: {
       fillColor: [16, 185, 129], textColor: [255, 255, 255],
@@ -3006,7 +3379,6 @@ function exportPDF(){
     }
   });
 
-  /* -------- SAVE -------- */
   const filename = `Laporan_bapok_${todayStr()}.pdf`;
   doc.save(filename);
   snack('PDF berhasil diunduh');
@@ -3046,6 +3418,22 @@ document.getElementById('compareItemSelect').addEventListener('change', e => {
 document.getElementById('trendItemSelect').addEventListener('change', e => {
   state.trendItemId = Number(e.target.value);
   renderReportCharts();
+});
+
+/* Bulk input bindings */
+document.getElementById('bulkStore').addEventListener('change', () => {
+  state.bulkDraft = {};
+  renderBulkList();
+});
+document.getElementById('bulkSearch').addEventListener('input', e => {
+  state.bulkSearch = e.target.value;
+  renderBulkList();
+});
+document.getElementById('bulkNewItem').addEventListener('keydown', e => {
+  if(e.key === 'Enter'){ e.preventDefault(); bulkAddItem(); }
+});
+document.getElementById('bulkNewUnit').addEventListener('keydown', e => {
+  if(e.key === 'Enter'){ e.preventDefault(); bulkAddItem(); }
 });
 
 ['loginEmail','loginPass'].forEach(id => {
@@ -3142,6 +3530,13 @@ window.openStoreModal = openStoreModal;
 window.openPriceModal = openPriceModal;
 window.openItemDetail = openItemDetail;
 window.openStoreDetail = openStoreDetail;
+window.openBulkModal = openBulkModal;
+window.bulkFillOne = bulkFillOne;
+window.bulkFillLast = bulkFillLast;
+window.bulkClear = bulkClear;
+window.bulkAddItem = bulkAddItem;
+window.onBulkInput = onBulkInput;
+window.saveBulk = saveBulk;
 window.saveItem = saveItem;
 window.saveStore = saveStore;
 window.savePrice = savePrice;
