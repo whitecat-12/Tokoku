@@ -65,6 +65,7 @@ body.app-ready .app{opacity:1;transform:translateY(0) scale(1);pointer-events:au
 .topbar-actions{display:flex;gap:6px;align-items:center;flex-shrink:0}
 .topbar-btn{width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,.9);color:var(--blue-deep);font-size:13px;cursor:pointer;display:grid;place-items:center;flex-shrink:0}
 .topbar-btn.amber{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff;box-shadow:0 6px 14px rgba(245,158,11,.4)}
+.topbar-btn.violet{background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff;box-shadow:0 6px 14px rgba(139,92,246,.4)}
 
 .admin-mode-banner{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff;padding:10px 14px;margin:0 14px 10px;border-radius:14px;display:none;align-items:center;gap:10px;box-shadow:0 8px 20px rgba(245,158,11,.3)}
 .admin-mode-banner.show{display:flex}
@@ -139,11 +140,13 @@ body.app-ready .app{opacity:1;transform:translateY(0) scale(1);pointer-events:au
 .stock-tag.low{background:var(--amber-pale);color:var(--amber-deep)}
 .stock-tag.empty{background:var(--rose-pale);color:var(--rose-deep)}
 .product-prices{display:grid;grid-template-columns:repeat(3, 1fr);gap:6px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.product-prices.single{grid-template-columns:1fr 1fr}
 .price-cell{text-align:center;min-width:0}
 .price-label{font-size:8.5px;color:var(--text-mute);font-weight:700;text-transform:uppercase}
-.price-value{font-size:11px;font-weight:700;margin-top:3px;color:var(--text)}
+.price-value{font-size:11px;font-weight:700;margin-top:3px;color:var(--text);word-break:break-word}
 .price-value.pos{color:var(--green-deep)}
 .price-value.neg{color:var(--rose-deep)}
+.price-value .unit{display:block;font-size:9px;font-weight:500;color:var(--text-mute);margin-top:1px}
 
 .fin-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
 .fin-card{background:var(--surface);border-radius:var(--r-md);padding:12px;box-shadow:var(--shadow-sm);display:flex;gap:10px;align-items:flex-start}
@@ -430,6 +433,26 @@ body.no-store-mode .fab{display:none}
 
 .badge-role{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;font-size:9px;font-weight:800;background:var(--violet-pale);color:var(--violet-deep);letter-spacing:0.3px;margin-left:auto;flex-shrink:0}
 .badge-role.admin{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff}
+.badge-role.agen{background:var(--violet-pale);color:var(--violet-deep)}
+
+/* ===== USER MANAGER (Role Management) ===== */
+.user-mgmt-item{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:12px;background:var(--surface-2);margin-bottom:7px;border:1.5px solid var(--line);transition:all .2s}
+.user-mgmt-item:hover{border-color:var(--blue)}
+.um-avatar{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:14px;flex-shrink:0}
+.um-avatar.admin{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff;box-shadow:0 4px 10px rgba(245,158,11,.35)}
+.um-avatar.agen{background:var(--violet-pale);color:var(--violet-deep)}
+.um-info{flex:1;min-width:0}
+.um-name{font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.um-email{font-size:10px;color:var(--text-mute);font-weight:500;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.um-actions{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+.um-btn{font-family:inherit;font-size:9.5px;font-weight:700;padding:5px 9px;border-radius:8px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:4px;background:var(--blue-pale);color:var(--blue-deep);transition:all .2s}
+.um-btn:hover{background:var(--blue);color:#fff}
+.um-btn.promote{background:linear-gradient(135deg,#10b981,#047857);color:#fff}
+.um-btn.promote:hover{box-shadow:0 4px 12px rgba(16,185,129,.4)}
+.um-btn.demote{background:var(--amber-pale);color:var(--amber-deep)}
+.um-btn.demote:hover{background:var(--amber);color:#fff}
+.um-lock{font-size:9px;font-weight:700;color:var(--text-mute);display:inline-flex;align-items:center;gap:3px;background:var(--surface-3);padding:4px 8px;border-radius:7px}
+.um-lock i{font-size:8px}
 
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-thumb{background:#bfdbfe;border-radius:99px}
@@ -516,6 +539,7 @@ body.no-store-mode .fab{display:none}
       </div>
     </div>
     <div class="topbar-actions">
+      <button class="topbar-btn violet" id="btnKelolaUser" style="display:none" aria-label="Kelola Role"><i class="fas fa-user-shield"></i></button>
       <button class="topbar-btn amber" id="btnKelolaAgen" style="display:none" aria-label="Kelola Agen"><i class="fas fa-users-gear"></i></button>
       <button class="topbar-btn" id="btnInfo" aria-label="Info"><i class="fas fa-circle-info"></i></button>
     </div>
@@ -563,7 +587,7 @@ body.no-store-mode .fab{display:none}
 
       <div class="section-head">
         <h2><i class="fas fa-ranking-star"></i> Harga Termurah</h2>
-        <button class="chip-button" onclick="switchView('compare')">Bandingkan <i class="fas fa-chevron-right"></i></button>
+        <button class="chip-button" id="dashCompareBtn" onclick="switchView('compare')">Bandingkan <i class="fas fa-chevron-right"></i></button>
       </div>
       <div id="cheapestList"></div>
 
@@ -747,8 +771,8 @@ body.no-store-mode .fab{display:none}
 <nav class="dock">
   <button class="nav-item active" data-view="dashboard"><i class="fas fa-house"></i><span>Dashboard</span></button>
   <button class="nav-item" data-view="stores"><i class="fas fa-store"></i><span>Toko</span></button>
-  <button class="nav-item" data-view="compare"><i class="fas fa-right-left"></i><span>Bandingkan</span></button>
-  <button class="nav-item" data-view="reports"><i class="fas fa-chart-simple"></i><span>Laporan</span></button>
+  <button class="nav-item" data-view="compare" id="navCompare"><i class="fas fa-right-left"></i><span>Bandingkan</span></button>
+  <button class="nav-item" data-view="reports" id="navReports"><i class="fas fa-chart-simple"></i><span>Laporan</span></button>
 </nav>
 
 <!-- Action sheet -->
@@ -757,6 +781,21 @@ body.no-store-mode .fab{display:none}
     <div class="sheet-handle"></div>
     <div class="sheet-header"><i class="fas fa-bolt"></i><h2>Aksi Cepat</h2></div>
     <div class="sheet-body" id="actionSheetBody"></div>
+  </div>
+</div>
+
+<!-- User Manager Modal (Role Management) - BARU -->
+<div class="scrim" id="userManagerModal">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header"><i class="fas fa-user-shield"></i><h2>Kelola Role Pengguna</h2></div>
+    <div class="sheet-body">
+      <div class="bulk-note">
+        <i class="fas fa-circle-info"></i>
+        <span><b>Admin</b>: akses penuh (bandingkan, laporan, kelola data agen).<br><b>Agen</b>: kelola toko & harga sendiri.</span>
+      </div>
+      <div id="userManagerList"></div>
+    </div>
   </div>
 </div>
 
@@ -786,7 +825,7 @@ body.no-store-mode .fab{display:none}
         <input type="hidden" id="sPhotoUrl">
         <div class="bulk-note" style="margin-bottom:12px">
           <i class="fas fa-circle-info"></i>
-          <span>Setiap agen <b>hanya boleh memiliki 1 toko</b>. Jika toko sudah ada, form ini akan menampilkan data toko Anda untuk diedit.</span>
+          <span>Setiap agen <b>hanya boleh memiliki 1 toko</b>.</span>
         </div>
         <div class="photo-field">
           <label class="field-label">Foto Toko (opsional)</label>
@@ -1187,6 +1226,11 @@ body.no-store-mode .fab{display:none}
           <div class="list-body"><div class="list-title">History</div></div>
           <div class="list-trailing"><div class="list-amount" style="font-size:11px" id="infoHist">0</div></div>
         </div>
+        <div class="list-item" style="cursor:default">
+          <div class="list-avatar ${'admin'}"><i class="fas fa-user-shield"></i></div>
+          <div class="list-body"><div class="list-title">Role Anda</div></div>
+          <div class="list-trailing"><div class="list-amount" style="font-size:11px" id="infoRole">—</div></div>
+        </div>
       </div>
       <button class="btn btn-outlined" style="margin-top:12px" onclick="doLogout()">
         <i class="fas fa-right-from-bracket"></i> Keluar (<span id="userEmail"></span>)
@@ -1222,7 +1266,6 @@ const firebaseConfig = {
   measurementId: "G-Q2ZKDWZPWF"
 };
 
-/* ⚠️ GANTI EMAIL ADMIN INI — SAMA dengan yang di Firestore Rules */
 const ADMIN_EMAIL = 'admin@bapok.app';
 
 const fbApp = initializeApp(firebaseConfig);
@@ -1387,17 +1430,16 @@ const Splash = (() => {
   return { renderTitle, setProgress, finish };
 })();
 
-/* ============ STATE ============ */
 let uid = null;
 let currentEmail = '';
+let currentRole = 'agen';  // 'admin' | 'agen'
 let isAdmin = false;
-let activeAgentUid = null;  // untuk admin: agen yang sedang dikelola
+let activeAgentUid = null;
 let activeAgentName = '';
 
 const cache = { stores: new Map(), items: new Map(), prices: new Map(), histories: new Map() };
 const newId = () => Date.now() * 1000 + Math.floor(Math.random() * 1000);
 
-/* Helper: target UID untuk operasi DB */
 function targetUid(){
   if(isAdmin) return activeAgentUid;
   return uid;
@@ -1411,13 +1453,140 @@ function colRefFor(uidParam, name){
   return collection(fdb, 'users', uidParam, name);
 }
 
-/* ============ AGENT REGISTRY ============ */
+function applyRoleUI(){
+  const navCompare = document.getElementById('navCompare');
+  const navReports = document.getElementById('navReports');
+  const dashCompareBtn = document.getElementById('dashCompareBtn');
+  if(isAdmin){
+    if(navCompare) navCompare.style.display = '';
+    if(navReports) navReports.style.display = '';
+    if(dashCompareBtn) dashCompareBtn.style.display = '';
+  } else {
+    if(navCompare) navCompare.style.display = 'none';
+    if(navReports) navReports.style.display = 'none';
+    if(dashCompareBtn) dashCompareBtn.style.display = 'none';
+  }
+}
+
+/* ====== ROLE MANAGEMENT (BARU) ====== */
+
+// Baca role dari agent_registry (atau 'admin' jika master email)
+async function loadUserRole(email, userId){
+  if((email || '').toLowerCase().trim() === ADMIN_EMAIL.toLowerCase()) return 'admin';
+  try {
+    const snap = await getDoc(doc(fdb, 'agent_registry', String(userId)));
+    if(snap.exists()){
+      const r = snap.data().role;
+      if(r === 'admin' || r === 'agen') return r;
+    }
+  } catch(e){ console.warn('loadUserRole:', e); }
+  return 'agen';
+}
+
+// Update role di agent_registry (hanya admin)
+async function setUserRole(targetUid, newRole){
+  if(!isAdmin) throw new Error('Hanya admin yang bisa mengubah role');
+  if(targetUid === uid) throw new Error('Tidak bisa mengubah role sendiri');
+  const ref = doc(fdb, 'agent_registry', String(targetUid));
+  await setDoc(ref, { role: newRole, updatedAt: Date.now() }, { merge: true });
+}
+
+// Buka modal kelola role pengguna
+async function openUserManager(){
+  if(!isAdmin) return;
+  const el = document.getElementById('userManagerList');
+  el.innerHTML = '<div style="text-align:center;padding:20px"><i class="fas fa-spinner fa-spin"></i> Memuat...</div>';
+  openSheet('userManagerModal');
+  try {
+    const snap = await getDocs(collection(fdb, 'agent_registry'));
+    const users = snap.docs.map(d => ({ uid: d.id, ...d.data() }))
+      .sort((a,b) => (a.email || '').localeCompare(b.email || ''));
+
+    if(users.length === 0){
+      el.innerHTML = `<div class="empty" style="padding:24px 10px">
+        <div class="empty-icon" style="width:48px;height:48px;font-size:18px"><i class="fas fa-users"></i></div>
+        <h3>Belum ada pengguna</h3>
+        <p>Belum ada pengguna yang login.</p>
+      </div>`;
+      return;
+    }
+
+    el.innerHTML = users.map(u => {
+      const role = (u.email || '').toLowerCase() === ADMIN_EMAIL.toLowerCase() ? 'admin' : (u.role || 'agen');
+      const isMasterAdmin = (u.email || '').toLowerCase() === ADMIN_EMAIL.toLowerCase();
+      const isSelf = u.uid === uid;
+      const roleBadge = role === 'admin'
+        ? '<span class="badge-role admin">ADMIN</span>'
+        : '<span class="badge-role">AGEN</span>';
+
+      let actionBtn = '';
+      if(isMasterAdmin){
+        actionBtn = '<span class="um-lock"><i class="fas fa-lock"></i> Master</span>';
+      } else if(isSelf){
+        actionBtn = '<span class="um-lock"><i class="fas fa-user"></i> Anda</span>';
+      } else {
+        const newRole = role === 'admin' ? 'agen' : 'admin';
+        const label = role === 'admin' ? 'Turunkan' : 'Naikkan';
+        const icon = role === 'admin' ? 'arrow-down' : 'arrow-up';
+        const cls = role === 'admin' ? 'demote' : 'promote';
+        actionBtn = `<button class="um-btn ${cls}" onclick="changeUserRole('${esc(u.uid)}', '${newRole}', '${esc(u.email || u.storeName || 'pengguna')}')"><i class="fas fa-${icon}"></i> ${label}</button>`;
+      }
+
+      return `<div class="user-mgmt-item">
+        <div class="um-avatar ${role}"><i class="fas fa-${role === 'admin' ? 'user-shield' : 'user'}"></i></div>
+        <div class="um-info">
+          <div class="um-name">${esc(u.storeName || u.email || 'Pengguna')}</div>
+          <div class="um-email">${esc(u.email || '')}</div>
+        </div>
+        <div class="um-actions">
+          ${roleBadge}
+          ${actionBtn}
+        </div>
+      </div>`;
+    }).join('');
+  } catch(err){
+    console.error(err);
+    el.innerHTML = `<div class="empty" style="padding:24px 10px">
+      <p style="margin:0;color:var(--rose-deep)">Gagal memuat. Cek Firestore rules.</p>
+    </div>`;
+  }
+}
+
+// Konfirmasi ubah role
+function changeUserRole(targetUid, newRole, targetName){
+  if(!isAdmin) return;
+  const action = newRole === 'admin' ? 'menaikkan' : 'menurunkan';
+  const confirmOk = document.getElementById('confirmOk');
+  const originalHTML = confirmOk.innerHTML;
+  document.getElementById('confirmMsg').innerHTML =
+    `Yakin ingin ${action} role <b>${esc(targetName)}</b> menjadi <b>${newRole.toUpperCase()}</b>?`;
+  confirmOk.innerHTML = '<i class="fas fa-check"></i> Ya, Ubah';
+  confirmOk.onclick = async () => {
+    confirmOk.disabled = true;
+    confirmOk.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+    try {
+      await setUserRole(targetUid, newRole);
+      closeSheet('confirmModal');
+      snack(`Role diubah menjadi ${newRole.toUpperCase()}`);
+      openUserManager();
+    } catch(err){
+      console.error(err);
+      snack(err.message || 'Gagal mengubah role', 'error');
+    } finally {
+      confirmOk.disabled = false;
+      confirmOk.innerHTML = originalHTML;
+    }
+  };
+  openSheet('confirmModal');
+}
+
 async function updateAgentRegistry(storeName){
   try {
     await setDoc(doc(fdb, 'agent_registry', String(uid)), {
       uid: String(uid),
       email: currentEmail,
       storeName: storeName || '',
+      role: currentRole || 'agen',
       updatedAt: Date.now()
     }, { merge: true });
   } catch(e){ console.warn('agent_registry update gagal:', e); }
@@ -1435,7 +1604,6 @@ async function ensureAgentRegistered(){
   } catch(e){ console.warn('ensureAgentRegistered gagal:', e); }
 }
 
-/* ============ LOAD DATA ============ */
 async function loadAll(){
   ['stores','items','prices','histories'].forEach(n => cache[n].clear());
   const names = ['stores','items','prices','histories'];
@@ -1460,7 +1628,6 @@ async function loadAllForAgent(agentUid){
   });
 }
 
-/* Admin: load semua data semua agen (untuk overview) */
 async function loadAdminOverviewData(){
   ['stores','items','prices','histories'].forEach(n => cache[n].clear());
   let agents = [];
@@ -1492,7 +1659,6 @@ async function loadAdminOverviewData(){
   }
 }
 
-/* ============ CRUD HELPERS ============ */
 async function dbAdd(name, obj){
   const id = newId();
   const data = { ...obj, id };
@@ -1511,7 +1677,6 @@ async function dbDelete(name, id){
 function dbGetAll(name){ return [...cache[name].values()]; }
 function dbGet(name, id){ return cache[name].get(id); }
 
-/* ============ FORMATTERS ============ */
 const fmtRp  = n => 'Rp ' + Number(n||0).toLocaleString('id-ID');
 const fmtNum = n => Number(n||0).toLocaleString('id-ID');
 function fmtQty(n){ const num = Number(n||0); if(!num) return '0'; return Number.isInteger(num) ? num.toLocaleString('id-ID') : num.toLocaleString('id-ID', {maximumFractionDigits:2}); }
@@ -1607,7 +1772,6 @@ function storeHistories(storeId){
   return dbGetAll('histories').filter(h => h.storeId === storeId).sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
 }
 
-/* ============ STATE ============ */
 const state = {
   view: 'dashboard',
   itemSearch: '',
@@ -1661,7 +1825,6 @@ function resetReportFilters(){
   renderReportCharts();
 }
 
-/* ============ MODAL SYSTEM ============ */
 let __modalZ = 100;
 function openSheet(id){
   const el = document.getElementById(id);
@@ -1688,7 +1851,6 @@ document.addEventListener('keydown', e => {
   if(e.key === 'Escape') document.querySelectorAll('.scrim.show').forEach(ov => closeSheet(ov.id));
 });
 
-/* ============ ADMIN: PICK AGENT ============ */
 async function openAgentPicker(){
   if(!isAdmin) return;
   const el = document.getElementById('agentPickerList');
@@ -1697,6 +1859,7 @@ async function openAgentPicker(){
   try {
     const snap = await getDocs(collection(fdb, 'agent_registry'));
     const agents = snap.docs.map(d => ({ uid: d.id, ...d.data() }))
+      .filter(a => (a.role || 'agen') !== 'admin')
       .sort((a,b) => (a.storeName||a.email||'').localeCompare(b.storeName||b.email||''));
     if(agents.length === 0){
       el.innerHTML = `<div class="empty" style="padding:24px 10px">
@@ -1762,8 +1925,11 @@ async function exitAgentMode(){
 }
 window.exitAgentMode = exitAgentMode;
 
-/* ============ VIEWS ============ */
 function switchView(name){
+  if(!isAdmin && (name === 'compare' || name === 'reports')){
+    snack('Fitur ini hanya untuk admin', 'info');
+    return;
+  }
   state.view = name;
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   const view = document.getElementById('view-' + name);
@@ -1789,7 +1955,6 @@ function ownerBadgeHTML(obj){
   return `<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:6px;background:var(--amber-pale);color:var(--amber-deep);font-size:8.5px;font-weight:700;margin-left:4px"><i class="fas fa-user"></i> ${esc(obj._ownerName)}</span>`;
 }
 
-/* ============ RENDER DASHBOARD ============ */
 function renderDashboard(){
   const t = todayStr();
   const stores = dbGetAll('stores');
@@ -1810,8 +1975,9 @@ function renderDashboard(){
   document.getElementById('infoItems').textContent  = fmtNum(items.length);
   const infoHist = document.getElementById('infoHist');
   if(infoHist) infoHist.textContent = fmtNum(histories.length);
+  const infoRole = document.getElementById('infoRole');
+  if(infoRole) infoRole.textContent = currentRole.toUpperCase();
 
-  /* No store warning (agen belum punya toko) */
   const noStoreMode = !isAdmin && stores.length === 0;
   document.body.classList.toggle('no-store-mode', noStoreMode);
 
@@ -1892,7 +2058,6 @@ function renderDashboard(){
   }).join('')}</div>`;
 }
 
-/* ============ RENDER ITEMS ============ */
 function renderItems(){
   const q = state.itemSearch.toLowerCase().trim();
   let list = [...dbGetAll('items')];
@@ -1924,13 +2089,54 @@ function renderItems(){
       else { tagClass = 'low'; tagText = `${stats.count} toko — butuh pembanding`; }
     }
     const icon = i.photoUrl ? `<img src="${esc(i.photoUrl)}" alt="">` : `<i class="fas fa-box"></i>`;
+    const wUnit = itemWeightUnit(i);
+
+    let priceBlockHtml = '';
+    if(!hasData){
+      priceBlockHtml = `<div class="product-prices">
+        <div class="price-cell"><div class="price-label">Harga</div><div class="price-value" style="color:var(--text-mute)">—</div></div>
+        <div class="price-cell"><div class="price-label">Terakhir</div><div class="price-value" style="color:var(--text-mute)">—</div></div>
+      </div>`;
+    } else if(stats.count === 1){
+      const r = stats.rows[0];
+      const chipParts = [];
+      if(r.weight) chipParts.push(`${fmtWeight(r.weight)} ${esc(wUnit)}`);
+      if(r.qty) chipParts.push(`${fmtQty(r.qty)} ${esc(itemQtyUnit(i))}`);
+      const chipTxt = chipParts.join(' • ');
+      priceBlockHtml = `<div class="product-prices single">
+        <div class="price-cell">
+          <div class="price-label">Harga</div>
+          <div class="price-value pos">${fmtRp(r.price)}<span class="unit">per ${esc(wUnit)}</span></div>
+        </div>
+        <div class="price-cell">
+          <div class="price-label">Terakhir Update</div>
+          <div class="price-value">${fmtDate(r.date)}${chipTxt ? `<span class="unit">${esc(chipTxt)}</span>` : ''}</div>
+        </div>
+      </div>`;
+    } else {
+      priceBlockHtml = `<div class="product-prices">
+        <div class="price-cell">
+          <div class="price-label">Terendah</div>
+          <div class="price-value pos">${fmtRp(stats.min)}</div>
+        </div>
+        <div class="price-cell">
+          <div class="price-label">Tertinggi</div>
+          <div class="price-value neg">${stats.diff > 0 ? fmtRp(stats.max) : fmtRp(stats.max)}</div>
+        </div>
+        <div class="price-cell">
+          <div class="price-label">Selisih</div>
+          <div class="price-value">${fmtRp(stats.diff)}</div>
+        </div>
+      </div>`;
+    }
+
     return `<div class="product" onclick="openItemDetail(${i.id})">
       <div class="product-top">
         <div class="product-icon">${icon}</div>
         <div class="product-info">
           <div class="product-name">${esc(i.name)}${ownerBadgeHTML(i)}</div>
           <div class="product-meta">
-            <span><i class="fas fa-weight-hanging"></i> ${esc(itemWeightUnit(i))}</span>
+            <span><i class="fas fa-weight-hanging"></i> ${esc(wUnit)}</span>
             <span><i class="fas fa-hashtag"></i> ${esc(itemQtyUnit(i))}</span>
             ${i.category ? `<span><i class="fas fa-folder"></i> ${esc(i.category)}</span>` : ''}
           </div>
@@ -1941,25 +2147,11 @@ function renderItems(){
           <button class="icon-btn-sm danger" onclick="confirmDeleteItem(${i.id})"><i class="fas fa-trash"></i></button>
         </div>
       </div>
-      <div class="product-prices">
-        <div class="price-cell">
-          <div class="price-label">Terendah</div>
-          <div class="price-value pos">${hasData ? fmtRp(stats.min) : '—'}</div>
-        </div>
-        <div class="price-cell">
-          <div class="price-label">Tertinggi</div>
-          <div class="price-value neg">${hasData && stats.diff > 0 ? fmtRp(stats.max) : '—'}</div>
-        </div>
-        <div class="price-cell">
-          <div class="price-label">Selisih</div>
-          <div class="price-value">${hasData && stats.diff > 0 ? fmtRp(stats.diff) : '—'}</div>
-        </div>
-      </div>
+      ${priceBlockHtml}
     </div>`;
   }).join('');
 }
 
-/* ============ RENDER STORES ============ */
 function renderStores(){
   const q = state.storeSearch.toLowerCase().trim();
   let list = [...dbGetAll('stores')];
@@ -2009,7 +2201,6 @@ function renderStores(){
   }).join('')}</div>`;
 }
 
-/* ============ RENDER COMPARE ============ */
 function populateItemSelect(sel, selectedId){
   if(!sel) return;
   const items = dbGetAll('items');
@@ -2019,6 +2210,7 @@ function populateItemSelect(sel, selectedId){
   if(selectedId) sel.value = String(selectedId);
 }
 function renderCompare(){
+  if(!isAdmin) return;
   const sel = document.getElementById('compareItemSelect');
   const content = document.getElementById('compareContent');
   const items = dbGetAll('items');
@@ -2121,7 +2313,6 @@ function renderCompare(){
   `;
 }
 
-/* ============ REPORTS ============ */
 let reportCharts = { compare:null, trend:null };
 function destroyReportCharts(){
   Object.keys(reportCharts).forEach(k => {
@@ -2175,6 +2366,7 @@ function renderFilterPanel(){
 }
 
 function renderReports(){
+  if(!isAdmin) return;
   renderFilterPanel();
   const stores = getFilteredStores();
   const items  = getFilteredItems();
@@ -2299,6 +2491,7 @@ const sharedTooltip = {
 };
 
 function renderReportCharts(){
+  if(!isAdmin) return;
   if(typeof Chart === 'undefined') return;
   destroyReportCharts();
   const stores = getFilteredStores();
@@ -2432,7 +2625,6 @@ function renderAll(){
   renderReports();
 }
 
-/* ============ ACTION SHEET (per role) ============ */
 function renderActionSheet(){
   const body = document.getElementById('actionSheetBody');
   const hasStore = dbGetAll('stores').length > 0;
@@ -2440,13 +2632,17 @@ function renderActionSheet(){
   let html = '';
   if(isAdmin && !activeAgentUid){
     html = `
+      <div class="action-item" onclick="closeSheet('actionSheet'); openUserManager();">
+        <i class="ic-violet fas fa-user-shield"></i>
+        <div class="action-text"><h4>Kelola Role Pengguna</h4><p>Naikkan/turunkan role admin & agen</p></div>
+      </div>
       <div class="action-item" onclick="closeSheet('actionSheet'); openAgentPicker();">
         <i class="ic-amber fas fa-users-gear"></i>
-        <div class="action-text"><h4>Kelola Agen</h4><p>Pilih agen untuk edit data mereka</p></div>
+        <div class="action-text"><h4>Kelola Data Agen</h4><p>Pilih agen untuk edit data mereka</p></div>
       </div>
       <div class="action-item" onclick="closeSheet('actionSheet'); openPriceModal();">
         <i class="ic-blue fas fa-tag"></i>
-        <div class="action-text"><h4>Catat Harga Manual</h4><p>Input harga sebagai admin (overview mode)</p></div>
+        <div class="action-text"><h4>Catat Harga Manual</h4><p>Input harga sebagai admin</p></div>
       </div>
     `;
   } else {
@@ -2477,7 +2673,6 @@ function renderActionSheet(){
   body.innerHTML = html;
 }
 
-/* ============ BULK ============ */
 function openBulkModal(storeId){
   closeSheet('actionSheet');
   closeSheet('detailModal');
@@ -2665,7 +2860,6 @@ async function saveBulk(){
   }
 }
 
-/* ============ ITEM DETAIL ============ */
 function openItemDetail(itemId){
   const item = getItem(itemId);
   if(!item) return;
@@ -2684,6 +2878,44 @@ function openItemDetail(itemId){
   </div>`;
   if(stats.count === 0){
     html += `<div class="empty" style="padding:20px 10px"><p style="margin:0">Belum ada harga tercatat.</p></div>`;
+  } else if(stats.count === 1){
+    const r = stats.rows[0];
+    const chipParts = [];
+    if(r.weight) chipParts.push(`⚖ ${fmtWeight(r.weight)} ${esc(wUnit)}`);
+    if(r.qty) chipParts.push(`${fmtQty(r.qty)} ${esc(qUnit)}`);
+    const chipTxt = chipParts.length ? chipParts.join(' • ') : '';
+    html += `
+      <div class="total-preview" style="margin-bottom:10px;background:var(--green-pale)">
+        <span class="lbl" style="color:var(--green-deep)">Harga Tercatat</span>
+        <span class="val" style="color:var(--green-deep);font-size:16px">${fmtRp(r.price)} <span style="font-size:10px;font-weight:600">/ ${esc(wUnit)}</span></span>
+      </div>
+      <div class="fin-grid">
+        <div class="fin-card fin-income">
+          <div class="fin-icon"><i class="fas fa-calendar"></i></div>
+          <div class="fin-content"><div class="fin-label">Terakhir Update</div><div class="fin-value" style="font-size:12px">${fmtDate(r.date)}</div><div class="fin-sub">${esc(r.store.name)}</div></div>
+        </div>
+        <div class="fin-card fin-income">
+          <div class="fin-icon"><i class="fas fa-weight-hanging"></i></div>
+          <div class="fin-content"><div class="fin-label">Berat / Stok</div><div class="fin-value" style="font-size:12px">${r.weight ? fmtWeight(r.weight)+' '+esc(wUnit) : '—'}</div><div class="fin-sub">${r.qty ? fmtQty(r.qty)+' '+esc(qUnit) : 'Belum diisi'}</div></div>
+        </div>
+      </div>
+      <div class="section-head" style="margin:4px 2px 8px">
+        <h2><i class="fas fa-store"></i> Detail Harga</h2>
+      </div>
+      <div class="list">
+        <div class="list-item" onclick="closeSheet('detailModal'); openPriceModal(${item.id}, ${r.storeId}, ${r.id});">
+          <div class="list-avatar in"><i class="fas fa-store"></i></div>
+          <div class="list-body">
+            <div class="list-title">${esc(r.store.name)}</div>
+            <div class="list-sub"><span>${fmtDate(r.date)}</span>${chipTxt ? `<span>•</span><span>${esc(chipTxt)}</span>` : ''}${r.note ? `<span>•</span><span style="font-style:italic">${esc(r.note)}</span>` : ''}</div>
+          </div>
+          <div class="list-trailing">
+            <div class="list-amount best">${fmtRp(r.price)}</div>
+            <div class="list-meta">per ${esc(wUnit)}</div>
+          </div>
+        </div>
+      </div>
+    `;
   } else {
     html += `
       <div class="fin-grid">
@@ -2737,7 +2969,6 @@ function openItemDetail(itemId){
   openSheet('detailModal');
 }
 
-/* ============ STORE DETAIL ============ */
 function openStoreDetail(storeId){
   const store = getStore(storeId);
   if(!store) return;
@@ -2774,7 +3005,52 @@ function openStoreDetail(storeId){
   </div>
   ${qtyEntries.length ? qtyChips : ''}`;
 
-  html += `<div class="section-head" style="margin:14px 2px 8px">
+  if(st.list.length === 0){
+    html += `<div class="section-head" style="margin:14px 2px 8px">
+      <h2><i class="fas fa-tags"></i> Harga Terkini</h2><span class="count">0 barang</span>
+    </div>
+    <div class="empty" style="padding:20px 10px"><p style="margin:0">Belum ada harga tercatat. Klik <b>Catat Harga</b> di bawah.</p></div>`;
+  } else {
+    html += `<div class="section-head" style="margin:14px 2px 8px">
+      <h2><i class="fas fa-tags"></i> Harga Terkini</h2><span class="count">${st.list.length} barang</span>
+    </div><div class="list">`;
+    st.list.forEach(r => {
+      const allStats = itemStats(r.itemId);
+      const isBest = allStats.count > 1 && r.price === allStats.min;
+      const isWorst = allStats.count > 1 && r.price === allStats.max && allStats.diff > 0;
+      const cls = isBest ? 'best' : (isWorst ? 'worst' : '');
+      const tag = isBest ? 'Termurah' : (isWorst ? 'Tertinggi' : 'Tercatat');
+      const wUnit = itemWeightUnit(r.item);
+      const qUnit = itemQtyUnit(r.item);
+      const parts = [];
+      if(r.weight) parts.push(`⚖ ${fmtWeight(r.weight)} ${esc(wUnit)}`);
+      if(r.qty) parts.push(`${fmtQty(r.qty)} ${esc(qUnit)}`);
+      const extraTxt = parts.length ? ` • ${parts.join(' • ')}` : '';
+      const itemIcon = r.item.photoUrl ? `<img src="${esc(r.item.photoUrl)}" alt="">` : `<i class="fas fa-cube"></i>`;
+      html += `<div class="list-item" onclick="closeSheet('detailModal'); openPriceModal(${r.itemId}, ${storeId}, ${r.id});">
+        <div class="list-avatar prod">${itemIcon}</div>
+        <div class="list-body">
+          <div class="list-title">${esc(r.item.name)}</div>
+          <div class="list-sub"><span>per ${esc(wUnit)}${extraTxt}</span><span>•</span><span>${fmtDate(r.date)}</span></div>
+        </div>
+        <div class="list-trailing">
+          <div class="list-amount ${cls}">${fmtRp(r.price)}</div>
+          <div class="list-meta">${tag}</div>
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+    html += `<button class="btn btn-filled" style="margin-top:10px" onclick="closeSheet('detailModal'); openBulkModal(${storeId})">
+      <i class="fas fa-layer-group"></i> Input Massal Harga
+    </button>`;
+  }
+
+  html += `<div class="btn-row" style="margin-top:8px">
+    <button class="btn btn-outlined" onclick="closeSheet('detailModal'); openStoreModal(${storeId})"><i class="fas fa-pen"></i> Edit Toko</button>
+    <button class="btn btn-tonal" onclick="closeSheet('detailModal'); openPriceModal(null, ${storeId})"><i class="fas fa-plus"></i> Catat Harga</button>
+  </div>`;
+
+  html += `<div class="section-head" style="margin:18px 2px 8px">
     <h2><i class="fas fa-bookmark"></i> History</h2><span class="count">${hist.length} entri</span>
   </div>
   <button class="btn btn-violet" style="margin-bottom:8px" onclick="openSaveHistory(${storeId})">
@@ -2807,52 +3083,10 @@ function openStoreDetail(storeId){
     if(hist.length > 5) html += `<div style="text-align:center;font-size:10.5px;color:var(--text-mute);font-weight:600;padding:4px 0 10px">+ ${hist.length - 5} lainnya</div>`;
   }
 
-  if(st.list.length === 0){
-    html += `<div class="empty" style="padding:20px 10px"><p style="margin:0">Belum ada harga tercatat.</p></div>`;
-  } else {
-    html += `<div class="section-head" style="margin:14px 2px 8px">
-      <h2><i class="fas fa-tags"></i> Harga Terkini</h2><span class="count">${st.list.length} barang</span>
-    </div><div class="list">`;
-    st.list.forEach(r => {
-      const allStats = itemStats(r.itemId);
-      const isBest = allStats.count > 1 && r.price === allStats.min;
-      const isWorst = allStats.count > 1 && r.price === allStats.max && allStats.diff > 0;
-      const cls = isBest ? 'best' : (isWorst ? 'worst' : '');
-      const tag = isBest ? 'Termurah' : (isWorst ? 'Tertinggi' : 'Tercatat');
-      const wUnit = itemWeightUnit(r.item);
-      const qUnit = itemQtyUnit(r.item);
-      const parts = [];
-      if(r.weight) parts.push(`⚖ ${fmtWeight(r.weight)} ${esc(wUnit)}`);
-      if(r.qty) parts.push(`${fmtQty(r.qty)} ${esc(qUnit)}`);
-      const extraTxt = parts.length ? ` • ${parts.join(' • ')}` : '';
-      const itemIcon = r.item.photoUrl ? `<img src="${esc(r.item.photoUrl)}" alt="">` : `<i class="fas fa-cube"></i>`;
-      html += `<div class="list-item" onclick="closeSheet('detailModal'); openPriceModal(${r.itemId}, ${storeId}, ${r.id});">
-        <div class="list-avatar prod">${itemIcon}</div>
-        <div class="list-body">
-          <div class="list-title">${esc(r.item.name)}</div>
-          <div class="list-sub"><span>Harga${extraTxt}</span><span>•</span><span>${fmtDate(r.date)}</span></div>
-        </div>
-        <div class="list-trailing">
-          <div class="list-amount ${cls}">${fmtRp(r.price)}</div>
-          <div class="list-meta">${tag}</div>
-        </div>
-      </div>`;
-    });
-    html += `</div>`;
-  }
-
-  html += `<button class="btn btn-filled" style="margin-top:12px" onclick="closeSheet('detailModal'); openBulkModal(${storeId})">
-    <i class="fas fa-layer-group"></i> Input Massal
-  </button>
-  <div class="btn-row" style="margin-top:8px">
-    <button class="btn btn-outlined" onclick="closeSheet('detailModal'); openStoreModal(${storeId})"><i class="fas fa-pen"></i> Edit Toko</button>
-    <button class="btn btn-tonal" onclick="closeSheet('detailModal'); openPriceModal(null, ${storeId})"><i class="fas fa-plus"></i> Catat Harga</button>
-  </div>`;
   document.getElementById('detailBody').innerHTML = html;
   openSheet('detailModal');
 }
 
-/* ============ HISTORY SAVE ============ */
 function openSaveHistory(storeId){
   const store = getStore(storeId);
   if(!store) return;
@@ -2929,7 +3163,6 @@ async function saveHistoryNow(){
   }
 }
 
-/* ============ EDIT HISTORY ============ */
 const editHistState = { items: [] };
 
 function openEditHistory(histId){
@@ -3058,7 +3291,6 @@ async function saveHistoryEdit(){
 }
 window.saveHistoryEdit = saveHistoryEdit;
 
-/* ============ HISTORY DETAIL ============ */
 function openHistoryDetail(histId){
   const h = getHistory(histId);
   if(!h) return;
@@ -3106,12 +3338,18 @@ function openHistoryDetail(histId){
         </div>
       </div>`;
     }).join('')}
-  </div>
-  <div class="btn-row" style="margin-bottom:8px">
-    <button class="btn btn-tonal" onclick="closeSheet('histDetailModal'); openEditHistory(${h.id})"><i class="fas fa-pen"></i> Edit</button>
-    <button class="btn btn-pdf" onclick="exportHistoryPDF(${h.id})"><i class="fas fa-file-pdf"></i> PDF</button>
-  </div>
-  <button class="btn btn-outlined" style="margin-bottom:8px" onclick="closeSheet('histDetailModal'); openStoreDetail(${h.storeId})"><i class="fas fa-store"></i> Lihat Toko</button>
+  </div>`;
+
+  if(isAdmin){
+    html += `<div class="btn-row" style="margin-bottom:8px">
+      <button class="btn btn-tonal" onclick="closeSheet('histDetailModal'); openEditHistory(${h.id})"><i class="fas fa-pen"></i> Edit</button>
+      <button class="btn btn-pdf" onclick="exportHistoryPDF(${h.id})"><i class="fas fa-file-pdf"></i> PDF</button>
+    </div>`;
+  } else {
+    html += `<button class="btn btn-tonal" style="margin-bottom:8px" onclick="closeSheet('histDetailModal'); openEditHistory(${h.id})"><i class="fas fa-pen"></i> Edit</button>`;
+  }
+
+  html += `<button class="btn btn-outlined" style="margin-bottom:8px" onclick="closeSheet('histDetailModal'); openStoreDetail(${h.storeId})"><i class="fas fa-store"></i> Lihat Toko</button>
   <button class="btn btn-danger" onclick="deleteHistoryConfirm(${h.id})"><i class="fas fa-trash"></i> Hapus History</button>`;
   document.getElementById('hdBody').innerHTML = html;
   openSheet('histDetailModal');
@@ -3122,8 +3360,10 @@ function deleteHistoryConfirm(histId){
   const h = getHistory(histId);
   if(!h) return;
   closeSheet('histDetailModal');
+  const confirmOk = document.getElementById('confirmOk');
+  confirmOk.innerHTML = '<i class="fas fa-trash"></i> Hapus';
   document.getElementById('confirmMsg').innerHTML = `Hapus history <b>${esc(h.label || 'History')}</b>?`;
-  document.getElementById('confirmOk').onclick = async () => {
+  confirmOk.onclick = async () => {
     try {
       await dbDelete('histories', histId);
       closeSheet('confirmModal');
@@ -3135,7 +3375,6 @@ function deleteHistoryConfirm(histId){
   openSheet('confirmModal');
 }
 
-/* ============ PDF HISTORY ============ */
 async function loadImageAsBase64(url, maxW = 700){
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -3157,13 +3396,13 @@ async function loadImageAsBase64(url, maxW = 700){
 }
 
 async function exportHistoryPDF(histId){
+  if(!isAdmin){ snack('Fitur PDF hanya untuk admin', 'info'); return; }
   if(!window.jspdf || !window.jspdf.jsPDF){ snack('PDF belum termuat', 'error'); return; }
   const h = getHistory(histId);
   if(!h){ snack('History tidak ditemukan', 'error'); return; }
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
   const pageW = doc.internal.pageSize.getWidth();
-  const pageH = doc.internal.pageSize.getHeight();
   const M = 12;
   let photoData = null;
   if(h.photoUrl){
@@ -3171,78 +3410,29 @@ async function exportHistoryPDF(histId){
   }
   doc.setFillColor(37, 99, 235);
   doc.rect(0, 0, pageW, 30, 'F');
-  doc.setFillColor(255, 255, 255);
-  doc.roundedRect(M, 7, 16, 16, 4, 4, 'F');
-  doc.setTextColor(37, 99, 235);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(16);
-  doc.text('B', M + 5, 18);
   doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
   doc.setFontSize(18);
-  doc.text('bapok', M + 22, 14);
+  doc.text('bapok', M + 4, 14);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
-  doc.text('Laporan Snapshot History', M + 22, 20.5);
+  doc.text('Laporan Snapshot History', M + 4, 20.5);
   let y = 40;
-  const photoBoxW = 60, photoBoxH = 45;
-  const photoX = pageW - M - photoBoxW;
-  let textMaxW = pageW - 2*M;
   if(photoData){
     try {
-      doc.setDrawColor(226, 232, 240);
-      doc.setFillColor(248, 251, 255);
-      doc.roundedRect(photoX, y - 2, photoBoxW, photoBoxH, 3, 3, 'F');
-      doc.addImage(photoData, 'JPEG', photoX + 1.5, y - 0.5, photoBoxW - 3, photoBoxH - 3, undefined, 'FAST');
+      doc.addImage(photoData, 'JPEG', pageW - M - 60, y - 2, 57, 42, undefined, 'FAST');
     } catch(e){ console.warn(e); }
-    textMaxW = pageW - 2*M - photoBoxW - 6;
   }
   doc.setTextColor(15, 23, 42);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(15);
-  const titleLines = doc.splitTextToSize(h.label || 'History', textMaxW);
-  doc.text(titleLines, M, y);
-  y += titleLines.length * 6.5 + 1;
+  doc.text(h.label || 'History', M, y);
+  y += 7;
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
   doc.setTextColor(71, 85, 105);
-  const store = getStore(h.storeId);
-  const storeLine = `${h.storeName || 'Toko'}${store && store.address ? ' • ' + store.address : ''}`;
-  doc.text(doc.splitTextToSize(storeLine, textMaxW), M, y);
-  y += 5;
-  doc.setFontSize(9);
-  doc.setTextColor(148, 163, 184);
-  doc.text('Data: ' + fmtDate(h.date) + '  •  Disimpan: ' + fmtDateTime(h.createdAt || Date.now()), M, y);
-  y += 6;
-  if(photoData && y < (40 + photoBoxH)) y = 40 + photoBoxH + 4;
-  const qtyEntries = h.qtyByUnit ? Object.entries(h.qtyByUnit) : [];
-  const qtyTxt = qtyEntries.length ? qtyEntries.map(([u,v]) => `${fmtQty(v)} ${u}`).join(' • ') : '—';
-  const weightTxt = h.totalWeight ? fmtWeight(h.totalWeight) + ' kg' : '—';
-  const gap = 3;
-  const boxW = (pageW - 2*M - gap*3) / 4;
-  const boxH = 20;
-  const stats = [
-    { label:'Barang', value: String(h.itemCount || 0), color:[37,99,235] },
-    { label:'Berat', value: weightTxt, color:[37,99,235] },
-    { label:'Stok', value: qtyTxt.length > 20 ? qtyTxt.slice(0,20)+'…' : qtyTxt, color:[109,40,217] },
-    { label:'Total Nilai', value: fmtRp(h.totalValue||0), color:[4,120,87] }
-  ];
-  stats.forEach((s, i) => {
-    const x = M + i * (boxW + gap);
-    doc.setFillColor(248, 251, 255);
-    doc.roundedRect(x, y, boxW, boxH, 2, 2, 'F');
-    doc.setDrawColor(226, 232, 240);
-    doc.roundedRect(x, y, boxW, boxH, 2, 2, 'S');
-    doc.setFillColor(s.color[0], s.color[1], s.color[2]);
-    doc.rect(x, y, 1.5, boxH, 'F');
-    doc.setTextColor(100, 116, 139);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(7);
-    doc.text(s.label.toUpperCase(), x + 4, y + 6);
-    doc.setTextColor(s.color[0], s.color[1], s.color[2]);
-    doc.setFontSize(10.5);
-    doc.text(s.value, x + 4, y + 14, { maxWidth: boxW - 6 });
-  });
-  y += boxH + 7;
+  doc.text(`${h.storeName || 'Toko'}  •  ${fmtDate(h.date)}`, M, y);
+  y += 8;
   const head = [['#', 'Barang', 'Harga', 'Berat', 'Stok', 'Subtotal']];
   const body = (h.items||[]).map((it, i) => {
     const price = Number(it.price) || 0;
@@ -3257,46 +3447,26 @@ async function exportHistoryPDF(histId){
       fmtRp(qty > 0 ? price * qty : price)
     ];
   });
-  body.push([
-    { content: '', styles: { fillColor: [236, 253, 245] } },
-    { content: 'TOTAL', styles: { fontStyle:'bold', halign:'right', fillColor:[236,253,245], textColor:[4,120,87], fontSize: 9.5 } },
-    { content: '', styles: { fillColor: [236, 253, 245] } },
-    { content: '', styles: { fillColor: [236, 253, 245] } },
-    { content: '', styles: { fillColor: [236, 253, 245] } },
-    { content: fmtRp(h.totalValue||0), styles: { fontStyle:'bold', halign:'right', fillColor:[209,250,229], textColor:[4,120,87], fontSize: 10 } }
-  ]);
   doc.autoTable({
-    head, body, startY: y, theme: 'grid', margin: { left: M, right: M, top: 32, bottom: 15 },
+    head, body, startY: y, theme: 'grid', margin: { left: M, right: M },
     styles: { font: 'helvetica', fontSize: 8.5, cellPadding: 2.5, textColor: [30, 41, 59] },
-    headStyles: { fillColor: [139, 92, 246], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center' },
-    alternateRowStyles: { fillColor: [245, 243, 255] },
-    columnStyles: {
-      0: { halign: 'center', cellWidth: 10, textColor: [100, 116, 139], fontStyle: 'bold' },
-      1: { fontStyle: 'bold', minCellWidth: 32 },
-      2: { halign: 'right' }, 3: { halign: 'right' }, 4: { halign: 'right' },
-      5: { halign: 'right', fontStyle: 'bold', textColor: [4, 120, 87] }
-    }
+    headStyles: { fillColor: [139, 92, 246], textColor: [255, 255, 255], fontStyle: 'bold' },
+    columnStyles: { 0: { halign: 'center', cellWidth: 10 }, 1: { fontStyle: 'bold' }, 2: { halign: 'right' }, 3: { halign: 'right' }, 4: { halign: 'right' }, 5: { halign: 'right', fontStyle: 'bold', textColor: [4, 120, 87] } }
   });
-  const safeLabel = (h.label || 'snapshot').replace(/[^a-z0-9]+/gi, '_').slice(0, 30) || 'snapshot';
-  doc.save(`History_${safeLabel}_${h.date || todayStr()}.pdf`);
+  doc.save(`History_${(h.label || 'snapshot').replace(/[^a-z0-9]+/gi,'_')}.pdf`);
   snack('PDF diunduh');
 }
 window.exportHistoryPDF = exportHistoryPDF;
 
 /* ============ STORE CRUD ============ */
-/* ⚠️ RULE: Setiap agen HANYA boleh punya 1 toko */
 function openStoreModal(id){
   closeSheet('actionSheet');
   closeSheet('detailModal');
-
-  /* Admin harus pilih agen dulu */
   if(isAdmin && !activeAgentUid){
     snack('Pilih agen terlebih dahulu (Kelola Agen)', 'info');
     openAgentPicker();
     return;
   }
-
-  /* ⚠️ ENFORCEMENT 1-TOKO: jika belum punya id (mode tambah) tapi sudah ada toko → arahkan ke edit */
   if(!id){
     const existingStores = dbGetAll('stores');
     if(existingStores.length > 0){
@@ -3304,7 +3474,6 @@ function openStoreModal(id){
       return openStoreModal(existingStores[0].id);
     }
   }
-
   document.getElementById('storeForm').reset();
   document.getElementById('sId').value = '';
   document.getElementById('btnDeleteStore').style.display = 'none';
@@ -3334,8 +3503,6 @@ async function saveStore(e){
   const id = document.getElementById('sId').value;
   const name = document.getElementById('sName').value.trim();
   if(!name){ snack('Nama toko wajib diisi', 'error'); return; }
-
-  /* ⚠️ GUARD 1-TOKO: cegah pembuatan toko baru jika sudah ada (juga cegah bypass UI) */
   if(!id){
     if(isAdmin && !activeAgentUid){
       snack('Pilih agen terlebih dahulu', 'error');
@@ -3348,7 +3515,6 @@ async function saveStore(e){
       return;
     }
   }
-
   const btn = document.getElementById('sSaveBtn');
   const oldHtml = btn.innerHTML;
   btn.disabled = true;
@@ -3366,13 +3532,11 @@ async function saveStore(e){
     else { await dbAdd('stores', data); snack('Toko dibuat'); }
     closeSheet('storeModal');
     resetPhotoField('sPhoto');
-    /* Update registry jika agen (bukan admin) */
     if(!isAdmin){
       await updateAgentRegistry(name);
     }
     renderAll();
     if(state.view === 'reports') renderReportCharts();
-    /* Refresh adminModeName jika admin edit toko agen */
     if(isAdmin && activeAgentUid) activeAgentName = name;
     if(isAdmin && activeAgentUid) document.getElementById('adminModeName').textContent = activeAgentName;
   } catch(err){
@@ -3396,9 +3560,11 @@ function confirmDeleteStore(id){
   if(!s) return;
   const count = dbGetAll('prices').filter(p => p.storeId === id).length;
   const histCount = dbGetAll('histories').filter(h => h.storeId === id).length;
+  const confirmOk = document.getElementById('confirmOk');
+  confirmOk.innerHTML = '<i class="fas fa-trash"></i> Hapus';
   document.getElementById('confirmMsg').innerHTML = `Hapus toko <b>${esc(s.name)}</b>?` +
     (count > 0 ? `<br><br><span style="color:var(--rose-deep)"><i class="fas fa-triangle-exclamation"></i> ${count} harga & ${histCount} history dihapus.</span>` : '');
-  document.getElementById('confirmOk').onclick = async () => {
+  confirmOk.onclick = async () => {
     try {
       const related = dbGetAll('prices').filter(p => p.storeId === id);
       for(const p of related) await dbDelete('prices', p.id);
@@ -3415,7 +3581,6 @@ function confirmDeleteStore(id){
   openSheet('confirmModal');
 }
 
-/* ============ ITEM CRUD ============ */
 function openItemModal(id){
   closeSheet('actionSheet');
   closeSheet('detailModal');
@@ -3499,9 +3664,11 @@ function confirmDeleteItem(id){
   const it = getItem(id);
   if(!it) return;
   const count = dbGetAll('prices').filter(p => p.itemId === id).length;
+  const confirmOk = document.getElementById('confirmOk');
+  confirmOk.innerHTML = '<i class="fas fa-trash"></i> Hapus';
   document.getElementById('confirmMsg').innerHTML = `Hapus barang <b>${esc(it.name)}</b>?` +
     (count > 0 ? `<br><br><span style="color:var(--rose-deep)"><i class="fas fa-triangle-exclamation"></i> ${count} harga dihapus.</span>` : '');
-  document.getElementById('confirmOk').onclick = async () => {
+  confirmOk.onclick = async () => {
     try {
       const related = dbGetAll('prices').filter(p => p.itemId === id);
       for(const p of related) await dbDelete('prices', p.id);
@@ -3519,7 +3686,6 @@ function confirmDeleteItem(id){
   openSheet('confirmModal');
 }
 
-/* ============ PRICE CRUD ============ */
 function openPriceModal(itemId, storeId, priceId){
   closeSheet('actionSheet');
   closeSheet('detailModal');
@@ -3657,8 +3823,10 @@ function deletePriceFromModal(){
   if(!p) return;
   const it = getItem(p.itemId);
   const st = getStore(p.storeId);
+  const confirmOk = document.getElementById('confirmOk');
+  confirmOk.innerHTML = '<i class="fas fa-trash"></i> Hapus';
   document.getElementById('confirmMsg').innerHTML = `Hapus harga <b>${esc(it ? it.name : 'barang')}</b> di <b>${esc(st ? st.name : 'toko')}</b>?`;
-  document.getElementById('confirmOk').onclick = async () => {
+  confirmOk.onclick = async () => {
     try {
       await dbDelete('prices', id);
       closeSheet('confirmModal');
@@ -3670,7 +3838,6 @@ function deletePriceFromModal(){
   openSheet('confirmModal');
 }
 
-/* ============ EXPORT CSV/PDF ============ */
 function downloadCSV(rows, filename){
   const csv = rows.map(r => r.map(c => {
     const s = String(c ?? '');
@@ -3727,6 +3894,7 @@ function exportCSV(type){
 }
 
 function exportPDF(){
+  if(!isAdmin){ snack('Fitur PDF hanya untuk admin', 'info'); return; }
   if(!window.jspdf || !window.jspdf.jsPDF){ snack('PDF belum termuat', 'error'); return; }
   const { jsPDF } = window.jspdf;
   const stores = getFilteredStores();
@@ -3780,13 +3948,13 @@ function exportPDF(){
   snack('PDF diunduh');
 }
 
-/* ============ EVENT BINDINGS ============ */
 document.querySelectorAll('.nav-item').forEach(btn => {
   btn.addEventListener('click', () => switchView(btn.dataset.view));
 });
 document.getElementById('fab').addEventListener('click', () => { renderActionSheet(); openSheet('actionSheet'); });
 document.getElementById('btnInfo').addEventListener('click', () => openSheet('infoModal'));
 document.getElementById('btnKelolaAgen').addEventListener('click', openAgentPicker);
+document.getElementById('btnKelolaUser').addEventListener('click', openUserManager);
 document.getElementById('searchItem').addEventListener('input', e => { state.itemSearch = e.target.value; renderItems(); });
 document.getElementById('searchStore').addEventListener('input', e => { state.storeSearch = e.target.value; renderStores(); });
 document.getElementById('compareItemSelect').addEventListener('change', e => { state.compareItemId = Number(e.target.value); renderCompare(); });
@@ -3799,7 +3967,6 @@ document.getElementById('bulkNewQtyUnit').addEventListener('keydown', e => { if(
 ['loginEmail','loginPass'].forEach(id => { document.getElementById(id).addEventListener('keydown', e => { if(e.key === 'Enter') doAuth('login'); }); });
 ['regEmail','regPass','regPass2'].forEach(id => { document.getElementById(id).addEventListener('keydown', e => { if(e.key === 'Enter') doAuth('register'); }); });
 
-/* ============ AUTH ============ */
 const authErrors = {
   'auth/invalid-credential': 'Email atau password salah.',
   'auth/invalid-email': 'Format email tidak valid.',
@@ -3873,7 +4040,6 @@ async function doLogout(){
   try { await signOut(auth); } catch(e){ snack('Gagal keluar', 'error'); }
 }
 
-/* ============ EXPOSE GLOBALS ============ */
 window.switchView = switchView;
 window.openItemModal = openItemModal;
 window.openStoreModal = openStoreModal;
@@ -3909,8 +4075,9 @@ window.saveHistoryNow = saveHistoryNow;
 window.deleteHistoryConfirm = deleteHistoryConfirm;
 window.handlePhotoSelect = handlePhotoSelect;
 window.clearPhoto = clearPhoto;
+window.openUserManager = openUserManager;
+window.changeUserRole = changeUserRole;
 
-/* ============ BOOT ============ */
 Splash.renderTitle('bapok');
 Splash.setProgress(15, 'Menghubungkan...');
 
@@ -3920,26 +4087,38 @@ onAuthStateChanged(auth, async user => {
   if(user){
     uid = user.uid;
     currentEmail = user.email || '';
-    isAdmin = currentEmail === ADMIN_EMAIL;
+
+    // ===== ROLE DETECTION (BARU) =====
+    currentRole = await loadUserRole(currentEmail, uid);
+    isAdmin = currentRole === 'admin';
+
     activeAgentUid = null;
     activeAgentName = '';
 
     // Badge role
     const roleBadge = document.getElementById('roleBadge');
+    roleBadge.style.display = 'inline-flex';
     if(isAdmin){
-      roleBadge.style.display = 'inline-flex';
       roleBadge.textContent = 'ADMIN';
       roleBadge.classList.add('admin');
+      roleBadge.classList.remove('agen');
       document.getElementById('btnKelolaAgen').style.display = 'grid';
+      document.getElementById('btnKelolaUser').style.display = 'grid';
     } else {
-      roleBadge.style.display = 'none';
+      roleBadge.textContent = 'AGEN';
       roleBadge.classList.remove('admin');
+      roleBadge.classList.add('agen');
       document.getElementById('btnKelolaAgen').style.display = 'none';
+      document.getElementById('btnKelolaUser').style.display = 'none';
     }
     document.getElementById('adminModeBanner').classList.remove('show');
 
+    applyRoleUI();
+
     hideAuth();
     document.getElementById('userEmail').textContent = currentEmail;
+    const infoRole = document.getElementById('infoRole');
+    if(infoRole) infoRole.textContent = currentRole.toUpperCase();
 
     try {
       if(isAdmin){
@@ -3959,9 +4138,16 @@ onAuthStateChanged(auth, async user => {
   } else {
     uid = null;
     currentEmail = '';
+    currentRole = 'agen';
     isAdmin = false;
     activeAgentUid = null;
     activeAgentName = '';
+
+    document.getElementById('roleBadge').style.display = 'none';
+    document.getElementById('btnKelolaUser').style.display = 'none';
+
+    applyRoleUI();
+
     Object.values(cache).forEach(m => m.clear());
     renderAll();
     switchView('dashboard');
