@@ -16,6 +16,7 @@
   --rose:#f43f5e;--rose-pale:#ffe4e6;--rose-deep:#be123c;
   --violet:#8b5cf6;--violet-pale:#ede9fe;--violet-deep:#6d28d9;
   --amber:#f59e0b;--amber-pale:#fef3c7;--amber-deep:#92400e;
+  --teal:#14b8a6;--teal-deep:#0d9488;--teal-pale:#ccfbf1;
   --surface:#ffffff;--surface-2:#f8fbff;--surface-3:#f0f7ff;
   --text:#0b1220;--text-soft:#475569;--text-mute:#94a3b8;--line:#e6efff;
   --r-xs:8px;--r-sm:12px;--r-md:16px;--r-lg:22px;--r-xl:28px;
@@ -105,6 +106,7 @@ body.app-ready .app{opacity:1;transform:translateY(0) scale(1);pointer-events:au
 .list-avatar.out{background:var(--rose-pale);color:var(--rose-deep)}
 .list-avatar.prod{background:var(--blue-pale);color:var(--blue-deep)}
 .list-avatar.violet{background:var(--violet-pale);color:var(--violet-deep)}
+.list-avatar.teal{background:var(--teal-pale);color:var(--teal-deep)}
 .list-avatar img{width:100%;height:100%;object-fit:cover}
 .list-body{flex:1;min-width:0}
 .list-title{font-size:12px;font-weight:600;color:var(--text);line-height:1.35;word-break:break-word}
@@ -325,6 +327,7 @@ body.no-store-mode .fab{display:none}
 .btn-violet{background:linear-gradient(135deg,var(--violet),var(--violet-deep));color:#fff;box-shadow:0 10px 20px rgba(139,92,246,.4)}
 .btn-pdf{background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;box-shadow:0 10px 20px rgba(220,38,38,.35)}
 .btn-amber{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff;box-shadow:0 10px 20px rgba(245,158,11,.4)}
+.btn-teal{background:linear-gradient(135deg,#14b8a6,#0d9488);color:#fff;box-shadow:0 10px 20px rgba(20,184,166,.4)}
 .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
 .total-preview{background:var(--blue-pale);border-radius:11px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
 .total-preview .lbl{font-size:10px;font-weight:700;color:var(--blue-deep);text-transform:uppercase;opacity:.8}
@@ -336,6 +339,7 @@ body.no-store-mode .fab{display:none}
 .action-item .ic-blue{background:var(--blue-pale);color:var(--blue-deep)}
 .action-item .ic-violet{background:var(--violet-pale);color:var(--violet-deep)}
 .action-item .ic-amber{background:var(--amber-pale);color:var(--amber-deep)}
+.action-item .ic-teal{background:var(--teal-pale);color:var(--teal-deep)}
 .action-text h4{font-size:12px;font-weight:700;color:var(--text)}
 .action-text p{font-size:10.5px;color:var(--text-mute);margin-top:2px;font-weight:500}
 #snackbar-container{position:fixed;bottom:calc(106px + env(safe-area-inset-bottom));left:0;right:0;margin:0 auto;z-index:510;display:flex;flex-direction:column-reverse;gap:6px;width:calc(100% - 28px);max-width:380px;pointer-events:none}
@@ -434,25 +438,17 @@ body.no-store-mode .fab{display:none}
 .badge-role{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;font-size:9px;font-weight:800;background:var(--violet-pale);color:var(--violet-deep);letter-spacing:0.3px;margin-left:auto;flex-shrink:0}
 .badge-role.admin{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff}
 .badge-role.agen{background:var(--violet-pale);color:var(--violet-deep)}
+.badge-role.petugas{background:linear-gradient(135deg,#14b8a6,#0d9488);color:#fff}
 
-/* ===== USER MANAGER (Role Management) ===== */
-.user-mgmt-item{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:12px;background:var(--surface-2);margin-bottom:7px;border:1.5px solid var(--line);transition:all .2s}
-.user-mgmt-item:hover{border-color:var(--blue)}
-.um-avatar{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:14px;flex-shrink:0}
-.um-avatar.admin{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff;box-shadow:0 4px 10px rgba(245,158,11,.35)}
-.um-avatar.agen{background:var(--violet-pale);color:var(--violet-deep)}
-.um-info{flex:1;min-width:0}
-.um-name{font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.um-email{font-size:10px;color:var(--text-mute);font-weight:500;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.um-actions{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
-.um-btn{font-family:inherit;font-size:9.5px;font-weight:700;padding:5px 9px;border-radius:8px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:4px;background:var(--blue-pale);color:var(--blue-deep);transition:all .2s}
-.um-btn:hover{background:var(--blue);color:#fff}
-.um-btn.promote{background:linear-gradient(135deg,#10b981,#047857);color:#fff}
-.um-btn.promote:hover{box-shadow:0 4px 12px rgba(16,185,129,.4)}
-.um-btn.demote{background:var(--amber-pale);color:var(--amber-deep)}
-.um-btn.demote:hover{background:var(--amber);color:#fff}
-.um-lock{font-size:9px;font-weight:700;color:var(--text-mute);display:inline-flex;align-items:center;gap:3px;background:var(--surface-3);padding:4px 8px;border-radius:7px}
-.um-lock i{font-size:8px}
+.fb-info-box{background:var(--surface-2);border:1.5px solid var(--line);border-radius:12px;padding:11px 13px;font-size:10.5px;line-height:1.55;color:var(--text-soft);font-weight:500;margin-bottom:10px}
+.fb-info-box b{color:var(--text)}
+.fb-info-box code{background:var(--blue-pale);color:var(--blue-deep);padding:1px 6px;border-radius:5px;font-family:ui-monospace,monospace;font-size:10px;font-weight:700}
+
+/* ===== MANUAL COMPARISON (Admin) ===== */
+.manual-select-wrap{display:flex;gap:6px;align-items:stretch}
+.manual-select-wrap .field-wrap{flex:1;margin-bottom:0}
+.manual-add-btn{flex-shrink:0;width:auto!important;padding:0 14px!important;height:40px}
+.manual-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;font-size:9px;font-weight:800;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff;margin-left:6px;vertical-align:middle}
 
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-thumb{background:#bfdbfe;border-radius:99px}
@@ -478,7 +474,7 @@ body.no-store-mode .fab{display:none}
       <div class="info-hero">
         <div class="info-hero-icon"><i class="fas fa-tags"></i></div>
         <h3>Masuk ke bapok</h3>
-        <p>Agen toko & admin gunakan halaman yang sama. Sistem mendeteksi peran otomatis.</p>
+        <p>Agen, Petugas & Admin gunakan halaman yang sama. Sistem mendeteksi peran otomatis dari database Firebase.</p>
       </div>
       <div class="field">
         <label class="field-label">Email</label>
@@ -502,7 +498,7 @@ body.no-store-mode .fab{display:none}
       <div class="info-hero">
         <div class="info-hero-icon"><i class="fas fa-user-plus"></i></div>
         <h3>Buat Akun Baru</h3>
-        <p>Daftar sebagai agen toko. Setelah login, isi info toko Anda.</p>
+        <p>Setelah daftar, peran default adalah <b>Agen</b>. Untuk menjadi <b>Petugas</b> atau <b>Admin</b>, minta admin mengubahnya di <b>Firebase Console</b> → koleksi <code style="background:#dbeafe;color:#2563eb;padding:1px 5px;border-radius:4px;font-size:10px">agent_registry</code>.</p>
       </div>
       <div class="field">
         <label class="field-label">Email</label>
@@ -539,8 +535,7 @@ body.no-store-mode .fab{display:none}
       </div>
     </div>
     <div class="topbar-actions">
-      <button class="topbar-btn violet" id="btnKelolaUser" style="display:none" aria-label="Kelola Role"><i class="fas fa-user-shield"></i></button>
-      <button class="topbar-btn amber" id="btnKelolaAgen" style="display:none" aria-label="Kelola Agen"><i class="fas fa-users-gear"></i></button>
+      <button class="topbar-btn amber" id="btnKelolaAgen" style="display:none" aria-label="Kelola Data Pengguna"><i class="fas fa-users-gear"></i></button>
       <button class="topbar-btn" id="btnInfo" aria-label="Info"><i class="fas fa-circle-info"></i></button>
     </div>
   </header>
@@ -633,6 +628,36 @@ body.no-store-mode .fab{display:none}
     </section>
 
     <section class="view" id="view-reports">
+      <!-- ===== MANUAL COMPARISON (ADMIN OVERVIEW ONLY) ===== -->
+      <div id="manualCompareSection" style="display:none">
+        <div class="section-head" style="margin-top:8px">
+          <h2><i class="fas fa-hand-pointer"></i> Perbandingan Manual <span class="manual-badge"><i class="fas fa-crown"></i> ADMIN</span></h2>
+          <span class="count" id="manualCompareCount">0 item</span>
+        </div>
+        <div class="bulk-note" style="margin-bottom:8px">
+          <i class="fas fa-circle-info"></i>
+          <span>Pilih barang dari dropdown di bawah — berisi <b>semua barang</b> dari agen & petugas yang punya harga. Klik <b>Tambah Baris</b> untuk menambahkan ke tabel perbandingan.</span>
+        </div>
+        <div class="filter-panel" style="margin-bottom:10px;padding:12px">
+          <div class="field" style="margin-bottom:8px">
+            <label class="field-label">Pilih Barang (dari semua agen & petugas)</label>
+            <div class="manual-select-wrap">
+              <div class="field-wrap"><i class="fas fa-box"></i>
+                <select class="select" id="manualItemSelect">
+                  <option value="">— Pilih barang —</option>
+                </select>
+              </div>
+              <button class="btn btn-filled manual-add-btn" onclick="manualAddSelected()"><i class="fas fa-plus"></i> Tambah</button>
+            </div>
+          </div>
+          <div class="btn-row" style="margin-top:0">
+            <button class="btn btn-outlined" onclick="manualClearAll()"><i class="fas fa-eraser"></i> Kosongkan Tabel</button>
+            <button class="btn btn-tonal" onclick="openAgentPicker()"><i class="fas fa-users-gear"></i> Kelola Data</button>
+          </div>
+        </div>
+        <div id="manualCompareContent"></div>
+      </div>
+
       <div class="filter-panel" id="filterPanel">
         <div class="fp-header">
           <h3><i class="fas fa-sliders"></i> Pilih Perbandingan</h3>
@@ -784,30 +809,15 @@ body.no-store-mode .fab{display:none}
   </div>
 </div>
 
-<!-- User Manager Modal (Role Management) - BARU -->
-<div class="scrim" id="userManagerModal">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-header"><i class="fas fa-user-shield"></i><h2>Kelola Role Pengguna</h2></div>
-    <div class="sheet-body">
-      <div class="bulk-note">
-        <i class="fas fa-circle-info"></i>
-        <span><b>Admin</b>: akses penuh (bandingkan, laporan, kelola data agen).<br><b>Agen</b>: kelola toko & harga sendiri.</span>
-      </div>
-      <div id="userManagerList"></div>
-    </div>
-  </div>
-</div>
-
 <!-- Agent Picker Modal (admin only) -->
 <div class="scrim" id="agentPickerModal">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-header"><i class="fas fa-users-gear"></i><h2>Pilih Agen untuk Dikelola</h2></div>
+    <div class="sheet-header"><i class="fas fa-users-gear"></i><h2>Pilih Pengguna untuk Dikelola</h2></div>
     <div class="sheet-body">
       <div class="bulk-note">
         <i class="fas fa-circle-info"></i>
-        <span>Pilih agen untuk masuk ke mode edit. Setelah itu Anda bisa edit toko, barang, dan harga mereka.</span>
+        <span>Pilih agen atau petugas untuk masuk ke mode edit. Setelah itu Anda bisa kelola toko, barang, dan harga mereka.</span>
       </div>
       <div id="agentPickerList"></div>
     </div>
@@ -823,9 +833,9 @@ body.no-store-mode .fab{display:none}
       <form id="storeForm" onsubmit="saveStore(event)">
         <input type="hidden" id="sId">
         <input type="hidden" id="sPhotoUrl">
-        <div class="bulk-note" style="margin-bottom:12px">
+        <div class="bulk-note" style="margin-bottom:12px" id="storeLimitNote">
           <i class="fas fa-circle-info"></i>
-          <span>Setiap agen <b>hanya boleh memiliki 1 toko</b>.</span>
+          <span>Agen <b>hanya boleh memiliki 1 toko</b>. Petugas boleh membuat banyak toko.</span>
         </div>
         <div class="photo-field">
           <label class="field-label">Foto Toko (opsional)</label>
@@ -1227,15 +1237,26 @@ body.no-store-mode .fab{display:none}
           <div class="list-trailing"><div class="list-amount" style="font-size:11px" id="infoHist">0</div></div>
         </div>
         <div class="list-item" style="cursor:default">
-          <div class="list-avatar ${'admin'}"><i class="fas fa-user-shield"></i></div>
-          <div class="list-body"><div class="list-title">Role Anda</div></div>
+          <div class="list-avatar teal"><i class="fas fa-user-shield"></i></div>
+          <div class="list-body"><div class="list-title">Peran Anda</div></div>
           <div class="list-trailing"><div class="list-amount" style="font-size:11px" id="infoRole">—</div></div>
         </div>
       </div>
-      <button class="btn btn-outlined" style="margin-top:12px" onclick="doLogout()">
+
+      <div class="fb-info-box" style="margin-top:12px">
+        <i class="fas fa-circle-info" style="color:var(--blue);font-size:11px;margin-right:4px"></i>
+        <b>Peran akun diatur di Firebase Console.</b><br>
+        Buka Firestore → koleksi <code>agent_registry</code> → dokumen <code>{uid}</code> → field <code>role</code> → isi <code>agen</code> / <code>petugas</code> / <code>admin</code>.
+        Setelah diubah, tekan <b>Refresh Peran</b> di bawah.
+      </div>
+
+      <button class="btn btn-tonal" style="margin-bottom:8px" onclick="refreshRole()">
+        <i class="fas fa-rotate"></i> Refresh Peran
+      </button>
+      <button class="btn btn-outlined" style="margin-bottom:8px" onclick="doLogout()">
         <i class="fas fa-right-from-bracket"></i> Keluar (<span id="userEmail"></span>)
       </button>
-      <button class="btn btn-tonal" style="margin-top:8px" onclick="closeSheet('infoModal')">Tutup</button>
+      <button class="btn btn-tonal" onclick="closeSheet('infoModal')">Tutup</button>
     </div>
   </div>
 </div>
@@ -1267,6 +1288,7 @@ const firebaseConfig = {
 };
 
 const ADMIN_EMAIL = 'admin@bapok.app';
+const VALID_ROLES = ['admin', 'agen', 'petugas'];
 
 const fbApp = initializeApp(firebaseConfig);
 const auth = getAuth(fbApp);
@@ -1432,10 +1454,11 @@ const Splash = (() => {
 
 let uid = null;
 let currentEmail = '';
-let currentRole = 'agen';  // 'admin' | 'agen'
+let currentRole = 'agen';   // 'admin' | 'agen' | 'petugas'
 let isAdmin = false;
 let activeAgentUid = null;
 let activeAgentName = '';
+let activeAgentRole = null;
 
 const cache = { stores: new Map(), items: new Map(), prices: new Map(), histories: new Map() };
 const newId = () => Date.now() * 1000 + Math.floor(Math.random() * 1000);
@@ -1453,11 +1476,23 @@ function colRefFor(uidParam, name){
   return collection(fdb, 'users', uidParam, name);
 }
 
+function maxStoresAllowed(){
+  const role = (isAdmin && activeAgentUid) ? (activeAgentRole || 'agen') : currentRole;
+  return role === 'agen' ? 1 : Infinity;
+}
+function effectiveRole(){
+  return (isAdmin && activeAgentUid) ? (activeAgentRole || 'agen') : currentRole;
+}
+function canAccessCompareReports(){
+  const r = effectiveRole();
+  return r === 'admin' || r === 'petugas';
+}
+
 function applyRoleUI(){
   const navCompare = document.getElementById('navCompare');
   const navReports = document.getElementById('navReports');
   const dashCompareBtn = document.getElementById('dashCompareBtn');
-  if(isAdmin){
+  if(canAccessCompareReports()){
     if(navCompare) navCompare.style.display = '';
     if(navReports) navReports.style.display = '';
     if(dashCompareBtn) dashCompareBtn.style.display = '';
@@ -1468,127 +1503,46 @@ function applyRoleUI(){
   }
 }
 
-/* ====== ROLE MANAGEMENT (BARU) ====== */
-
-// Baca role dari agent_registry (atau 'admin' jika master email)
+/* ====== ROLE DETECTION (dari Firebase Console) ====== */
 async function loadUserRole(email, userId){
   if((email || '').toLowerCase().trim() === ADMIN_EMAIL.toLowerCase()) return 'admin';
   try {
     const snap = await getDoc(doc(fdb, 'agent_registry', String(userId)));
     if(snap.exists()){
       const r = snap.data().role;
-      if(r === 'admin' || r === 'agen') return r;
+      if(VALID_ROLES.includes(r)) return r;
     }
   } catch(e){ console.warn('loadUserRole:', e); }
   return 'agen';
 }
 
-// Update role di agent_registry (hanya admin)
-async function setUserRole(targetUid, newRole){
-  if(!isAdmin) throw new Error('Hanya admin yang bisa mengubah role');
-  if(targetUid === uid) throw new Error('Tidak bisa mengubah role sendiri');
-  const ref = doc(fdb, 'agent_registry', String(targetUid));
-  await setDoc(ref, { role: newRole, updatedAt: Date.now() }, { merge: true });
-}
-
-// Buka modal kelola role pengguna
-async function openUserManager(){
-  if(!isAdmin) return;
-  const el = document.getElementById('userManagerList');
-  el.innerHTML = '<div style="text-align:center;padding:20px"><i class="fas fa-spinner fa-spin"></i> Memuat...</div>';
-  openSheet('userManagerModal');
-  try {
-    const snap = await getDocs(collection(fdb, 'agent_registry'));
-    const users = snap.docs.map(d => ({ uid: d.id, ...d.data() }))
-      .sort((a,b) => (a.email || '').localeCompare(b.email || ''));
-
-    if(users.length === 0){
-      el.innerHTML = `<div class="empty" style="padding:24px 10px">
-        <div class="empty-icon" style="width:48px;height:48px;font-size:18px"><i class="fas fa-users"></i></div>
-        <h3>Belum ada pengguna</h3>
-        <p>Belum ada pengguna yang login.</p>
-      </div>`;
-      return;
-    }
-
-    el.innerHTML = users.map(u => {
-      const role = (u.email || '').toLowerCase() === ADMIN_EMAIL.toLowerCase() ? 'admin' : (u.role || 'agen');
-      const isMasterAdmin = (u.email || '').toLowerCase() === ADMIN_EMAIL.toLowerCase();
-      const isSelf = u.uid === uid;
-      const roleBadge = role === 'admin'
-        ? '<span class="badge-role admin">ADMIN</span>'
-        : '<span class="badge-role">AGEN</span>';
-
-      let actionBtn = '';
-      if(isMasterAdmin){
-        actionBtn = '<span class="um-lock"><i class="fas fa-lock"></i> Master</span>';
-      } else if(isSelf){
-        actionBtn = '<span class="um-lock"><i class="fas fa-user"></i> Anda</span>';
-      } else {
-        const newRole = role === 'admin' ? 'agen' : 'admin';
-        const label = role === 'admin' ? 'Turunkan' : 'Naikkan';
-        const icon = role === 'admin' ? 'arrow-down' : 'arrow-up';
-        const cls = role === 'admin' ? 'demote' : 'promote';
-        actionBtn = `<button class="um-btn ${cls}" onclick="changeUserRole('${esc(u.uid)}', '${newRole}', '${esc(u.email || u.storeName || 'pengguna')}')"><i class="fas fa-${icon}"></i> ${label}</button>`;
-      }
-
-      return `<div class="user-mgmt-item">
-        <div class="um-avatar ${role}"><i class="fas fa-${role === 'admin' ? 'user-shield' : 'user'}"></i></div>
-        <div class="um-info">
-          <div class="um-name">${esc(u.storeName || u.email || 'Pengguna')}</div>
-          <div class="um-email">${esc(u.email || '')}</div>
-        </div>
-        <div class="um-actions">
-          ${roleBadge}
-          ${actionBtn}
-        </div>
-      </div>`;
-    }).join('');
-  } catch(err){
-    console.error(err);
-    el.innerHTML = `<div class="empty" style="padding:24px 10px">
-      <p style="margin:0;color:var(--rose-deep)">Gagal memuat. Cek Firestore rules.</p>
-    </div>`;
+function updateRoleBadgeUI(){
+  const roleBadge = document.getElementById('roleBadge');
+  if(!roleBadge) return;
+  if(!uid){
+    roleBadge.style.display = 'none';
+    return;
   }
-}
-
-// Konfirmasi ubah role
-function changeUserRole(targetUid, newRole, targetName){
-  if(!isAdmin) return;
-  const action = newRole === 'admin' ? 'menaikkan' : 'menurunkan';
-  const confirmOk = document.getElementById('confirmOk');
-  const originalHTML = confirmOk.innerHTML;
-  document.getElementById('confirmMsg').innerHTML =
-    `Yakin ingin ${action} role <b>${esc(targetName)}</b> menjadi <b>${newRole.toUpperCase()}</b>?`;
-  confirmOk.innerHTML = '<i class="fas fa-check"></i> Ya, Ubah';
-  confirmOk.onclick = async () => {
-    confirmOk.disabled = true;
-    confirmOk.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
-    try {
-      await setUserRole(targetUid, newRole);
-      closeSheet('confirmModal');
-      snack(`Role diubah menjadi ${newRole.toUpperCase()}`);
-      openUserManager();
-    } catch(err){
-      console.error(err);
-      snack(err.message || 'Gagal mengubah role', 'error');
-    } finally {
-      confirmOk.disabled = false;
-      confirmOk.innerHTML = originalHTML;
-    }
-  };
-  openSheet('confirmModal');
+  roleBadge.style.display = 'inline-flex';
+  roleBadge.classList.remove('admin', 'agen', 'petugas');
+  roleBadge.textContent = currentRole.toUpperCase();
+  roleBadge.classList.add(currentRole);
 }
 
 async function updateAgentRegistry(storeName){
   try {
-    await setDoc(doc(fdb, 'agent_registry', String(uid)), {
+    const ref = doc(fdb, 'agent_registry', String(uid));
+    const existing = await getDoc(ref);
+    const data = {
       uid: String(uid),
       email: currentEmail,
       storeName: storeName || '',
-      role: currentRole || 'agen',
       updatedAt: Date.now()
-    }, { merge: true });
+    };
+    if(!existing.exists() || !existing.data().role){
+      data.role = currentRole || 'agen';
+    }
+    await setDoc(ref, data, { merge: true });
   } catch(e){ console.warn('agent_registry update gagal:', e); }
 }
 
@@ -1649,7 +1603,8 @@ async function loadAdminOverviewData(){
       const ownerMeta = {
         _ownerUid: agent.uid,
         _ownerEmail: agent.email || '',
-        _ownerName: agent.storeName || agent.email || 'Agen'
+        _ownerName: agent.storeName || agent.email || 'Agen',
+        _ownerRole: agent.role || 'agen'
       };
       stores.forEach(d => { const dd = d.data(); cache.stores.set(dd.id, { ...dd, ...ownerMeta }); });
       items.forEach(d  => { const dd = d.data(); cache.items.set(dd.id, { ...dd, ...ownerMeta }); });
@@ -1781,7 +1736,8 @@ const state = {
   selectedStores: new Set(),
   selectedItems: new Set(),
   bulkDraft: {},
-  bulkSearch: ''
+  bulkSearch: '',
+  manualCompareItems: new Set()   // <-- BARU: item yang dipilih admin untuk tabel manual
 };
 
 function getFilteredStores(){
@@ -1851,6 +1807,158 @@ document.addEventListener('keydown', e => {
   if(e.key === 'Escape') document.querySelectorAll('.scrim.show').forEach(ov => closeSheet(ov.id));
 });
 
+/* ============================================================
+   MANUAL COMPARISON (ADMIN OVERVIEW) — FUNGSI BARU
+   ============================================================ */
+function renderManualCompareSelector(){
+  const sel = document.getElementById('manualItemSelect');
+  if(!sel) return;
+  const items = [...dbGetAll('items')].sort((a,b) => (a.name||'').localeCompare(b.name||''));
+  const withPrice = items.filter(i => dbGetAll('prices').some(p => p.itemId === i.id));
+  const currentVal = sel.value;
+  if(withPrice.length === 0){
+    sel.innerHTML = '<option value="">Belum ada barang dengan harga</option>';
+    return;
+  }
+  sel.innerHTML = '<option value="">— Pilih barang —</option>' +
+    withPrice.map(i => {
+      const owner = i._ownerName ? ` — ${i._ownerName}` : '';
+      return `<option value="${i.id}">${esc(i.name)}${esc(owner)}</option>`;
+    }).join('');
+  if(currentVal) sel.value = currentVal;
+}
+
+function manualAddSelected(){
+  const sel = document.getElementById('manualItemSelect');
+  if(!sel) return;
+  const itemId = Number(sel.value);
+  if(!itemId){ snack('Pilih barang terlebih dahulu', 'info'); return; }
+  if(state.manualCompareItems.has(itemId)){ snack('Barang sudah ada di tabel', 'info'); return; }
+  state.manualCompareItems.add(itemId);
+  sel.value = '';
+  renderManualCompare();
+  snack('Baris ditambahkan ke tabel manual');
+}
+
+function manualRemoveItem(itemId){
+  state.manualCompareItems.delete(itemId);
+  renderManualCompare();
+  snack('Baris dihapus');
+}
+
+function manualClearAll(){
+  if(state.manualCompareItems.size === 0){ snack('Tabel sudah kosong', 'info'); return; }
+  state.manualCompareItems.clear();
+  renderManualCompare();
+  snack('Tabel manual dikosongkan');
+}
+
+function renderManualCompare(){
+  const wrap = document.getElementById('manualCompareContent');
+  const countEl = document.getElementById('manualCompareCount');
+  if(!wrap) return;
+
+  if(state.manualCompareItems.size === 0){
+    wrap.innerHTML = `<div class="list"><div class="empty" style="padding:24px">
+      <div class="empty-icon" style="background:var(--amber-pale);color:var(--amber-deep)"><i class="fas fa-hand-pointer"></i></div>
+      <h3>Belum Ada Baris</h3>
+      <p>Pilih barang dari dropdown di atas, lalu klik <b>Tambah Baris</b> untuk melihat perbandingan harga antar toko.</p>
+    </div></div>`;
+    if(countEl) countEl.textContent = '0 item';
+    return;
+  }
+
+  const itemIds = [...state.manualCompareItems];
+  const storeIds = new Set();
+  itemIds.forEach(itemId => {
+    dbGetAll('prices').filter(p => p.itemId === itemId).forEach(p => storeIds.add(p.storeId));
+  });
+  const stores = [...storeIds].map(id => getStore(id)).filter(Boolean)
+    .sort((a,b) => (a.name||'').localeCompare(b.name||''));
+
+  if(stores.length === 0){
+    wrap.innerHTML = `<div class="empty" style="padding:24px"><p style="margin:0">Belum ada data harga untuk barang yang dipilih</p></div>`;
+    if(countEl) countEl.textContent = `${itemIds.length} barang`;
+    return;
+  }
+
+  const rows = itemIds.map(itemId => {
+    const item = getItem(itemId);
+    if(!item) return null;
+    const cells = stores.map(store => getLatestPrice(itemId, store.id));
+    const prices = cells.filter(c => c).map(c => c.price);
+    const min = prices.length ? Math.min(...prices) : null;
+    const max = prices.length ? Math.max(...prices) : null;
+    return { item, cells, min, max, diff: (min !== null && max !== null) ? max - min : 0, hasData: prices.length > 0 };
+  }).filter(Boolean).filter(r => r.hasData);
+
+  if(rows.length === 0){
+    wrap.innerHTML = `<div class="empty" style="padding:24px"><p style="margin:0">Tidak ada data harga</p></div>`;
+    if(countEl) countEl.textContent = `0 barang`;
+    return;
+  }
+
+  if(countEl) countEl.textContent = `${rows.length} barang × ${stores.length} toko`;
+
+  let totalSavings = 0;
+  rows.forEach(r => { if(r.diff > 0) totalSavings += r.diff; });
+
+  let html = `<div class="table-wrap">
+    <div class="table-scroll">
+      <table class="matrix-table">
+        <thead><tr>
+          <th style="min-width:130px">Barang</th>
+          ${stores.map(s => `<th class="center" style="min-width:90px">
+            <div class="matrix-store">
+              <span class="st-name" title="${esc(s.name)}">${esc(s.name)}</span>
+              ${s._ownerName ? `<span class="st-addr" title="${esc(s._ownerName)}">${esc(s._ownerName)}</span>` : (s.address ? `<span class="st-addr">${esc(s.address)}</span>` : '')}
+            </div>
+          </th>`).join('')}
+          <th class="num">Terendah</th>
+          <th class="num">Tertinggi</th>
+          <th class="num">Selisih</th>
+          <th class="center" style="width:36px"></th>
+        </tr></thead>
+        <tbody>
+          ${rows.map(r => {
+            const cellsHtml = r.cells.map(c => {
+              if(!c) return `<td class="matrix-cell empty">—</td>`;
+              const isMin = c.price === r.min && r.min !== r.max;
+              const isMax = c.price === r.max && r.min !== r.max;
+              let cls = '';
+              if(isMin) cls = 'best';
+              else if(isMax) cls = 'worst';
+              else if(r.min === r.max) cls = 'same';
+              const crown = isMin ? '<i class="fas fa-crown crown"></i>' : '';
+              return `<td class="matrix-cell ${cls}">${crown}${fmtRp(c.price)}</td>`;
+            }).join('');
+            return `<tr>
+              <td class="matrix-item">${esc(r.item.name)}<span class="it-unit">per ${esc(itemWeightUnit(r.item))}</span></td>
+              ${cellsHtml}
+              <td class="matrix-sum min">${fmtRp(r.min)}</td>
+              <td class="matrix-sum max">${fmtRp(r.max)}</td>
+              <td class="matrix-sum diff" ${r.diff > 0 ? '' : 'style="color:var(--text-mute)"'}>${r.diff > 0 ? '+' + fmtRp(r.diff) : '—'}</td>
+              <td style="text-align:center;padding:6px"><button class="icon-btn-sm danger" onclick="manualRemoveItem(${r.item.id})" title="Hapus baris"><i class="fas fa-xmark"></i></button></td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div class="table-foot">
+      <div class="tf-label"><i class="fas fa-calculator"></i> Total Potensi Hemat</div>
+      <div class="tf-value">${fmtRp(totalSavings)}</div>
+    </div>
+  </div>`;
+
+  wrap.innerHTML = html;
+}
+
+window.manualAddSelected = manualAddSelected;
+window.manualRemoveItem = manualRemoveItem;
+window.manualClearAll = manualClearAll;
+
+/* ============================================================ */
+
 async function openAgentPicker(){
   if(!isAdmin) return;
   const el = document.getElementById('agentPickerList');
@@ -1859,23 +1967,27 @@ async function openAgentPicker(){
   try {
     const snap = await getDocs(collection(fdb, 'agent_registry'));
     const agents = snap.docs.map(d => ({ uid: d.id, ...d.data() }))
-      .filter(a => (a.role || 'agen') !== 'admin')
+      .filter(a => (VALID_ROLES.includes(a.role) ? a.role : 'agen') !== 'admin')
       .sort((a,b) => (a.storeName||a.email||'').localeCompare(b.storeName||b.email||''));
     if(agents.length === 0){
       el.innerHTML = `<div class="empty" style="padding:24px 10px">
         <div class="empty-icon" style="width:48px;height:48px;font-size:18px"><i class="fas fa-users"></i></div>
-        <h3>Belum ada agen terdaftar</h3>
-        <p>Belum ada agen yang login ke sistem.</p>
+        <h3>Belum ada pengguna terdaftar</h3>
+        <p>Belum ada agen atau petugas yang login ke sistem.</p>
       </div>`;
       return;
     }
     el.innerHTML = `<div class="list">${agents.map(a => {
       const isCurrent = a.uid === activeAgentUid;
-      return `<div class="list-item" onclick="selectAgentForEdit('${esc(a.uid)}', '${esc(a.storeName || a.email || 'Agen')}')">
-        <div class="list-avatar in"><i class="fas fa-user"></i></div>
+      const role = VALID_ROLES.includes(a.role) ? a.role : 'agen';
+      const roleLabel = role === 'petugas' ? 'Petugas' : 'Agen';
+      const iconCls = role === 'petugas' ? 'teal' : 'in';
+      const iconName = role === 'petugas' ? 'user-tie' : 'user';
+      return `<div class="list-item" onclick="selectAgentForEdit('${esc(a.uid)}', '${esc(a.storeName || a.email || roleLabel)}', '${esc(role)}')">
+        <div class="list-avatar ${iconCls}"><i class="fas fa-${iconName}"></i></div>
         <div class="list-body">
           <div class="list-title">${esc(a.storeName || 'Toko belum dibuat')}${isCurrent ? ' <span class="badge-role" style="background:var(--green);color:#fff">Aktif</span>' : ''}</div>
-          <div class="list-sub"><i class="fas fa-envelope" style="font-size:8.5px"></i> ${esc(a.email || '')}</div>
+          <div class="list-sub"><span class="badge-role ${role}">${role.toUpperCase()}</span> <i class="fas fa-envelope" style="font-size:8.5px"></i> ${esc(a.email || '')}</div>
         </div>
         <i class="fas fa-chevron-right" style="color:var(--text-mute);font-size:11px"></i>
       </div>`;
@@ -1883,28 +1995,32 @@ async function openAgentPicker(){
   } catch(err){
     console.error(err);
     el.innerHTML = `<div class="empty" style="padding:24px 10px">
-      <p style="margin:0;color:var(--rose-deep)">Gagal memuat agen. Pastikan Firestore Rules sudah diupdate.</p>
+      <p style="margin:0;color:var(--rose-deep)">Gagal memuat. Pastikan Firestore Rules sudah diupdate.</p>
     </div>`;
   }
 }
 window.openAgentPicker = openAgentPicker;
 
-async function selectAgentForEdit(agentUid, agentName){
+async function selectAgentForEdit(agentUid, agentName, agentRole){
   activeAgentUid = agentUid;
   activeAgentName = agentName;
+  activeAgentRole = VALID_ROLES.includes(agentRole) ? agentRole : 'agen';
   closeSheet('agentPickerModal');
   try {
-    snack('Memuat data agen...', 'info');
+    snack('Memuat data pengguna...', 'info');
     await loadAllForAgent(agentUid);
     document.getElementById('adminModeName').textContent = agentName;
+    document.querySelector('#adminModeBanner .lbl').textContent =
+      `Mode Admin — Mengelola ${activeAgentRole === 'petugas' ? 'Petugas' : 'Agen'}`;
     document.getElementById('adminModeBanner').classList.add('show');
     document.body.classList.remove('no-store-mode');
+    applyRoleUI();
     renderAll();
     switchView('stores');
-    snack(`Mode kelola: ${agentName}`);
+    snack(`Mode kelola: ${agentName} (${activeAgentRole})`);
   } catch(err){
     console.error(err);
-    snack('Gagal memuat data agen', 'error');
+    snack('Gagal memuat data', 'error');
   }
 }
 window.selectAgentForEdit = selectAgentForEdit;
@@ -1912,9 +2028,12 @@ window.selectAgentForEdit = selectAgentForEdit;
 async function exitAgentMode(){
   activeAgentUid = null;
   activeAgentName = '';
+  activeAgentRole = null;
   document.getElementById('adminModeBanner').classList.remove('show');
+  document.querySelector('#adminModeBanner .lbl').textContent = 'Mode Admin — Mengelola';
   try {
     await loadAdminOverviewData();
+    applyRoleUI();
     renderAll();
     switchView('dashboard');
     snack('Kembali ke overview');
@@ -1926,8 +2045,8 @@ async function exitAgentMode(){
 window.exitAgentMode = exitAgentMode;
 
 function switchView(name){
-  if(!isAdmin && (name === 'compare' || name === 'reports')){
-    snack('Fitur ini hanya untuk admin', 'info');
+  if(!canAccessCompareReports() && (name === 'compare' || name === 'reports')){
+    snack('Fitur ini hanya untuk admin & petugas', 'info');
     return;
   }
   state.view = name;
@@ -1940,7 +2059,7 @@ function switchView(name){
     items: 'Daftar Barang',
     stores: isAdmin && activeAgentUid ? `Toko: ${activeAgentName}` : 'Daftar Toko',
     compare: 'Bandingkan Harga',
-    reports: isAdmin && activeAgentUid ? 'Laporan Agen' : (isAdmin ? 'Laporan Gabungan' : 'Laporan & Grafik')
+    reports: isAdmin && activeAgentUid ? 'Laporan Pengguna' : (isAdmin ? 'Laporan Gabungan' : 'Laporan & Grafik')
   };
   document.getElementById('appbarSub').textContent = titles[name] || 'Perbandingan Harga';
   const appEl = document.querySelector('.app');
@@ -1992,16 +2111,16 @@ function renderDashboard(){
     cheapestEl.innerHTML = `<div class="list"><div class="empty" style="padding:36px 20px">
       <div class="empty-icon" style="width:64px;height:64px;font-size:26px;background:var(--green-pale);color:var(--green-deep)"><i class="fas fa-store"></i></div>
       <h3>Selamat Datang!</h3>
-      <p>Untuk memulai, isi <b>informasi toko Anda</b> terlebih dahulu. Anda hanya perlu mengisi <b>1 toko</b> saja.</p>
+      <p>Untuk memulai, isi <b>informasi toko Anda</b> terlebih dahulu${currentRole === 'petugas' ? '. Anda boleh membuat lebih dari 1 toko.' : '. Anda hanya perlu mengisi <b>1 toko</b> saja.'}</p>
       <button class="btn-text" style="background:var(--green);color:#fff;padding:12px 20px;font-size:12px" onclick="openStoreModal()">
-        <i class="fas fa-plus"></i> Buat Toko Saya
+        <i class="fas fa-plus"></i> ${currentRole === 'petugas' ? 'Tambah Toko Pertama' : 'Buat Toko Saya'}
       </button>
     </div></div>`;
   } else if(withPrice.length === 0){
     cheapestEl.innerHTML = `<div class="list"><div class="empty" style="padding:28px 20px">
       <div class="empty-icon" style="width:52px;height:52px;font-size:20px"><i class="fas fa-tags"></i></div>
       <h3>Belum Ada Harga</h3>
-      <p>${isAdmin && !activeAgentUid ? 'Agen belum mengirimkan data.' : 'Tambahkan barang & catat harganya.'}</p>
+      <p>${isAdmin && !activeAgentUid ? 'Pengguna belum mengirimkan data.' : 'Tambahkan barang & catat harganya.'}</p>
     </div></div>`;
   } else {
     cheapestEl.innerHTML = `<div class="list">${withPrice.map(({item, stats}) => {
@@ -2121,7 +2240,7 @@ function renderItems(){
         </div>
         <div class="price-cell">
           <div class="price-label">Tertinggi</div>
-          <div class="price-value neg">${stats.diff > 0 ? fmtRp(stats.max) : fmtRp(stats.max)}</div>
+          <div class="price-value neg">${fmtRp(stats.max)}</div>
         </div>
         <div class="price-cell">
           <div class="price-label">Selisih</div>
@@ -2169,9 +2288,9 @@ function renderStores(){
     const noStore = isAgen && dbGetAll('stores').length === 0;
     el.innerHTML = `<div class="list"><div class="empty">
       <div class="empty-icon"><i class="fas fa-store-slash"></i></div>
-      <h3>${q ? 'Toko Tidak Ditemukan' : (isAdmin && !activeAgentUid ? 'Belum Ada Agen Terdaftar' : 'Belum Ada Toko')}</h3>
-      <p>${q ? 'Coba kata kunci lain.' : (isAdmin && !activeAgentUid ? 'Agen belum mendaftarkan toko.' : 'Tambahkan informasi toko Anda.')}</p>
-      ${!q && noStore ? `<button class="btn-text" onclick="openStoreModal()"><i class="fas fa-plus"></i> Buat Toko</button>` : ''}
+      <h3>${q ? 'Toko Tidak Ditemukan' : (isAdmin && !activeAgentUid ? 'Belum Ada Toko Terdaftar' : 'Belum Ada Toko')}</h3>
+      <p>${q ? 'Coba kata kunci lain.' : (isAdmin && !activeAgentUid ? 'Pengguna belum mendaftarkan toko.' : 'Tambahkan informasi toko Anda.')}</p>
+      ${!q && noStore ? `<button class="btn-text" onclick="openStoreModal()"><i class="fas fa-plus"></i> Tambah Toko</button>` : ''}
     </div></div>`;
     return;
   }
@@ -2210,7 +2329,7 @@ function populateItemSelect(sel, selectedId){
   if(selectedId) sel.value = String(selectedId);
 }
 function renderCompare(){
-  if(!isAdmin) return;
+  if(!canAccessCompareReports()) return;
   const sel = document.getElementById('compareItemSelect');
   const content = document.getElementById('compareContent');
   const items = dbGetAll('items');
@@ -2366,7 +2485,19 @@ function renderFilterPanel(){
 }
 
 function renderReports(){
-  if(!isAdmin) return;
+  if(!canAccessCompareReports()) return;
+
+  // === Tampilkan/sembunyikan tabel perbandingan manual (admin overview saja) ===
+  const manualSection = document.getElementById('manualCompareSection');
+  const showManual = isAdmin && !activeAgentUid;
+  if(manualSection){
+    manualSection.style.display = showManual ? 'block' : 'none';
+    if(showManual){
+      renderManualCompareSelector();
+      renderManualCompare();
+    }
+  }
+
   renderFilterPanel();
   const stores = getFilteredStores();
   const items  = getFilteredItems();
@@ -2491,7 +2622,7 @@ const sharedTooltip = {
 };
 
 function renderReportCharts(){
-  if(!isAdmin) return;
+  if(!canAccessCompareReports()) return;
   if(typeof Chart === 'undefined') return;
   destroyReportCharts();
   const stores = getFilteredStores();
@@ -2629,16 +2760,14 @@ function renderActionSheet(){
   const body = document.getElementById('actionSheetBody');
   const hasStore = dbGetAll('stores').length > 0;
   const agentLabel = isAdmin && activeAgentUid ? `di ${activeAgentName}` : '';
+  const role = effectiveRole();
+  const canMultiStore = role === 'petugas';
   let html = '';
   if(isAdmin && !activeAgentUid){
     html = `
-      <div class="action-item" onclick="closeSheet('actionSheet'); openUserManager();">
-        <i class="ic-violet fas fa-user-shield"></i>
-        <div class="action-text"><h4>Kelola Role Pengguna</h4><p>Naikkan/turunkan role admin & agen</p></div>
-      </div>
       <div class="action-item" onclick="closeSheet('actionSheet'); openAgentPicker();">
         <i class="ic-amber fas fa-users-gear"></i>
-        <div class="action-text"><h4>Kelola Data Agen</h4><p>Pilih agen untuk edit data mereka</p></div>
+        <div class="action-text"><h4>Kelola Data Pengguna</h4><p>Pilih agen / petugas untuk edit data mereka</p></div>
       </div>
       <div class="action-item" onclick="closeSheet('actionSheet'); openPriceModal();">
         <i class="ic-blue fas fa-tag"></i>
@@ -2666,7 +2795,14 @@ function renderActionSheet(){
       html += `
         <div class="action-item" onclick="openStoreModal()">
           <i class="ic-green fas fa-store"></i>
-          <div class="action-text"><h4>Buat Toko Saya</h4><p>Wajib 1 toko untuk mulai</p></div>
+          <div class="action-text"><h4>${canMultiStore ? 'Tambah Toko Pertama' : 'Buat Toko Saya'}</h4><p>${canMultiStore ? 'Petugas boleh banyak toko' : 'Wajib 1 toko untuk mulai'}</p></div>
+        </div>`;
+    }
+    if(canMultiStore && hasStore){
+      html += `
+        <div class="action-item" onclick="openStoreModal()">
+          <i class="ic-teal fas fa-store"></i>
+          <div class="action-text"><h4>Tambah Toko Baru</h4><p>Kelola banyak toko sekaligus</p></div>
         </div>`;
     }
   }
@@ -2979,7 +3115,7 @@ function openStoreDetail(storeId){
   document.getElementById('detailTitle').textContent = store.name;
   const qtyEntries = Object.entries(totals.qtyByUnit);
   const qtyChips = qtyEntries.length
-    ? `<div class="unit-chips">${qtyEntries.map(([u,v]) => `<span class="unit-chip violet" style="background:var(--violet-pale);color:var(--violet-deep)"><i class="fas fa-hashtag"></i> ${fmtQty(v)} ${esc(u)}</span>`).join('')}</div>`
+    ? `<div class="unit-chips">${qtyEntries.map(([u,v]) => `<span class="unit-chip" style="background:var(--violet-pale);color:var(--violet-deep)"><i class="fas fa-hashtag"></i> ${fmtQty(v)} ${esc(u)}</span>`).join('')}</div>`
     : '';
   const weightValue = totals.totalWeight > 0 ? `${fmtWeight(totals.totalWeight)} kg` : 'Belum ada berat';
   const qtySummaryTxt = qtyEntries.length ? qtyEntries.map(([u,v]) => `${fmtQty(v)} ${esc(u)}`).join(' • ') : '—';
@@ -3340,7 +3476,8 @@ function openHistoryDetail(histId){
     }).join('')}
   </div>`;
 
-  if(isAdmin){
+  const canPdf = canAccessCompareReports();
+  if(canPdf){
     html += `<div class="btn-row" style="margin-bottom:8px">
       <button class="btn btn-tonal" onclick="closeSheet('histDetailModal'); openEditHistory(${h.id})"><i class="fas fa-pen"></i> Edit</button>
       <button class="btn btn-pdf" onclick="exportHistoryPDF(${h.id})"><i class="fas fa-file-pdf"></i> PDF</button>
@@ -3396,7 +3533,7 @@ async function loadImageAsBase64(url, maxW = 700){
 }
 
 async function exportHistoryPDF(histId){
-  if(!isAdmin){ snack('Fitur PDF hanya untuk admin', 'info'); return; }
+  if(!canAccessCompareReports()){ snack('Fitur PDF hanya untuk admin & petugas', 'info'); return; }
   if(!window.jspdf || !window.jspdf.jsPDF){ snack('PDF belum termuat', 'error'); return; }
   const h = getHistory(histId);
   if(!h){ snack('History tidak ditemukan', 'error'); return; }
@@ -3463,21 +3600,36 @@ function openStoreModal(id){
   closeSheet('actionSheet');
   closeSheet('detailModal');
   if(isAdmin && !activeAgentUid){
-    snack('Pilih agen terlebih dahulu (Kelola Agen)', 'info');
+    snack('Pilih agen/petugas terlebih dahulu (Kelola Data Pengguna)', 'info');
     openAgentPicker();
     return;
   }
   if(!id){
     const existingStores = dbGetAll('stores');
-    if(existingStores.length > 0){
-      snack('Hanya boleh 1 toko. Mengedit toko yang sudah ada.', 'info');
-      return openStoreModal(existingStores[0].id);
+    const maxS = maxStoresAllowed();
+    if(existingStores.length >= maxS){
+      if(maxS === 1){
+        snack('Agen hanya boleh 1 toko. Mengedit toko yang sudah ada.', 'info');
+        return openStoreModal(existingStores[0].id);
+      }
+      snack('Batas maksimal toko tercapai.', 'info');
+      return;
     }
   }
   document.getElementById('storeForm').reset();
   document.getElementById('sId').value = '';
   document.getElementById('btnDeleteStore').style.display = 'none';
   resetPhotoField('sPhoto');
+
+  const noteEl = document.getElementById('storeLimitNote');
+  if(noteEl){
+    if(maxStoresAllowed() === 1){
+      noteEl.innerHTML = '<i class="fas fa-circle-info"></i><span>Agen <b>hanya boleh memiliki 1 toko</b>.</span>';
+    } else {
+      noteEl.innerHTML = '<i class="fas fa-circle-info"></i><span>Sebagai <b>Petugas</b> Anda dapat membuat <b>lebih dari 1 toko</b>.</span>';
+    }
+  }
+
   if(id){
     const s = getStore(id);
     if(!s) return;
@@ -3490,9 +3642,11 @@ function openStoreModal(id){
     if(s.photoUrl) setExistingPhoto('sPhoto', s.photoUrl);
     document.getElementById('btnDeleteStore').style.display = 'inline-flex';
   } else {
-    document.getElementById('storeModalTitle').textContent = (isAdmin && activeAgentUid)
-      ? 'Buat Toko (untuk agen terpilih)'
-      : 'Buat Toko Saya';
+    const role = effectiveRole();
+    const title = (isAdmin && activeAgentUid)
+      ? 'Tambah Toko (untuk pengguna terpilih)'
+      : (role === 'petugas' ? 'Tambah Toko Baru' : 'Buat Toko Saya');
+    document.getElementById('storeModalTitle').textContent = title;
   }
   openSheet('storeModal');
   setTimeout(() => document.getElementById('sName').focus(), 400);
@@ -3505,12 +3659,13 @@ async function saveStore(e){
   if(!name){ snack('Nama toko wajib diisi', 'error'); return; }
   if(!id){
     if(isAdmin && !activeAgentUid){
-      snack('Pilih agen terlebih dahulu', 'error');
+      snack('Pilih pengguna terlebih dahulu', 'error');
       openAgentPicker();
       return;
     }
-    if(dbGetAll('stores').length > 0){
-      snack('Hanya boleh 1 toko per agen. Edit toko yang sudah ada.', 'error');
+    const maxS = maxStoresAllowed();
+    if(dbGetAll('stores').length >= maxS){
+      snack(maxS === 1 ? 'Hanya boleh 1 toko per agen.' : 'Batas toko tercapai.', 'error');
       closeSheet('storeModal');
       return;
     }
@@ -3590,7 +3745,7 @@ function openItemModal(id){
     return;
   }
   if(isAdmin && !activeAgentUid){
-    snack('Pilih agen terlebih dahulu', 'info');
+    snack('Pilih pengguna terlebih dahulu', 'info');
     openAgentPicker();
     return;
   }
@@ -3675,6 +3830,7 @@ function confirmDeleteItem(id){
       await dbDelete('items', id);
       state.selectedItems.delete(id);
       delete state.bulkDraft[String(id)];
+      state.manualCompareItems.delete(id);
       if(state.compareItemId === id) state.compareItemId = null;
       if(state.trendItemId === id) state.trendItemId = null;
       closeSheet('confirmModal');
@@ -3690,7 +3846,7 @@ function openPriceModal(itemId, storeId, priceId){
   closeSheet('actionSheet');
   closeSheet('detailModal');
   if(isAdmin && !activeAgentUid){
-    snack('Pilih agen terlebih dahulu', 'info');
+    snack('Pilih pengguna terlebih dahulu', 'info');
     openAgentPicker();
     return;
   }
@@ -3894,7 +4050,7 @@ function exportCSV(type){
 }
 
 function exportPDF(){
-  if(!isAdmin){ snack('Fitur PDF hanya untuk admin', 'info'); return; }
+  if(!canAccessCompareReports()){ snack('Fitur PDF hanya untuk admin & petugas', 'info'); return; }
   if(!window.jspdf || !window.jspdf.jsPDF){ snack('PDF belum termuat', 'error'); return; }
   const { jsPDF } = window.jspdf;
   const stores = getFilteredStores();
@@ -3948,13 +4104,62 @@ function exportPDF(){
   snack('PDF diunduh');
 }
 
+/* ====== REFRESH ROLE (untuk memuat ulang peran dari Firebase) ====== */
+async function refreshRole(){
+  if(!uid){ snack('Belum login', 'error'); return; }
+  try {
+    const newRole = await loadUserRole(currentEmail, uid);
+    if(newRole === currentRole){
+      snack(`Peran Anda: ${currentRole.toUpperCase()} (tidak ada perubahan)`, 'info');
+      return;
+    }
+    const oldRole = currentRole;
+    currentRole = newRole;
+    isAdmin = newRole === 'admin';
+
+    updateRoleBadgeUI();
+    document.getElementById('btnKelolaAgen').style.display = isAdmin ? 'grid' : 'none';
+
+    if(!isAdmin){
+      activeAgentUid = null;
+      activeAgentName = '';
+      activeAgentRole = null;
+      document.getElementById('adminModeBanner').classList.remove('show');
+      document.querySelector('#adminModeBanner .lbl').textContent = 'Mode Admin — Mengelola';
+    }
+
+    applyRoleUI();
+    const infoRole = document.getElementById('infoRole');
+    if(infoRole) infoRole.textContent = currentRole.toUpperCase();
+
+    if(isAdmin){
+      await loadAdminOverviewData();
+    } else {
+      await loadAll();
+    }
+    renderAll();
+
+    if(!canAccessCompareReports() && (state.view === 'compare' || state.view === 'reports')){
+      switchView('dashboard');
+    } else if(state.view === 'reports'){
+      setTimeout(() => renderReportCharts(), 100);
+    }
+
+    closeSheet('infoModal');
+    snack(`Peran diperbarui: ${oldRole.toUpperCase()} → ${newRole.toUpperCase()}`);
+  } catch(err){
+    console.error(err);
+    snack('Gagal refresh peran', 'error');
+  }
+}
+window.refreshRole = refreshRole;
+
 document.querySelectorAll('.nav-item').forEach(btn => {
   btn.addEventListener('click', () => switchView(btn.dataset.view));
 });
 document.getElementById('fab').addEventListener('click', () => { renderActionSheet(); openSheet('actionSheet'); });
 document.getElementById('btnInfo').addEventListener('click', () => openSheet('infoModal'));
 document.getElementById('btnKelolaAgen').addEventListener('click', openAgentPicker);
-document.getElementById('btnKelolaUser').addEventListener('click', openUserManager);
 document.getElementById('searchItem').addEventListener('input', e => { state.itemSearch = e.target.value; renderItems(); });
 document.getElementById('searchStore').addEventListener('input', e => { state.storeSearch = e.target.value; renderStores(); });
 document.getElementById('compareItemSelect').addEventListener('change', e => { state.compareItemId = Number(e.target.value); renderCompare(); });
@@ -4037,6 +4242,7 @@ async function doLogout(){
   closeSheet('infoModal');
   activeAgentUid = null;
   activeAgentName = '';
+  activeAgentRole = null;
   try { await signOut(auth); } catch(e){ snack('Gagal keluar', 'error'); }
 }
 
@@ -4075,8 +4281,6 @@ window.saveHistoryNow = saveHistoryNow;
 window.deleteHistoryConfirm = deleteHistoryConfirm;
 window.handlePhotoSelect = handlePhotoSelect;
 window.clearPhoto = clearPhoto;
-window.openUserManager = openUserManager;
-window.changeUserRole = changeUserRole;
 
 Splash.renderTitle('bapok');
 Splash.setProgress(15, 'Menghubungkan...');
@@ -4088,30 +4292,17 @@ onAuthStateChanged(auth, async user => {
     uid = user.uid;
     currentEmail = user.email || '';
 
-    // ===== ROLE DETECTION (BARU) =====
     currentRole = await loadUserRole(currentEmail, uid);
     isAdmin = currentRole === 'admin';
 
     activeAgentUid = null;
     activeAgentName = '';
+    activeAgentRole = null;
 
-    // Badge role
-    const roleBadge = document.getElementById('roleBadge');
-    roleBadge.style.display = 'inline-flex';
-    if(isAdmin){
-      roleBadge.textContent = 'ADMIN';
-      roleBadge.classList.add('admin');
-      roleBadge.classList.remove('agen');
-      document.getElementById('btnKelolaAgen').style.display = 'grid';
-      document.getElementById('btnKelolaUser').style.display = 'grid';
-    } else {
-      roleBadge.textContent = 'AGEN';
-      roleBadge.classList.remove('admin');
-      roleBadge.classList.add('agen');
-      document.getElementById('btnKelolaAgen').style.display = 'none';
-      document.getElementById('btnKelolaUser').style.display = 'none';
-    }
+    updateRoleBadgeUI();
+    document.getElementById('btnKelolaAgen').style.display = isAdmin ? 'grid' : 'none';
     document.getElementById('adminModeBanner').classList.remove('show');
+    document.querySelector('#adminModeBanner .lbl').textContent = 'Mode Admin — Mengelola';
 
     applyRoleUI();
 
@@ -4122,7 +4313,7 @@ onAuthStateChanged(auth, async user => {
 
     try {
       if(isAdmin){
-        Splash.setProgress(50, 'Memuat semua agen...');
+        Splash.setProgress(50, 'Memuat semua pengguna...');
         await loadAdminOverviewData();
       } else {
         Splash.setProgress(50, 'Memuat data...');
@@ -4142,13 +4333,15 @@ onAuthStateChanged(auth, async user => {
     isAdmin = false;
     activeAgentUid = null;
     activeAgentName = '';
+    activeAgentRole = null;
 
     document.getElementById('roleBadge').style.display = 'none';
-    document.getElementById('btnKelolaUser').style.display = 'none';
+    document.getElementById('btnKelolaAgen').style.display = 'none';
 
     applyRoleUI();
 
     Object.values(cache).forEach(m => m.clear());
+    state.manualCompareItems.clear();
     renderAll();
     switchView('dashboard');
     showAuth();
