@@ -656,6 +656,7 @@ body.no-store-mode .fab{display:none}
       <div class="section-head" style="margin-top:0">
         <h2><i class="fas fa-boxes-stacked"></i> Daftar Barang</h2>
         <div style="display:flex;gap:6px;align-items:center">
+          <button class="chip-button" onclick="manualMergeAll()" style="background:var(--green-pale);color:var(--green-deep)" title="Gabungkan otomatis barang dengan nama sama"><i class="fas fa-compress"></i> Merge Semua</button>
           <button class="chip-button" onclick="scanDuplicates()" style="background:var(--amber-pale);color:var(--amber-deep)" title="Cari nama barang mirip"><i class="fas fa-clone"></i> Scan Duplikat</button>
           <span class="count" id="itemCount">0 item</span>
         </div>
@@ -2138,7 +2139,6 @@ function useExistingFromWarning(source, itemId){
     snack(`Menggunakan "${item.name}" — silakan catat harga`);
     setTimeout(() => openPriceModal(item.id), 350);
   } else if(source === 'bulk'){
-    // Bersihkan search & reset filter, fokus ke input harga item ybs
     state.bulkSearch = '';
     const searchEl = document.getElementById('bulkSearch');
     if(searchEl) searchEl.value = '';
@@ -2231,7 +2231,6 @@ async function mergeItems(masterId, slaveId){
       pp.date === p.date
     );
     if(collision){
-      // Harga master untuk toko+tanggal sama sudah ada → hapus harga slave
       await dbDelete('prices', p.id);
       discarded++;
     } else {
@@ -2242,7 +2241,6 @@ async function mergeItems(masterId, slaveId){
 
   await dbDelete('items', slaveId);
 
-  // Bersihkan state
   state.manualCompareItems.delete(slaveId);
   state.selectedItems.delete(slaveId);
   if(state.compareItemId === slaveId) state.compareItemId = null;
@@ -2280,7 +2278,6 @@ function mergeItemsPrompt(masterId, slaveId){
     try {
       const res = await mergeItems(masterId, slaveId);
       closeSheet('confirmModal');
-      // Reset styling confirm button
       setTimeout(() => {
         confirmOk.className = 'btn btn-danger';
         confirmOk.style.background = '';
@@ -2302,6 +2299,78 @@ function mergeItemsPrompt(masterId, slaveId){
   openSheet('confirmModal');
 }
 window.mergeItemsPrompt = mergeItemsPrompt;
+
+/* ============================================================
+   AUTO-MERGE BARANG DUPLIKAT (nama + satuan identik)
+   ============================================================ */
+async function autoMergeExactDuplicates(){
+  // Skip di admin overview — data lintas user, tak bisa di-merge satu collection
+  if(isAdmin && !activeAgentUid) return 0;
+
+  const items = [...dbGetAll('items')];
+  if(items.length < 2) return 0;
+
+  // Kelompokkan berdasarkan nama ternormalisasi + satuan (unit + qtyUnit)
+  const groups = new Map();
+  items.forEach(it => {
+    const norm = normalizeItemName(it.name);
+    if(!norm) return;
+    const key = norm + '||' + (it.unit || 'kg') + '||' + (it.qtyUnit || 'pcs');
+    if(!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(it);
+  });
+
+  let mergedCount = 0, totalMoved = 0, totalDiscarded = 0;
+
+  for(const group of groups.values()){
+    if(group.length < 2) continue;
+
+    // Master = item dengan harga terbanyak (tiebreak: id terlama)
+    const withCounts = group.map(it => ({
+      it,
+      count: dbGetAll('prices').filter(p => p.itemId === it.id).length
+    })).sort((a,b) => b.count - a.count || a.it.id - b.it.id);
+
+    const master = withCounts[0].it;
+
+    for(let i = 1; i < withCounts.length; i++){
+      try {
+        const res = await mergeItems(master.id, withCounts[i].it.id);
+        mergedCount++;
+        totalMoved += res.moved;
+        totalDiscarded += res.discarded;
+      } catch(e){
+        console.warn('autoMerge gagal:', withCounts[i].it.name, e);
+      }
+    }
+  }
+
+  if(mergedCount > 0){
+    snack(`${mergedCount} barang duplikat digabung otomatis${totalDiscarded > 0 ? ` • ${totalDiscarded} harga duplikat dihapus` : ''}`, 'info');
+    console.log('[autoMergeExactDuplicates]', { mergedCount, totalMoved, totalDiscarded });
+  }
+  return mergedCount;
+}
+window.autoMergeExactDuplicates = autoMergeExactDuplicates;
+
+async function manualMergeAll(){
+  if(isAdmin && !activeAgentUid){
+    snack('Pilih pengguna terlebih dahulu (Kelola Data Pengguna)', 'info');
+    openAgentPicker();
+    return;
+  }
+  snack('Memeriksa duplikat...', 'info');
+  try {
+    const n = await autoMergeExactDuplicates();
+    if(n === 0) snack('Tidak ada duplikat ditemukan', 'info');
+    renderAll();
+    if(state.view === 'reports') renderReportCharts();
+  } catch(e){
+    console.error(e);
+    snack('Gagal merge: ' + e.message, 'error');
+  }
+}
+window.manualMergeAll = manualMergeAll;
 
 window.scanDuplicates = scanDuplicates;
 window.applyDetectedUnits = applyDetectedUnits;
@@ -2573,6 +2642,8 @@ async function selectAgentForEdit(agentUid, agentName, agentRole){
   try {
     snack('Memuat data pengguna...', 'info');
     await loadAllForAgent(agentUid);
+    // PERBAIKAN: auto-merge duplikat setelah load
+    await autoMergeExactDuplicates();
     document.getElementById('adminModeName').textContent = agentName;
     document.querySelector('#adminModeBanner .lbl').textContent =
       `Mode Admin — Mengelola ${activeAgentRole === 'petugas' ? 'Petugas' : 'Agen'}`;
@@ -3510,7 +3581,6 @@ function updateBulkTotal(){
 }
 
 async function bulkAddItem(){
-  // Guard double-click
   if(window.__bulkAdding) return;
 
   const nameEl = document.getElementById('bulkNewItem');
@@ -4784,6 +4854,8 @@ async function refreshRole(){
       await loadAdminOverviewData();
     } else {
       await loadAll();
+      // PERBAIKAN: auto-merge duplikat setelah load
+      await autoMergeExactDuplicates();
     }
     renderAll();
 
@@ -4977,6 +5049,9 @@ onAuthStateChanged(auth, async user => {
         Splash.setProgress(50, 'Memuat data...');
         await loadAll();
         await ensureAgentRegistered();
+        // PERBAIKAN: auto-merge duplikat setelah load (bersihkan data lama)
+        Splash.setProgress(70, 'Membersihkan duplikat...');
+        await autoMergeExactDuplicates();
       }
       renderAll();
       setTimeout(() => renderReportCharts(), 200);
