@@ -831,6 +831,14 @@ body.no-store-mode .fab{display:none}
           </div>
           <i class="fas fa-chevron-right ex-arrow"></i>
         </div>
+        <div class="export-item" onclick="openPDFSettings()">
+          <div class="ex-icon pdf" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff"><i class="fas fa-gear"></i></div>
+          <div class="ex-text">
+            <h4>Pengaturan PDF</h4>
+            <p>Atur logo, tanda tangan & nama penanda tangan</p>
+          </div>
+          <i class="fas fa-chevron-right ex-arrow"></i>
+        </div>
         <div class="export-item" onclick="exportCSV('all')">
           <div class="ex-icon blue"><i class="fas fa-table"></i></div>
           <div class="ex-text">
@@ -1381,6 +1389,64 @@ body.no-store-mode .fab{display:none}
   </div>
 </div>
 
+<!-- PDF Settings Modal -->
+<div class="scrim" id="pdfSettingsModal">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <i class="fas fa-file-pdf" style="background:var(--rose-pale);color:var(--rose-deep)"></i>
+      <h2>Pengaturan PDF</h2>
+    </div>
+    <div class="sheet-body">
+      <div class="bulk-note">
+        <i class="fas fa-circle-info"></i>
+        <span>Logo tampil di <b>header PDF</b>. Tanda tangan & nama tampil di <b>bagian bawah</b> setiap laporan. Data disimpan di perangkat ini.</span>
+      </div>
+
+      <div class="photo-field">
+        <label class="field-label">Logo Perusahaan</label>
+        <div class="photo-drop" id="pdfLogoDrop">
+          <input type="file" accept="image/*" id="pdfLogoInput" onchange="handlePDFConfigSelect('pdfLogo')">
+          <img id="pdfLogoPreview" class="photo-preview" style="display:none" alt="">
+          <button type="button" class="photo-overlay-btn" onclick="clearPDFConfigPhoto('pdfLogo', event)"><i class="fas fa-xmark"></i></button>
+          <div class="photo-drop-inner" id="pdfLogoPlaceholder">
+            <i class="fas fa-image"></i>
+            <span>Ketuk untuk pilih logo</span>
+            <small>PNG/JPG, max 2MB</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="photo-field">
+        <label class="field-label">Tanda Tangan</label>
+        <div class="photo-drop" id="pdfSigDrop">
+          <input type="file" accept="image/*" id="pdfSigInput" onchange="handlePDFConfigSelect('pdfSig')">
+          <img id="pdfSigPreview" class="photo-preview" style="display:none" alt="">
+          <button type="button" class="photo-overlay-btn" onclick="clearPDFConfigPhoto('pdfSig', event)"><i class="fas fa-xmark"></i></button>
+          <div class="photo-drop-inner" id="pdfSigPlaceholder">
+            <i class="fas fa-signature"></i>
+            <span>Ketuk untuk pilih tanda tangan</span>
+            <small>PNG transparan disarankan</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Nama di Bawah Tanda Tangan</label>
+        <div class="field-wrap"><i class="fas fa-user"></i>
+          <input type="text" class="input" id="pdfSigName" placeholder="Nama lengkap penanda tangan" maxlength="60">
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn btn-outlined" onclick="closeSheet('pdfSettingsModal')">Batal</button>
+        <button type="button" class="btn btn-pdf" onclick="savePDFSettings()"><i class="fas fa-check"></i> Simpan</button>
+      </div>
+      <button type="button" class="btn btn-outlined" style="margin-top:8px" onclick="resetPDFSettings()"><i class="fas fa-eraser"></i> Reset Pengaturan</button>
+    </div>
+  </div>
+</div>
+
 <div id="snackbar-container"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -1846,10 +1912,6 @@ function storeHistories(storeId){
   return dbGetAll('histories').filter(h => h.storeId === storeId).sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
 }
 
-/* ============================================================
-   VIRTUAL GROUPING — kelompokkan item dengan nama ternormalisasi + satuan identik
-   sehingga barang dari akun berbeda tetap muncul sebagai 1 baris di tabel.
-   ============================================================ */
 function findGroupKeyForItem(itemId){
   const item = getItem(itemId);
   if(!item) return null;
@@ -1874,7 +1936,6 @@ function getVirtualItemGroups(){
     const g = groups.get(key);
     g.memberIds.push(it.id);
     g.members.push(it);
-    // Pick display name — yang lebih panjang dianggap lebih deskriptif
     if((it.name || '').length > g.displayName.length) g.displayName = it.name;
   });
   return [...groups.values()];
@@ -1958,10 +2019,6 @@ const state = {
   bulkSearch: '',
   manualCompareItems: new Set()
 };
-
-/* ============================================================
-   JARO-WINKLER + DETEKSI SATUAN
-   ============================================================ */
 
 function jaroWinkler(a, b){
   a = String(a == null ? '' : a);
@@ -2396,9 +2453,6 @@ function mergeItemsPrompt(masterId, slaveId){
 }
 window.mergeItemsPrompt = mergeItemsPrompt;
 
-/* ============================================================
-   AUTO-MERGE (physical) — hanya dalam 1 akun
-   ============================================================ */
 async function autoMergeExactDuplicates(){
   if(isAdmin && !activeAgentUid) return 0;
 
@@ -2463,8 +2517,6 @@ window.manualMergeAll = manualMergeAll;
 
 window.scanDuplicates = scanDuplicates;
 window.applyDetectedUnits = applyDetectedUnits;
-
-/* ============================================================ */
 
 function getFilteredStores(){
   const all = [...dbGetAll('stores')].sort((a,b)=>(a.name||'').localeCompare(b.name||''));
@@ -2533,7 +2585,6 @@ document.addEventListener('keydown', e => {
   if(e.key === 'Escape') document.querySelectorAll('.scrim.show').forEach(ov => closeSheet(ov.id));
 });
 
-/* MANUAL COMPARISON (ADMIN OVERVIEW) — grouped */
 function renderManualCompareSelector(){
   const sel = document.getElementById('manualItemSelect');
   if(!sel) return;
@@ -3053,7 +3104,6 @@ function renderStores(){
   }).join('')}</div>`;
 }
 
-/* Group-based compare view */
 function renderCompare(){
   if(!canAccessCompareReports()) return;
   const sel = document.getElementById('compareItemSelect');
@@ -3163,7 +3213,6 @@ function renderCompare(){
   `;
 }
 
-/* Group detail modal */
 function openGroupDetail(groupKey){
   const groups = getVirtualItemGroups();
   const group = groups.find(g => g.key === groupKey);
@@ -3224,7 +3273,6 @@ function openGroupDetail(groupKey){
     html += `</div>`;
   }
 
-  // Show member items (for admin overview debugging)
   if(group.memberIds.length > 1){
     html += `<div class="section-head" style="margin:14px 2px 8px">
       <h2><i class="fas fa-layer-group"></i> Entri Digabung</h2>
@@ -3854,7 +3902,6 @@ async function saveBulk(){
     }
     closeSheet('bulkModal');
     state.bulkDraft = {};
-    // update compare group key to first saved item's group
     const firstItemId = Number(entries[0][0]);
     state.compareGroupKey = findGroupKeyForItem(firstItemId);
     renderAll();
@@ -4747,11 +4794,9 @@ function confirmDeleteItem(id){
       await dbDelete('items', id);
       state.selectedItems.delete(id);
       delete state.bulkDraft[String(id)];
-      // clear group keys if now empty
       const remainingGroups = getVirtualItemGroups();
       if(state.compareGroupKey && !remainingGroups.some(g => g.key === state.compareGroupKey)) state.compareGroupKey = null;
       if(state.trendGroupKey && !remainingGroups.some(g => g.key === state.trendGroupKey)) state.trendGroupKey = null;
-      // Cleanup manualCompareItems that no longer exist
       const existingKeys = new Set(remainingGroups.map(g => g.key));
       [...state.manualCompareItems].forEach(k => { if(!existingKeys.has(k)) state.manualCompareItems.delete(k); });
       closeSheet('confirmModal');
@@ -4973,6 +5018,124 @@ function exportCSV(type){
   snack('CSV diunduh');
 }
 
+/* ============================================================
+   PDF CONFIG — Logo, Tanda Tangan & Nama
+   ============================================================ */
+const PDF_CONFIG_KEY = 'bapok_pdf_config_v1';
+
+function getPDFConfig(){
+  try {
+    const raw = localStorage.getItem(PDF_CONFIG_KEY);
+    if(raw){
+      const cfg = JSON.parse(raw);
+      return {
+        logoUrl: cfg.logoUrl || '',
+        signatureUrl: cfg.signatureUrl || '',
+        signatureName: cfg.signatureName || ''
+      };
+    }
+  } catch(e){ console.warn('getPDFConfig:', e); }
+  return { logoUrl: '', signatureUrl: '', signatureName: '' };
+}
+
+function savePDFConfig(cfg){
+  try { localStorage.setItem(PDF_CONFIG_KEY, JSON.stringify(cfg)); }
+  catch(e){ console.warn('savePDFConfig:', e); }
+}
+
+function handlePDFConfigSelect(key){
+  const input = document.getElementById(key + 'Input');
+  const drop  = document.getElementById(key + 'Drop');
+  const img   = document.getElementById(key + 'Preview');
+  const ph    = document.getElementById(key + 'Placeholder');
+  const file  = input.files && input.files[0];
+  if(!file) return;
+  if(!file.type.startsWith('image/')){ snack('File harus gambar', 'error'); input.value=''; return; }
+  if(file.size > 2 * 1024 * 1024){ snack('Maksimal 2MB', 'error'); input.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const image = new Image();
+    image.onload = () => {
+      const maxW = 400;
+      let w = image.width, h = image.height;
+      if(w > maxW){ h = Math.round(h * maxW / w); w = maxW; }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, w, h);
+      ctx.drawImage(image, 0, 0, w, h);
+      const dataUrl = canvas.toDataURL('image/png');
+      img.src = dataUrl;
+      img.style.display = 'block';
+      ph.style.display = 'none';
+      drop.classList.add('has-img');
+      drop.dataset.dataUrl = dataUrl;
+    };
+    image.onerror = () => snack('Gagal memuat gambar', 'error');
+    image.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearPDFConfigPhoto(key, ev){
+  if(ev) ev.stopPropagation();
+  const input = document.getElementById(key + 'Input');
+  const drop  = document.getElementById(key + 'Drop');
+  const img   = document.getElementById(key + 'Preview');
+  const ph    = document.getElementById(key + 'Placeholder');
+  input.value = '';
+  img.src = ''; img.style.display = 'none';
+  ph.style.display = 'flex';
+  drop.classList.remove('has-img');
+  drop.dataset.dataUrl = '';
+}
+
+function openPDFSettings(){
+  if(!canAccessCompareReports()){ snack('Fitur PDF hanya untuk admin & petugas', 'info'); return; }
+  const cfg = getPDFConfig();
+  ['pdfLogo', 'pdfSig'].forEach(key => {
+    const drop = document.getElementById(key + 'Drop');
+    const img  = document.getElementById(key + 'Preview');
+    const ph   = document.getElementById(key + 'Placeholder');
+    const dataUrl = key === 'pdfLogo' ? cfg.logoUrl : cfg.signatureUrl;
+    if(dataUrl){
+      img.src = dataUrl; img.style.display = 'block';
+      ph.style.display = 'none'; drop.classList.add('has-img');
+      drop.dataset.dataUrl = dataUrl;
+    } else {
+      img.src = ''; img.style.display = 'none';
+      ph.style.display = 'flex'; drop.classList.remove('has-img');
+      drop.dataset.dataUrl = '';
+    }
+  });
+  document.getElementById('pdfSigName').value = cfg.signatureName || '';
+  openSheet('pdfSettingsModal');
+}
+
+function savePDFSettings(){
+  const cfg = {
+    logoUrl: document.getElementById('pdfLogoDrop').dataset.dataUrl || '',
+    signatureUrl: document.getElementById('pdfSigDrop').dataset.dataUrl || '',
+    signatureName: document.getElementById('pdfSigName').value.trim()
+  };
+  savePDFConfig(cfg);
+  closeSheet('pdfSettingsModal');
+  snack('Pengaturan PDF disimpan');
+}
+
+function resetPDFSettings(){
+  try { localStorage.removeItem(PDF_CONFIG_KEY); } catch(e){}
+  ['pdfLogo', 'pdfSig'].forEach(key => clearPDFConfigPhoto(key));
+  document.getElementById('pdfSigName').value = '';
+  snack('Pengaturan PDF direset', 'info');
+}
+
+window.openPDFSettings = openPDFSettings;
+window.savePDFSettings = savePDFSettings;
+window.resetPDFSettings = resetPDFSettings;
+window.handlePDFConfigSelect = handlePDFConfigSelect;
+window.clearPDFConfigPhoto = clearPDFConfigPhoto;
+
 function exportPDF(){
   if(!canAccessCompareReports()){ snack('Fitur PDF hanya untuk admin & petugas', 'info'); return; }
   if(!window.jspdf || !window.jspdf.jsPDF){ snack('PDF belum termuat', 'error'); return; }
@@ -4980,6 +5143,7 @@ function exportPDF(){
   const stores = getFilteredStores();
   const groups = getFilteredGroups();
   if(stores.length === 0 || groups.length === 0){ snack('Pilih minimal 1 toko & 1 barang', 'info'); return; }
+
   const rows = groups.map(group => {
     const cells = stores.map(s => getLatestPriceForGroup(group, s.id));
     const prices = cells.filter(c => c).map(c => c.price);
@@ -4988,10 +5152,15 @@ function exportPDF(){
     return { group, cells, min, max, diff: (min !== null && max !== null) ? max - min : 0, hasData: prices.length > 0 };
   }).filter(r => r.hasData);
   if(rows.length === 0){ snack('Tidak ada data', 'info'); return; }
-  const orientation = stores.length >= 4 ? 'landscape' : 'portrait';
+
+  const cfg = getPDFConfig();
+  const orientation = stores.length >= 3 ? 'landscape' : 'portrait';
   const doc = new jsPDF({ orientation, unit:'mm', format:'a4' });
   const pageW = doc.internal.pageSize.getWidth();
-  const M = 12;
+  const pageH = doc.internal.pageSize.getHeight();
+  const M = 10;
+
+  /* HEADER BIRU */
   doc.setFillColor(37, 99, 235);
   doc.rect(0, 0, pageW, 26, 'F');
   doc.setTextColor(255, 255, 255);
@@ -5000,13 +5169,30 @@ function exportPDF(){
   doc.text('bapok', M + 4, 12.5);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8.5);
-  doc.text(isAdmin && !activeAgentUid ? 'Laporan Gabungan' : 'Laporan Perbandingan Harga', M + 4, 18.5);
-  let y = 34;
+  doc.text(isAdmin && !activeAgentUid ? 'Laporan Gabungan' : 'Laporan Perbandingan Harga', M + 4, 19);
+
+  // Logo di kanan header
+  if(cfg.logoUrl){
+    try {
+      const logoW = 20, logoH = 18;
+      doc.addImage(cfg.logoUrl, 'PNG', pageW - M - logoW - 2, 4, logoW, logoH, undefined, 'FAST');
+    } catch(e){ console.warn('Logo gagal ditambahkan:', e); }
+  }
+
+  let y = 33;
   doc.setTextColor(15, 23, 42);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
   doc.text('Tabel Perbandingan Harga', M, y);
   y += 4;
+
+  const numStores = stores.length;
+  let baseFont = 8;
+  if(numStores >= 6) baseFont = 6;
+  else if(numStores >= 5) baseFont = 6.5;
+  else if(numStores >= 4) baseFont = 7;
+  else if(numStores >= 3) baseFont = 7.5;
+
   const head = [['#', 'Barang', 'Sat.', ...stores.map(s => s.name), 'Terendah', 'Tertinggi', 'Selisih']];
   const body = rows.map((r, i) => {
     const row = [String(i + 1), r.group.displayName, r.group.unit];
@@ -5016,13 +5202,79 @@ function exportPDF(){
     row.push(r.diff > 0 ? '+' + fmtRp(r.diff) : '—');
     return row;
   });
-  const baseFont = stores.length >= 6 ? 6.5 : stores.length >= 4 ? 7.5 : 8;
+
+  let totalSavings = 0;
+  rows.forEach(r => { if(r.diff > 0) totalSavings += r.diff; });
+
+  const hasSig = !!(cfg.signatureUrl || cfg.signatureName);
+  const bottomMargin = hasSig ? 55 : 15;
+
   doc.autoTable({
-    head, body, startY: y, theme: 'grid', margin: { left: M, right: M, top: 30 },
-    styles: { font: 'helvetica', fontSize: baseFont, cellPadding: 2, textColor: [30, 41, 59] },
-    headStyles: { fillColor: [37, 99, 235], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', fontSize: baseFont },
-    alternateRowStyles: { fillColor: [248, 251, 255] }
+    head, body, startY: y, theme: 'grid',
+    margin: { left: M, right: M, top: 30, bottom: bottomMargin },
+    tableWidth: 'auto',
+    styles: {
+      font: 'helvetica', fontSize: baseFont, cellPadding: 1.8,
+      textColor: [30, 41, 59], overflow: 'linebreak', valign: 'middle'
+    },
+    headStyles: {
+      fillColor: [37, 99, 235], textColor: [255, 255, 255],
+      fontStyle: 'bold', halign: 'center', fontSize: baseFont, cellPadding: 1.5
+    },
+    alternateRowStyles: { fillColor: [248, 251, 255] },
+    columnStyles: {
+      0: { halign: 'center', cellWidth: 7 },
+      1: { halign: 'left', fontStyle: 'bold', cellWidth: numStores >= 5 ? 28 : 35 },
+      2: { halign: 'center', cellWidth: 10 }
+    }
   });
+
+  let finalY = doc.lastAutoTable.finalY || (pageH - bottomMargin);
+
+  // Total potensi hemat
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9.5);
+  doc.setTextColor(37, 99, 235);
+  doc.text(`Total Potensi Hemat: ${fmtRp(totalSavings)}`, M, finalY + 7);
+
+  if(hasSig){
+    let sigY = finalY + 12;
+    if(sigY + 40 > pageH - 10){
+      doc.addPage();
+      sigY = 22;
+    }
+    const sigW = 55;
+    const sigX = pageW - M - sigW;
+
+    doc.setTextColor(30, 41, 59);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.text('Tanda Tangan,', sigX, sigY);
+
+    let imgY = sigY + 3;
+    if(cfg.signatureUrl){
+      try {
+        doc.addImage(cfg.signatureUrl, 'PNG', sigX, imgY, sigW, 20, undefined, 'FAST');
+        imgY += 20;
+      } catch(e){
+        console.warn('Signature gagal ditambahkan:', e);
+        imgY += 15;
+      }
+    } else {
+      imgY += 15;
+    }
+
+    doc.setDrawColor(30, 41, 59);
+    doc.setLineWidth(0.3);
+    doc.line(sigX, imgY, sigX + sigW, imgY);
+
+    if(cfg.signatureName){
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.text(cfg.signatureName, sigX + sigW / 2, imgY + 5, { align: 'center' });
+    }
+  }
+
   doc.save(`Laporan_bapok_${todayStr()}.pdf`);
   snack('PDF diunduh');
 }
