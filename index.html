@@ -444,56 +444,66 @@ body.no-store-mode .fab{display:none}
 .fb-info-box b{color:var(--text)}
 .fb-info-box code{background:var(--blue-pale);color:var(--blue-deep);padding:1px 6px;border-radius:5px;font-family:ui-monospace,monospace;font-size:10px;font-weight:700}
 
-/* ===== MANUAL COMPARISON (Admin) ===== */
 .manual-select-wrap{display:flex;gap:6px;align-items:stretch}
 .manual-select-wrap .field-wrap{flex:1;margin-bottom:0}
 .manual-add-btn{flex-shrink:0;width:auto!important;padding:0 14px!important;height:40px}
 .manual-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;font-size:9px;font-weight:800;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff;margin-left:6px;vertical-align:middle}
 
-/* ===== UNIT DETECTION & SIMILARITY ===== */
-.unit-detect{
-  display:flex;align-items:center;gap:9px;
-  background:linear-gradient(135deg,#ecfdf5,#d1fae5);
-  border:1.5px solid rgba(16,185,129,.3);
-  border-radius:11px;padding:9px 11px;margin-bottom:11px;
-}
-.unit-detect .ud-icon{
-  width:26px;height:26px;border-radius:8px;
-  background:var(--green);color:#fff;
-  display:grid;place-items:center;font-size:11px;flex-shrink:0;
-}
+.unit-detect{display:flex;align-items:center;gap:9px;background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:1.5px solid rgba(16,185,129,.3);border-radius:11px;padding:9px 11px;margin-bottom:11px}
+.unit-detect .ud-icon{width:26px;height:26px;border-radius:8px;background:var(--green);color:#fff;display:grid;place-items:center;font-size:11px;flex-shrink:0}
 .unit-detect .ud-body-wrap{flex:1;min-width:0}
-.unit-detect .ud-title{
-  font-size:9.5px;font-weight:800;color:var(--green-deep);
-  text-transform:uppercase;letter-spacing:.3px;
-}
+.unit-detect .ud-title{font-size:9.5px;font-weight:800;color:var(--green-deep);text-transform:uppercase;letter-spacing:.3px}
 .unit-detect .ud-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
-.det-chip{
-  display:inline-flex;align-items:center;gap:4px;
-  background:#fff;color:var(--green-deep);
-  padding:2px 8px;border-radius:999px;
-  font-size:10.5px;font-weight:800;
-}
+.det-chip{display:inline-flex;align-items:center;gap:4px;background:#fff;color:var(--green-deep);padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:800}
 .det-chip i{font-size:9px}
-.unit-detect .ud-apply{
-  flex-shrink:0;font-family:inherit;font-size:10px;font-weight:800;
-  padding:6px 10px;border-radius:8px;border:none;
-  background:var(--green);color:#fff;cursor:pointer;
-}
+.unit-detect .ud-apply{flex-shrink:0;font-family:inherit;font-size:10px;font-weight:800;padding:6px 10px;border-radius:8px;border:none;background:var(--green);color:#fff;cursor:pointer}
 
-.sim-card{
-  background:var(--surface);border-radius:12px;padding:10px 12px;
-  box-shadow:var(--shadow-sm);margin-bottom:6px;cursor:pointer;
-  border-left:3px solid var(--amber);transition:transform .15s;
-}
+.sim-card{background:var(--surface);border-radius:12px;padding:10px 12px;box-shadow:var(--shadow-sm);margin-bottom:6px;cursor:pointer;border-left:3px solid var(--amber);transition:transform .15s}
 .sim-card:active{transform:scale(.99)}
 .sim-card .sim-top{display:flex;align-items:center;gap:9px}
-.sim-card .sim-score{
-  flex-shrink:0;font-size:9.5px;font-weight:800;
-  padding:3px 8px;border-radius:999px;
-  background:var(--green-pale);color:var(--green-deep);
-}
+.sim-card .sim-score{flex-shrink:0;font-size:9.5px;font-weight:800;padding:3px 8px;border-radius:999px;background:var(--green-pale);color:var(--green-deep)}
 .sim-card .sim-score.med{background:var(--amber-pale);color:var(--amber-deep)}
+
+/* ===== NAME WARNING (inline realtime) ===== */
+.name-warn{
+  display:flex;align-items:center;gap:9px;
+  background:var(--amber-pale);
+  border:1.5px solid rgba(245,158,11,.5);
+  border-radius:11px;padding:9px 11px;margin-bottom:11px;
+  font-size:11px;font-weight:600;color:var(--amber-deep);
+  line-height:1.4;
+  animation:nwSlide .25s ease;
+}
+@keyframes nwSlide{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.name-warn.exact{
+  background:var(--rose-pale);
+  border-color:rgba(244,63,94,.5);
+  color:var(--rose-deep);
+}
+.name-warn i{font-size:13px;flex-shrink:0;margin-top:1px}
+.name-warn .nw-text{flex:1;min-width:0;word-break:break-word}
+.name-warn .nw-text b{font-weight:800}
+.name-warn .nw-use{
+  flex-shrink:0;font-family:inherit;font-size:10px;font-weight:800;
+  padding:6px 11px;border-radius:8px;border:none;cursor:pointer;
+  background:var(--green);color:#fff;box-shadow:0 4px 10px rgba(16,185,129,.35);
+  display:inline-flex;align-items:center;gap:4px;
+}
+.name-warn .nw-use i{font-size:9px;margin:0}
+
+/* ===== MERGE BUTTONS ===== */
+.merge-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px}
+.merge-btn{
+  font-family:inherit;font-size:10.5px;font-weight:800;
+  padding:8px 10px;border-radius:9px;border:none;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  background:var(--blue-pale);color:var(--blue-deep);
+  transition:all .15s;
+}
+.merge-btn:hover{background:var(--blue);color:#fff}
+.merge-btn i{font-size:10px}
+.merge-btn.warn{background:var(--amber-pale);color:var(--amber-deep)}
+.merge-btn.warn:hover{background:var(--amber);color:#fff}
 
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-thumb{background:#bfdbfe;border-radius:99px}
@@ -961,6 +971,8 @@ body.no-store-mode .fab{display:none}
             <input type="text" class="input" id="iName" placeholder="Contoh: Beras" maxlength="40" required>
           </div>
         </div>
+        <!-- Warning realtime nama mirip -->
+        <div class="name-warn" id="iNameWarn" style="display:none"></div>
         <div class="unit-detect" id="iUnitDetect" style="display:none">
           <div class="ud-icon"><i class="fas fa-wand-magic-sparkles"></i></div>
           <div class="ud-body-wrap">
@@ -1114,6 +1126,8 @@ body.no-store-mode .fab{display:none}
         <input type="text" class="input-plain unit-plain" id="bulkNewQtyUnit" value="pcs" maxlength="12" placeholder="pcs">
         <button type="button" onclick="bulkAddItem()"><i class="fas fa-plus"></i></button>
       </div>
+      <!-- Warning realtime nama mirip (bulk) -->
+      <div class="name-warn" id="bulkNameWarn" style="display:none;margin-bottom:10px"></div>
       <div class="total-preview"><span class="lbl">Total Harga</span><span class="val" id="bulkTotal">Rp 0</span></div>
       <div class="btn-row">
         <button type="button" class="btn btn-outlined" onclick="closeSheet('bulkModal')">Batal</button>
@@ -1253,7 +1267,7 @@ body.no-store-mode .fab{display:none}
 <div class="scrim" id="confirmModal">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-header"><i class="fas fa-triangle-exclamation" style="background:var(--rose-pale);color:var(--rose-deep)"></i><h2>Konfirmasi</h2></div>
+    <div class="sheet-header"><i class="fas fa-triangle-exclamation" style="background:var(--rose-pale);color:var(--rose-deep)"></i><h2 id="confirmTitle">Konfirmasi</h2></div>
     <div class="sheet-body">
       <p id="confirmMsg" style="font-size:12px;color:var(--text-soft);line-height:1.6;margin-bottom:16px;font-weight:500"></p>
       <div class="btn-row">
@@ -1302,7 +1316,7 @@ body.no-store-mode .fab{display:none}
     <div class="sheet-body">
       <div class="bulk-note">
         <i class="fas fa-circle-info"></i>
-        <span>Daftar pasangan barang dengan nama mirip (≥ 85%). Tidak ada perubahan otomatis — periksa manual dan edit/hapus barang yang dobel.</span>
+        <span>Daftar pasangan barang dengan nama mirip (≥ 85%). Klik <b>Gabung</b> untuk memindahkan semua harga ke satu barang dan menghapus duplikat.</span>
       </div>
       <div class="section-head" style="margin:8px 2px">
         <h2><i class="fas fa-clone"></i> Hasil</h2>
@@ -1607,7 +1621,6 @@ function applyRoleUI(){
   }
 }
 
-/* ====== ROLE DETECTION (dari Firebase Console) ====== */
 async function loadUserRole(email, userId){
   if((email || '').toLowerCase().trim() === ADMIN_EMAIL.toLowerCase()) return 'admin';
   try {
@@ -1887,14 +1900,11 @@ function jaroWinkler(a, b){
 function normalizeItemName(s){
   let t = String(s == null ? '' : s).toLowerCase();
   try { t = t.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); } catch(e){}
-  // Split "1kg" → "1 kg", "500ml" → "500 ml", "1liter" → "1 liter"
   t = t.replace(/(\d+(?:[.,]\d+)?)\s*(kg|kilogram|kilos?|kilo|gr|grams?|gram|mg|miligram|milligram|ml|mililit(?:er|re)s?|millilit(?:er|re)s?|liters?|litres?|liter|litre|ltr|lt|l|cc|ons|ounces?|tons?|tonnes?|kuintals?|kwintals?|g)\b/g, '$1 $2');
-  // Normalize spellings
   t = t.replace(/\b(kilogram|kilos?|kilo)\b/g, 'kg');
   t = t.replace(/\b(grams?|gr)\b/g, 'g');
   t = t.replace(/\b(mililit(?:er|re)s?|millilit(?:er|re)s?)\b/g, 'ml');
   t = t.replace(/\b(lit(?:er|re)s?|ltr)\b/g, 'l');
-  // Remove punctuation
   t = t.replace(/[^a-z0-9\s]/g, ' ');
   t = t.replace(/\s+/g, ' ').trim();
   return t;
@@ -1914,7 +1924,6 @@ function itemSimilarity(a, b){
   return Math.max(raw, sorted);
 }
 
-// ===== Unit definitions =====
 const WEIGHT_UNIT_DEFS = [
   { keys: ['kg','kilogram','kilo','kilos'], canonical: 'kg' },
   { keys: ['gram','gr','grams','g'], canonical: 'g' },
@@ -1942,7 +1951,6 @@ const QTY_UNIT_DEFS = [
 
 function detectUnits(text){
   let t = String(text == null ? '' : text).toLowerCase();
-  // Pastikan spasi antara angka dan satuan: "1l" → "1 l"
   t = t.replace(/(\d+(?:[.,]\d+)?)\s*(kg|kilogram|kilos?|kilo|gr|grams?|gram|mg|miligram|milligram|ml|mililit(?:er|re)s?|millilit(?:er|re)s?|liters?|litres?|liter|litre|ltr|lt|l|cc|ons|ounces?|tons?|tonnes?|kuintals?|kwintals?|g)\b/g, '$1 $2');
   const res = { weightUnit: null, qtyUnit: null, weightValue: null, qtyValue: null, hits: [] };
   const findIn = (defs, type) => {
@@ -1982,19 +1990,33 @@ function findSimilarItems(name, excludeId, threshold){
   return results.slice(0, 6);
 }
 
-// ===== Similar modal =====
+/* ===== Similar modal ===== */
 function showSimilarItemsModal(similar, newName, onForceCreate, onUseExisting){
+  const topScore = similar[0]?.score || 0;
+  const isExact = topScore >= 0.98;
+
   document.getElementById('simNewName').textContent = newName;
   document.getElementById('simCount').textContent = `${similar.length} kandidat`;
   const wrap = document.getElementById('simCandidates');
-  wrap.innerHTML = similar.map(({item, score}) => {
+
+  const banner = isExact
+    ? `<div class="bulk-note" style="background:var(--rose-pale);color:var(--rose-deep);border:1.5px solid rgba(244,63,94,.4);margin-bottom:12px">
+        <i class="fas fa-circle-exclamation" style="color:var(--rose-deep)"></i>
+        <span><b>Barang ini SUDAH ADA!</b> Sangat disarankan pakai barang yang sudah ada — klik kandidat di bawah untuk pakai.</span>
+      </div>`
+    : '';
+
+  wrap.innerHTML = banner + similar.map(({item, score}) => {
     const pct = Math.round(score * 100);
     const scoreCls = score >= 0.92 ? '' : 'med';
     const stats = itemStats(item.id);
     const thumb = item.photoUrl ? `<img src="${esc(item.photoUrl)}" alt="">` : `<i class="fas fa-box"></i>`;
     const priceTxt = stats.count > 0 ? fmtRp(stats.min) : '—';
     const priceLbl = stats.count > 0 ? 'Termurah' : 'Belum ada harga';
-    return `<div class="sim-card" onclick="__simUseExisting(${item.id})">
+    const useBtnStyle = score >= 0.98
+      ? 'background:var(--green);color:#fff;font-weight:800;'
+      : '';
+    return `<div class="sim-card" style="${score >= 0.98 ? 'border-left-color:var(--green)' : ''}" onclick="__simUseExisting(${item.id})">
       <div class="sim-top">
         <div class="list-avatar prod" style="width:34px;height:34px">${thumb}</div>
         <div class="list-body">
@@ -2017,7 +2039,19 @@ function showSimilarItemsModal(similar, newName, onForceCreate, onUseExisting){
     if(onUseExisting) onUseExisting(item);
   };
 
-  document.getElementById('simForceBtn').onclick = () => {
+  const forceBtn = document.getElementById('simForceBtn');
+  if(isExact){
+    forceBtn.className = 'btn btn-outlined';
+    forceBtn.style.background = 'var(--rose-pale)';
+    forceBtn.style.color = 'var(--rose-deep)';
+    forceBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Tetap Buat Baru (Tidak Disarankan)';
+  } else {
+    forceBtn.className = 'btn btn-amber';
+    forceBtn.style.background = '';
+    forceBtn.style.color = '';
+    forceBtn.innerHTML = '<i class="fas fa-plus"></i> Tetap Buat Baru';
+  }
+  forceBtn.onclick = () => {
     closeSheet('similarModal');
     if(onForceCreate) onForceCreate();
   };
@@ -2025,7 +2059,7 @@ function showSimilarItemsModal(similar, newName, onForceCreate, onUseExisting){
   openSheet('similarModal');
 }
 
-// ===== Unit detection UI =====
+/* ===== Unit detection UI ===== */
 function runItemNameDetection(){
   const name = document.getElementById('iName').value;
   const panel = document.getElementById('iUnitDetect');
@@ -2059,7 +2093,73 @@ function applyDetectedUnits(){
   else snack('Tidak ada satuan terdeteksi', 'info');
 }
 
-// ===== Scan duplicates =====
+/* ===== REALTIME NAME WARNING ===== */
+function updateNameWarning(inputId, warnId, source){
+  const input = document.getElementById(inputId);
+  const warn = document.getElementById(warnId);
+  if(!input || !warn) return;
+  const name = input.value.trim();
+  if(name.length < 3){ warn.style.display = 'none'; return; }
+
+  let excludeId = null;
+  if(source === 'item'){
+    const idVal = document.getElementById('iId').value;
+    if(idVal) excludeId = Number(idVal);
+  }
+  const similar = findSimilarItems(name, excludeId);
+  if(similar.length === 0){ warn.style.display = 'none'; return; }
+
+  const top = similar[0];
+  const pct = Math.round(top.score * 100);
+  const exact = top.score >= 0.98;
+  warn.className = 'name-warn' + (exact ? ' exact' : '');
+  warn.style.display = 'flex';
+  warn.innerHTML = `
+    <i class="fas fa-${exact ? 'circle-exclamation' : 'triangle-exclamation'}"></i>
+    <div class="nw-text">
+      ${exact ? '<b>Barang ini sudah ada:</b>' : 'Mirip dengan:'}
+      <b>"${esc(top.item.name)}"</b>${similar.length > 1 ? ` <span style="opacity:.75">+${similar.length - 1} lain</span>` : ''}
+    </div>
+    <button type="button" class="nw-use" onclick="useExistingFromWarning('${source}', ${top.item.id})">
+      <i class="fas fa-check"></i> Pakai
+    </button>
+  `;
+}
+
+function useExistingFromWarning(source, itemId){
+  const item = getItem(itemId);
+  if(!item) return;
+
+  if(source === 'item'){
+    closeSheet('itemModal');
+    resetPhotoField('iPhoto');
+    const warn = document.getElementById('iNameWarn');
+    if(warn) warn.style.display = 'none';
+    snack(`Menggunakan "${item.name}" — silakan catat harga`);
+    setTimeout(() => openPriceModal(item.id), 350);
+  } else if(source === 'bulk'){
+    // Bersihkan search & reset filter, fokus ke input harga item ybs
+    state.bulkSearch = '';
+    const searchEl = document.getElementById('bulkSearch');
+    if(searchEl) searchEl.value = '';
+    const nameEl = document.getElementById('bulkNewItem');
+    if(nameEl) nameEl.value = '';
+    const warn = document.getElementById('bulkNameWarn');
+    if(warn) warn.style.display = 'none';
+    renderBulkList();
+    snack(`Gunakan "${item.name}" — isi harganya`);
+    setTimeout(() => {
+      const priceInput = document.querySelector(`.bulk-input[data-item="${item.id}"][data-field="price"]`);
+      if(priceInput){
+        priceInput.scrollIntoView({behavior:'smooth', block:'center'});
+        priceInput.focus();
+      }
+    }, 200);
+  }
+}
+window.useExistingFromWarning = useExistingFromWarning;
+
+/* ===== Scan duplicates + MERGE ===== */
 function scanDuplicates(){
   const items = [...dbGetAll('items')];
   const pairs = [];
@@ -2084,9 +2184,10 @@ function scanDuplicates(){
       const aStats = itemStats(a.id);
       const bStats = itemStats(b.id);
       const cls = score >= 0.92 ? '' : 'med';
-      return `<div class="sim-card" style="cursor:default">
+      return `<div class="sim-card" style="cursor:default;border-left-color:${score >= 0.98 ? 'var(--rose)' : 'var(--amber)'}">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
           <span class="sim-score ${cls}">${pct}% mirip</span>
+          ${score >= 0.98 ? '<span style="font-size:9px;font-weight:800;color:var(--rose-deep)">• HAMPIR IDENTIK</span>' : ''}
         </div>
         <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center">
           <div style="min-width:0">
@@ -2101,11 +2202,106 @@ function scanDuplicates(){
             <div class="list-sub">${bStats.count > 0 ? fmtRp(bStats.min) : '—'}</div>
           </div>
         </div>
+        <div class="merge-actions">
+          <button class="merge-btn" onclick="mergeItemsPrompt(${a.id}, ${b.id})" title="Semua harga '${esc(b.name)}' dipindah ke '${esc(a.name)}', lalu '${esc(b.name)}' dihapus">
+            <i class="fas fa-compress"></i> Pertahankan "${esc(a.name.length > 12 ? a.name.slice(0,12)+'…' : a.name)}"
+          </button>
+          <button class="merge-btn warn" onclick="mergeItemsPrompt(${b.id}, ${a.id})" title="Semua harga '${esc(a.name)}' dipindah ke '${esc(b.name)}', lalu '${esc(a.name)}' dihapus">
+            <i class="fas fa-compress"></i> Pertahankan "${esc(b.name.length > 12 ? b.name.slice(0,12)+'…' : b.name)}"
+          </button>
+        </div>
       </div>`;
     }).join('');
   }
   openSheet('dupModal');
 }
+
+async function mergeItems(masterId, slaveId){
+  const master = getItem(masterId);
+  const slave = getItem(slaveId);
+  if(!master || !slave || masterId === slaveId) return { moved: 0, discarded: 0 };
+
+  const slavePrices = dbGetAll('prices').filter(p => p.itemId === slaveId);
+  let moved = 0, discarded = 0;
+
+  for(const p of slavePrices){
+    const collision = dbGetAll('prices').find(pp =>
+      pp.itemId === masterId &&
+      pp.storeId === p.storeId &&
+      pp.date === p.date
+    );
+    if(collision){
+      // Harga master untuk toko+tanggal sama sudah ada → hapus harga slave
+      await dbDelete('prices', p.id);
+      discarded++;
+    } else {
+      await dbPut('prices', { ...p, itemId: masterId });
+      moved++;
+    }
+  }
+
+  await dbDelete('items', slaveId);
+
+  // Bersihkan state
+  state.manualCompareItems.delete(slaveId);
+  state.selectedItems.delete(slaveId);
+  if(state.compareItemId === slaveId) state.compareItemId = null;
+  if(state.trendItemId === slaveId) state.trendItemId = null;
+  delete state.bulkDraft[String(slaveId)];
+
+  return { moved, discarded };
+}
+
+function mergeItemsPrompt(masterId, slaveId){
+  const master = getItem(masterId);
+  const slave = getItem(slaveId);
+  if(!master || !slave) return;
+
+  const slavePrices = dbGetAll('prices').filter(p => p.itemId === slaveId).length;
+
+  const confirmTitle = document.getElementById('confirmTitle');
+  if(confirmTitle) confirmTitle.textContent = 'Gabungkan Barang';
+  const confirmMsg = document.getElementById('confirmMsg');
+  confirmMsg.innerHTML = `
+    Gabungkan <b style="color:var(--rose-deep)">"${esc(slave.name)}"</b>
+    ke <b style="color:var(--green-deep)">"${esc(master.name)}"</b>?
+    <br><br>
+    <span style="color:var(--blue-deep)"><i class="fas fa-circle-info"></i> <b>${slavePrices} harga</b> dari "${esc(slave.name)}" akan dipindahkan ke "${esc(master.name)}". Barang "${esc(slave.name)}" akan dihapus.</span>
+    <br><br>
+    <span style="font-size:10.5px;color:var(--text-mute)">Jika ada harga di toko & tanggal yang sama, harga master dipertahankan.</span>
+  `;
+  const confirmOk = document.getElementById('confirmOk');
+  confirmOk.className = 'btn btn-filled';
+  confirmOk.style.background = 'var(--blue)';
+  confirmOk.innerHTML = '<i class="fas fa-compress"></i> Gabungkan';
+  confirmOk.onclick = async () => {
+    confirmOk.disabled = true;
+    confirmOk.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menggabungkan...';
+    try {
+      const res = await mergeItems(masterId, slaveId);
+      closeSheet('confirmModal');
+      // Reset styling confirm button
+      setTimeout(() => {
+        confirmOk.className = 'btn btn-danger';
+        confirmOk.style.background = '';
+        confirmOk.innerHTML = '<i class="fas fa-trash"></i> Hapus';
+      }, 400);
+      renderAll();
+      if(state.view === 'reports') renderReportCharts();
+      if(document.getElementById('dupModal').classList.contains('show')){
+        setTimeout(() => scanDuplicates(), 100);
+      }
+      snack(`Digabung: ${res.moved} harga dipindah, ${res.discarded} duplikat dihapus`);
+    } catch(err){
+      console.error(err);
+      snack('Gagal menggabungkan', 'error');
+      confirmOk.disabled = false;
+      confirmOk.innerHTML = '<i class="fas fa-compress"></i> Gabungkan';
+    }
+  };
+  openSheet('confirmModal');
+}
+window.mergeItemsPrompt = mergeItemsPrompt;
 
 window.scanDuplicates = scanDuplicates;
 window.applyDetectedUnits = applyDetectedUnits;
@@ -3192,6 +3388,8 @@ function openBulkModal(storeId){
   document.getElementById('bulkNewItem').value = '';
   document.getElementById('bulkNewUnit').value = 'kg';
   document.getElementById('bulkNewQtyUnit').value = 'pcs';
+  const warnEl = document.getElementById('bulkNameWarn');
+  if(warnEl) warnEl.style.display = 'none';
   state.bulkDraft = {};
   state.bulkSearch = '';
   renderBulkList();
@@ -3312,6 +3510,9 @@ function updateBulkTotal(){
 }
 
 async function bulkAddItem(){
+  // Guard double-click
+  if(window.__bulkAdding) return;
+
   const nameEl = document.getElementById('bulkNewItem');
   const unitEl = document.getElementById('bulkNewUnit');
   const qtyUnitEl = document.getElementById('bulkNewQtyUnit');
@@ -3326,20 +3527,10 @@ async function bulkAddItem(){
         name,
         () => {
           window.__forceBulkCreate = true;
-          setTimeout(() => { window.__forceBulkCreate = false; }, 500);
+          setTimeout(() => { window.__forceBulkCreate = false; }, 800);
           bulkAddItem();
         },
-        (existing) => {
-          state.bulkSearch = existing.name;
-          document.getElementById('bulkSearch').value = existing.name;
-          renderBulkList();
-          nameEl.value = '';
-          snack(`Menampilkan "${existing.name}" — silakan isi harganya`);
-          setTimeout(() => {
-            const row = document.querySelector(`.bulk-row .bulk-input[data-item="${existing.id}"]`);
-            if(row) row.scrollIntoView({behavior:'smooth', block:'center'});
-          }, 150);
-        }
+        (existing) => useExistingFromWarning('bulk', existing.id)
       );
       return;
     }
@@ -3353,13 +3544,21 @@ async function bulkAddItem(){
   if(det.weightUnit && (unit === 'kg' || !unit)){ unit = det.weightUnit; detected = true; }
   if(det.qtyUnit && (qtyUnit === 'pcs' || !qtyUnit)){ qtyUnit = det.qtyUnit; detected = true; }
 
+  window.__bulkAdding = true;
   try {
     await dbAdd('items', { name, unit, qtyUnit, category: '', note: '', photoUrl: '' });
     nameEl.value = ''; unitEl.value = 'kg'; qtyUnitEl.value = 'pcs';
+    const warnEl = document.getElementById('bulkNameWarn');
+    if(warnEl) warnEl.style.display = 'none';
     renderBulkList(); renderItems(); renderDashboard();
     snack(`Barang ditambahkan${detected ? ' • satuan terdeteksi otomatis' : ''}`);
     nameEl.focus();
-  } catch(err){ console.error(err); snack('Gagal menambah barang', 'error'); }
+  } catch(err){
+    console.error(err);
+    snack('Gagal menambah barang', 'error');
+  } finally {
+    window.__bulkAdding = false;
+  }
 }
 
 async function saveBulk(){
@@ -3369,6 +3568,7 @@ async function saveBulk(){
   if(!storeId){ snack('Pilih toko', 'error'); return; }
   if(entries.length === 0){ snack('Belum ada harga', 'error'); return; }
   const btn = document.getElementById('bulkSaveBtn');
+  if(btn.disabled) return;
   const oldHtml = btn.innerHTML;
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
@@ -3901,6 +4101,8 @@ function deleteHistoryConfirm(histId){
   if(!h) return;
   closeSheet('histDetailModal');
   const confirmOk = document.getElementById('confirmOk');
+  confirmOk.className = 'btn btn-danger';
+  confirmOk.style.background = '';
   confirmOk.innerHTML = '<i class="fas fa-trash"></i> Hapus';
   document.getElementById('confirmMsg').innerHTML = `Hapus history <b>${esc(h.label || 'History')}</b>?`;
   confirmOk.onclick = async () => {
@@ -3998,7 +4200,6 @@ async function exportHistoryPDF(histId){
 }
 window.exportHistoryPDF = exportHistoryPDF;
 
-/* ============ STORE CRUD ============ */
 function openStoreModal(id){
   closeSheet('actionSheet');
   closeSheet('detailModal');
@@ -4074,6 +4275,7 @@ async function saveStore(e){
     }
   }
   const btn = document.getElementById('sSaveBtn');
+  if(btn.disabled) return;
   const oldHtml = btn.innerHTML;
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
@@ -4119,6 +4321,8 @@ function confirmDeleteStore(id){
   const count = dbGetAll('prices').filter(p => p.storeId === id).length;
   const histCount = dbGetAll('histories').filter(h => h.storeId === id).length;
   const confirmOk = document.getElementById('confirmOk');
+  confirmOk.className = 'btn btn-danger';
+  confirmOk.style.background = '';
   confirmOk.innerHTML = '<i class="fas fa-trash"></i> Hapus';
   document.getElementById('confirmMsg').innerHTML = `Hapus toko <b>${esc(s.name)}</b>?` +
     (count > 0 ? `<br><br><span style="color:var(--rose-deep)"><i class="fas fa-triangle-exclamation"></i> ${count} harga & ${histCount} history dihapus.</span>` : '');
@@ -4158,9 +4362,10 @@ function openItemModal(id){
   document.getElementById('iQtyUnit').value = 'pcs';
   document.getElementById('btnDeleteItem').style.display = 'none';
   resetPhotoField('iPhoto');
-  // Reset panel deteksi
   const detPanel = document.getElementById('iUnitDetect');
   if(detPanel){ detPanel.style.display = 'none'; detPanel.dataset.weight = ''; detPanel.dataset.qty = ''; }
+  const warnEl = document.getElementById('iNameWarn');
+  if(warnEl){ warnEl.style.display = 'none'; warnEl.className = 'name-warn'; }
 
   if(id){
     const it = getItem(id);
@@ -4181,31 +4386,37 @@ function openItemModal(id){
   setTimeout(() => {
     document.getElementById('iName').focus();
     runItemNameDetection();
+    updateNameWarning('iName', 'iNameWarn', 'item');
   }, 400);
 }
 
 async function saveItem(e){
   e.preventDefault();
+  const btn = document.getElementById('iSaveBtn');
+  if(btn.disabled) return;
+
   const id = document.getElementById('iId').value;
   const name = document.getElementById('iName').value.trim();
   if(!name){ snack('Nama barang wajib diisi', 'error'); return; }
 
-  // Cek mirip (Jaro-Winkler) hanya untuk barang baru
-  if(!id && !window.__forceItemCreate){
-    const similar = findSimilarItems(name);
+  if(!window.__forceItemCreate){
+    const excludeId = id ? Number(id) : null;
+    const similar = findSimilarItems(name, excludeId);
     if(similar.length > 0){
       showSimilarItemsModal(
         similar,
         name,
         () => {
           window.__forceItemCreate = true;
-          setTimeout(() => { window.__forceItemCreate = false; }, 500);
+          setTimeout(() => { window.__forceItemCreate = false; }, 800);
           document.getElementById('itemForm').requestSubmit();
         },
         (existing) => {
           closeSheet('itemModal');
           resetPhotoField('iPhoto');
-          snack(`Menggunakan barang "${existing.name}" — silakan catat harga`);
+          const warnEl = document.getElementById('iNameWarn');
+          if(warnEl) warnEl.style.display = 'none';
+          snack(`Menggunakan "${existing.name}" — silakan catat harga`);
           setTimeout(() => openPriceModal(existing.id), 350);
         }
       );
@@ -4214,7 +4425,6 @@ async function saveItem(e){
   }
   window.__forceItemCreate = false;
 
-  const btn = document.getElementById('iSaveBtn');
   const oldHtml = btn.innerHTML;
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
@@ -4255,6 +4465,8 @@ function confirmDeleteItem(id){
   if(!it) return;
   const count = dbGetAll('prices').filter(p => p.itemId === id).length;
   const confirmOk = document.getElementById('confirmOk');
+  confirmOk.className = 'btn btn-danger';
+  confirmOk.style.background = '';
   confirmOk.innerHTML = '<i class="fas fa-trash"></i> Hapus';
   document.getElementById('confirmMsg').innerHTML = `Hapus barang <b>${esc(it.name)}</b>?` +
     (count > 0 ? `<br><br><span style="color:var(--rose-deep)"><i class="fas fa-triangle-exclamation"></i> ${count} harga dihapus.</span>` : '');
@@ -4415,6 +4627,8 @@ function deletePriceFromModal(){
   const it = getItem(p.itemId);
   const st = getStore(p.storeId);
   const confirmOk = document.getElementById('confirmOk');
+  confirmOk.className = 'btn btn-danger';
+  confirmOk.style.background = '';
   confirmOk.innerHTML = '<i class="fas fa-trash"></i> Hapus';
   document.getElementById('confirmMsg').innerHTML = `Hapus harga <b>${esc(it ? it.name : 'barang')}</b> di <b>${esc(st ? st.name : 'toko')}</b>?`;
   confirmOk.onclick = async () => {
@@ -4603,8 +4817,16 @@ document.getElementById('bulkSearch').addEventListener('input', e => { state.bul
 document.getElementById('bulkNewItem').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); bulkAddItem(); } });
 document.getElementById('bulkNewUnit').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); bulkAddItem(); } });
 document.getElementById('bulkNewQtyUnit').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); bulkAddItem(); } });
-// Deteksi satuan saat nama barang diketik
-document.getElementById('iName').addEventListener('input', runItemNameDetection);
+
+// Realtime: unit detection + name warning
+document.getElementById('iName').addEventListener('input', () => {
+  runItemNameDetection();
+  updateNameWarning('iName', 'iNameWarn', 'item');
+});
+document.getElementById('bulkNewItem').addEventListener('input', () => {
+  updateNameWarning('bulkNewItem', 'bulkNameWarn', 'bulk');
+});
+
 ['loginEmail','loginPass'].forEach(id => { document.getElementById(id).addEventListener('keydown', e => { if(e.key === 'Enter') doAuth('login'); }); });
 ['regEmail','regPass','regPass2'].forEach(id => { document.getElementById(id).addEventListener('keydown', e => { if(e.key === 'Enter') doAuth('register'); }); });
 
