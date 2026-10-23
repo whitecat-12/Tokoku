@@ -450,6 +450,51 @@ body.no-store-mode .fab{display:none}
 .manual-add-btn{flex-shrink:0;width:auto!important;padding:0 14px!important;height:40px}
 .manual-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;font-size:9px;font-weight:800;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff;margin-left:6px;vertical-align:middle}
 
+/* ===== UNIT DETECTION & SIMILARITY ===== */
+.unit-detect{
+  display:flex;align-items:center;gap:9px;
+  background:linear-gradient(135deg,#ecfdf5,#d1fae5);
+  border:1.5px solid rgba(16,185,129,.3);
+  border-radius:11px;padding:9px 11px;margin-bottom:11px;
+}
+.unit-detect .ud-icon{
+  width:26px;height:26px;border-radius:8px;
+  background:var(--green);color:#fff;
+  display:grid;place-items:center;font-size:11px;flex-shrink:0;
+}
+.unit-detect .ud-body-wrap{flex:1;min-width:0}
+.unit-detect .ud-title{
+  font-size:9.5px;font-weight:800;color:var(--green-deep);
+  text-transform:uppercase;letter-spacing:.3px;
+}
+.unit-detect .ud-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.det-chip{
+  display:inline-flex;align-items:center;gap:4px;
+  background:#fff;color:var(--green-deep);
+  padding:2px 8px;border-radius:999px;
+  font-size:10.5px;font-weight:800;
+}
+.det-chip i{font-size:9px}
+.unit-detect .ud-apply{
+  flex-shrink:0;font-family:inherit;font-size:10px;font-weight:800;
+  padding:6px 10px;border-radius:8px;border:none;
+  background:var(--green);color:#fff;cursor:pointer;
+}
+
+.sim-card{
+  background:var(--surface);border-radius:12px;padding:10px 12px;
+  box-shadow:var(--shadow-sm);margin-bottom:6px;cursor:pointer;
+  border-left:3px solid var(--amber);transition:transform .15s;
+}
+.sim-card:active{transform:scale(.99)}
+.sim-card .sim-top{display:flex;align-items:center;gap:9px}
+.sim-card .sim-score{
+  flex-shrink:0;font-size:9.5px;font-weight:800;
+  padding:3px 8px;border-radius:999px;
+  background:var(--green-pale);color:var(--green-deep);
+}
+.sim-card .sim-score.med{background:var(--amber-pale);color:var(--amber-deep)}
+
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-thumb{background:#bfdbfe;border-radius:99px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -600,7 +645,10 @@ body.no-store-mode .fab{display:none}
       </div>
       <div class="section-head" style="margin-top:0">
         <h2><i class="fas fa-boxes-stacked"></i> Daftar Barang</h2>
-        <span class="count" id="itemCount">0 item</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          <button class="chip-button" onclick="scanDuplicates()" style="background:var(--amber-pale);color:var(--amber-deep)" title="Cari nama barang mirip"><i class="fas fa-clone"></i> Scan Duplikat</button>
+          <span class="count" id="itemCount">0 item</span>
+        </div>
       </div>
       <div id="itemList"></div>
     </section>
@@ -628,7 +676,6 @@ body.no-store-mode .fab{display:none}
     </section>
 
     <section class="view" id="view-reports">
-      <!-- ===== MANUAL COMPARISON (ADMIN OVERVIEW ONLY) ===== -->
       <div id="manualCompareSection" style="display:none">
         <div class="section-head" style="margin-top:8px">
           <h2><i class="fas fa-hand-pointer"></i> Perbandingan Manual <span class="manual-badge"><i class="fas fa-crown"></i> ADMIN</span></h2>
@@ -913,6 +960,14 @@ body.no-store-mode .fab{display:none}
           <div class="field-wrap"><i class="fas fa-tag"></i>
             <input type="text" class="input" id="iName" placeholder="Contoh: Beras" maxlength="40" required>
           </div>
+        </div>
+        <div class="unit-detect" id="iUnitDetect" style="display:none">
+          <div class="ud-icon"><i class="fas fa-wand-magic-sparkles"></i></div>
+          <div class="ud-body-wrap">
+            <div class="ud-title">Satuan terdeteksi dari nama</div>
+            <div class="ud-chips" id="iUnitDetectChips"></div>
+          </div>
+          <button type="button" class="ud-apply" onclick="applyDetectedUnits()">Pakai</button>
         </div>
         <div class="field-row">
           <div class="field">
@@ -1209,6 +1264,55 @@ body.no-store-mode .fab{display:none}
   </div>
 </div>
 
+<!-- Similar Items Modal (Jaro-Winkler) -->
+<div class="scrim" id="similarModal">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header"><i class="fas fa-clone" style="background:var(--amber-pale);color:var(--amber-deep)"></i><h2>Barang Mirip Ditemukan</h2></div>
+    <div class="sheet-body">
+      <div class="bulk-note" style="margin-bottom:12px">
+        <i class="fas fa-circle-info"></i>
+        <span>Sistem mendeteksi nama barang yang <b>mirip</b> menggunakan algoritma Jaro-Winkler. Gunakan barang yang sudah ada agar data perbandingan tidak terpecah ke beberapa nama.</span>
+      </div>
+      <div class="field">
+        <label class="field-label">Nama yang Anda input</label>
+        <div class="list"><div class="list-item" style="cursor:default">
+          <div class="list-avatar violet"><i class="fas fa-keyboard"></i></div>
+          <div class="list-body"><div class="list-title" id="simNewName">—</div></div>
+        </div></div>
+      </div>
+      <div class="section-head" style="margin:12px 2px 8px">
+        <h2><i class="fas fa-list"></i> Kandidat Serupa</h2>
+        <span class="count" id="simCount">0</span>
+      </div>
+      <div id="simCandidates"></div>
+      <div class="btn-row" style="margin-top:12px">
+        <button class="btn btn-outlined" onclick="closeSheet('similarModal')"><i class="fas fa-xmark"></i> Batal</button>
+        <button class="btn btn-amber" id="simForceBtn"><i class="fas fa-plus"></i> Tetap Buat Baru</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Duplicate Scan Modal -->
+<div class="scrim" id="dupModal">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header"><i class="fas fa-clone" style="background:var(--amber-pale);color:var(--amber-deep)"></i><h2>Scan Duplikat</h2></div>
+    <div class="sheet-body">
+      <div class="bulk-note">
+        <i class="fas fa-circle-info"></i>
+        <span>Daftar pasangan barang dengan nama mirip (≥ 85%). Tidak ada perubahan otomatis — periksa manual dan edit/hapus barang yang dobel.</span>
+      </div>
+      <div class="section-head" style="margin:8px 2px">
+        <h2><i class="fas fa-clone"></i> Hasil</h2>
+        <span class="count" id="dupCount">0 pasangan</span>
+      </div>
+      <div id="dupCandidates"></div>
+    </div>
+  </div>
+</div>
+
 <!-- Info Modal -->
 <div class="scrim" id="infoModal">
   <div class="sheet">
@@ -1454,7 +1558,7 @@ const Splash = (() => {
 
 let uid = null;
 let currentEmail = '';
-let currentRole = 'agen';   // 'admin' | 'agen' | 'petugas'
+let currentRole = 'agen';
 let isAdmin = false;
 let activeAgentUid = null;
 let activeAgentName = '';
@@ -1737,8 +1841,276 @@ const state = {
   selectedItems: new Set(),
   bulkDraft: {},
   bulkSearch: '',
-  manualCompareItems: new Set()   // <-- BARU: item yang dipilih admin untuk tabel manual
+  manualCompareItems: new Set()
 };
+
+/* ============================================================
+   JARO-WINKLER + DETEKSI SATUAN
+   ============================================================ */
+
+function jaroWinkler(a, b){
+  a = String(a == null ? '' : a);
+  b = String(b == null ? '' : b);
+  if(a === b) return 1;
+  const la = a.length, lb = b.length;
+  if(!la || !lb) return 0;
+  const matchDist = Math.max(0, Math.floor(Math.max(la, lb) / 2) - 1);
+  const ma = new Array(la).fill(false);
+  const mb = new Array(lb).fill(false);
+  let matches = 0;
+  for(let i = 0; i < la; i++){
+    const start = Math.max(0, i - matchDist);
+    const end = Math.min(i + matchDist + 1, lb);
+    for(let j = start; j < end; j++){
+      if(mb[j] || a[i] !== b[j]) continue;
+      ma[i] = true; mb[j] = true; matches++; break;
+    }
+  }
+  if(!matches) return 0;
+  let trans = 0, k = 0;
+  for(let i = 0; i < la; i++){
+    if(!ma[i]) continue;
+    while(!mb[k]) k++;
+    if(a[i] !== b[k]) trans++;
+    k++;
+  }
+  trans /= 2;
+  const jaro = (matches / la + matches / lb + (matches - trans) / matches) / 3;
+  let prefix = 0;
+  const maxPrefix = Math.min(4, la, lb);
+  for(let i = 0; i < maxPrefix; i++){
+    if(a[i] === b[i]) prefix++; else break;
+  }
+  return jaro + prefix * 0.1 * (1 - jaro);
+}
+
+function normalizeItemName(s){
+  let t = String(s == null ? '' : s).toLowerCase();
+  try { t = t.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); } catch(e){}
+  // Split "1kg" → "1 kg", "500ml" → "500 ml", "1liter" → "1 liter"
+  t = t.replace(/(\d+(?:[.,]\d+)?)\s*(kg|kilogram|kilos?|kilo|gr|grams?|gram|mg|miligram|milligram|ml|mililit(?:er|re)s?|millilit(?:er|re)s?|liters?|litres?|liter|litre|ltr|lt|l|cc|ons|ounces?|tons?|tonnes?|kuintals?|kwintals?|g)\b/g, '$1 $2');
+  // Normalize spellings
+  t = t.replace(/\b(kilogram|kilos?|kilo)\b/g, 'kg');
+  t = t.replace(/\b(grams?|gr)\b/g, 'g');
+  t = t.replace(/\b(mililit(?:er|re)s?|millilit(?:er|re)s?)\b/g, 'ml');
+  t = t.replace(/\b(lit(?:er|re)s?|ltr)\b/g, 'l');
+  // Remove punctuation
+  t = t.replace(/[^a-z0-9\s]/g, ' ');
+  t = t.replace(/\s+/g, ' ').trim();
+  return t;
+}
+
+const SIMILARITY_THRESHOLD = 0.85;
+
+function itemSimilarity(a, b){
+  const na = normalizeItemName(a);
+  const nb = normalizeItemName(b);
+  if(!na || !nb) return 0;
+  if(na === nb) return 1;
+  const raw = jaroWinkler(na, nb);
+  const ta = na.split(' ').filter(Boolean).sort().join(' ');
+  const tb = nb.split(' ').filter(Boolean).sort().join(' ');
+  const sorted = (ta === tb) ? 0.98 : jaroWinkler(ta, tb);
+  return Math.max(raw, sorted);
+}
+
+// ===== Unit definitions =====
+const WEIGHT_UNIT_DEFS = [
+  { keys: ['kg','kilogram','kilo','kilos'], canonical: 'kg' },
+  { keys: ['gram','gr','grams','g'], canonical: 'g' },
+  { keys: ['mg','miligram','milligram'], canonical: 'mg' },
+  { keys: ['ons','ounce'], canonical: 'ons' },
+  { keys: ['kuintal','kwintal'], canonical: 'kuintal' },
+  { keys: ['ton','tonne','tonnes','tons'], canonical: 'ton' }
+];
+const VOLUME_UNIT_DEFS = [
+  { keys: ['liter','litre','liters','litres','ltr','lt','l'], canonical: 'liter' },
+  { keys: ['ml','mililiter','milliliter','mililiters','milliliters'], canonical: 'ml' },
+  { keys: ['cc'], canonical: 'cc' }
+];
+const QTY_UNIT_DEFS = [
+  { keys: ['pcs','pc','pieces','piece','buah','biji','butir'], canonical: 'pcs' },
+  { keys: ['botol','bottle','btl'], canonical: 'botol' },
+  { keys: ['sachet','saset','sach'], canonical: 'sachet' },
+  { keys: ['dus','box','karton','carton'], canonical: 'dus' },
+  { keys: ['pack','pak','paket'], canonical: 'pack' },
+  { keys: ['bungkus','bks'], canonical: 'bungkus' },
+  { keys: ['karung','sak'], canonical: 'karung' },
+  { keys: ['renteng','renceng','rentengan'], canonical: 'renteng' },
+  { keys: ['rim','lembar'], canonical: 'rim' }
+];
+
+function detectUnits(text){
+  let t = String(text == null ? '' : text).toLowerCase();
+  // Pastikan spasi antara angka dan satuan: "1l" → "1 l"
+  t = t.replace(/(\d+(?:[.,]\d+)?)\s*(kg|kilogram|kilos?|kilo|gr|grams?|gram|mg|miligram|milligram|ml|mililit(?:er|re)s?|millilit(?:er|re)s?|liters?|litres?|liter|litre|ltr|lt|l|cc|ons|ounces?|tons?|tonnes?|kuintals?|kwintals?|g)\b/g, '$1 $2');
+  const res = { weightUnit: null, qtyUnit: null, weightValue: null, qtyValue: null, hits: [] };
+  const findIn = (defs, type) => {
+    for(const d of defs){
+      for(const kw of d.keys){
+        const esc = kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const re = new RegExp('(\\d+(?:[.,]\\d+)?)?\\s*\\b' + esc + '\\b', 'i');
+        const m = t.match(re);
+        if(m){
+          const val = m[1] ? Number(m[1].replace(',', '.')) : null;
+          if(type === 'weight'){ res.weightUnit = d.canonical; res.weightValue = val; }
+          else if(type === 'volume'){ if(!res.weightUnit){ res.weightUnit = d.canonical; res.weightValue = val; } }
+          else if(type === 'qty'){ res.qtyUnit = d.canonical; res.qtyValue = val; }
+          res.hits.push({ type, unit: d.canonical, keyword: kw, value: val });
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+  if(!findIn(WEIGHT_UNIT_DEFS, 'weight')) findIn(VOLUME_UNIT_DEFS, 'volume');
+  findIn(QTY_UNIT_DEFS, 'qty');
+  return res;
+}
+
+function findSimilarItems(name, excludeId, threshold){
+  threshold = threshold || SIMILARITY_THRESHOLD;
+  const norm = normalizeItemName(name);
+  if(!norm) return [];
+  const results = [];
+  for(const item of cache.items.values()){
+    if(excludeId && item.id === excludeId) continue;
+    const score = itemSimilarity(item.name, name);
+    if(score >= threshold) results.push({ item, score });
+  }
+  results.sort((a, b) => b.score - a.score);
+  return results.slice(0, 6);
+}
+
+// ===== Similar modal =====
+function showSimilarItemsModal(similar, newName, onForceCreate, onUseExisting){
+  document.getElementById('simNewName').textContent = newName;
+  document.getElementById('simCount').textContent = `${similar.length} kandidat`;
+  const wrap = document.getElementById('simCandidates');
+  wrap.innerHTML = similar.map(({item, score}) => {
+    const pct = Math.round(score * 100);
+    const scoreCls = score >= 0.92 ? '' : 'med';
+    const stats = itemStats(item.id);
+    const thumb = item.photoUrl ? `<img src="${esc(item.photoUrl)}" alt="">` : `<i class="fas fa-box"></i>`;
+    const priceTxt = stats.count > 0 ? fmtRp(stats.min) : '—';
+    const priceLbl = stats.count > 0 ? 'Termurah' : 'Belum ada harga';
+    return `<div class="sim-card" onclick="__simUseExisting(${item.id})">
+      <div class="sim-top">
+        <div class="list-avatar prod" style="width:34px;height:34px">${thumb}</div>
+        <div class="list-body">
+          <div class="list-title">${esc(item.name)}${ownerBadgeHTML(item)}</div>
+          <div class="list-sub">${pct}% mirip • ${stats.count} toko • per ${esc(itemWeightUnit(item))}</div>
+        </div>
+        <div class="sim-score ${scoreCls}">${pct}%</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line)">
+        <span style="font-size:9.5px;color:var(--text-mute);font-weight:700">${priceLbl}</span>
+        <span style="font-size:12px;font-weight:800;color:var(--green-deep)">${priceTxt}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  window.__simUseExisting = (itemId) => {
+    const item = getItem(itemId);
+    if(!item) return;
+    closeSheet('similarModal');
+    if(onUseExisting) onUseExisting(item);
+  };
+
+  document.getElementById('simForceBtn').onclick = () => {
+    closeSheet('similarModal');
+    if(onForceCreate) onForceCreate();
+  };
+
+  openSheet('similarModal');
+}
+
+// ===== Unit detection UI =====
+function runItemNameDetection(){
+  const name = document.getElementById('iName').value;
+  const panel = document.getElementById('iUnitDetect');
+  const chips = document.getElementById('iUnitDetectChips');
+  if(!panel || !chips) return;
+  const det = detectUnits(name);
+  if(!det.weightUnit && !det.qtyUnit){
+    panel.style.display = 'none';
+    panel.dataset.weight = '';
+    panel.dataset.qty = '';
+    return;
+  }
+  panel.style.display = 'flex';
+  panel.dataset.weight = det.weightUnit || '';
+  panel.dataset.qty = det.qtyUnit || '';
+  const parts = [];
+  if(det.weightUnit) parts.push(`<span class="det-chip"><i class="fas fa-weight-hanging"></i> ${esc(det.weightUnit)}${det.weightValue ? ' × ' + det.weightValue : ''}</span>`);
+  if(det.qtyUnit) parts.push(`<span class="det-chip"><i class="fas fa-hashtag"></i> ${esc(det.qtyUnit)}${det.qtyValue ? ' × ' + det.qtyValue : ''}</span>`);
+  chips.innerHTML = parts.join(' ');
+}
+
+function applyDetectedUnits(){
+  const panel = document.getElementById('iUnitDetect');
+  if(!panel) return;
+  const w = panel.dataset.weight;
+  const q = panel.dataset.qty;
+  let applied = false;
+  if(w){ document.getElementById('iUnit').value = w; applied = true; }
+  if(q){ document.getElementById('iQtyUnit').value = q; applied = true; }
+  if(applied) snack('Satuan diterapkan dari nama barang');
+  else snack('Tidak ada satuan terdeteksi', 'info');
+}
+
+// ===== Scan duplicates =====
+function scanDuplicates(){
+  const items = [...dbGetAll('items')];
+  const pairs = [];
+  for(let i = 0; i < items.length; i++){
+    for(let j = i + 1; j < items.length; j++){
+      const score = itemSimilarity(items[i].name, items[j].name);
+      if(score >= SIMILARITY_THRESHOLD) pairs.push({ a: items[i], b: items[j], score });
+    }
+  }
+  pairs.sort((p, q) => q.score - p.score);
+  const wrap = document.getElementById('dupCandidates');
+  document.getElementById('dupCount').textContent = `${pairs.length} pasangan`;
+  if(pairs.length === 0){
+    wrap.innerHTML = `<div class="empty" style="padding:24px">
+      <div class="empty-icon" style="background:var(--green-pale);color:var(--green-deep)"><i class="fas fa-check"></i></div>
+      <h3>Semua Bersih!</h3>
+      <p>Tidak ada nama barang mirip ≥ ${Math.round(SIMILARITY_THRESHOLD*100)}%.</p>
+    </div>`;
+  } else {
+    wrap.innerHTML = pairs.map(({a, b, score}) => {
+      const pct = Math.round(score * 100);
+      const aStats = itemStats(a.id);
+      const bStats = itemStats(b.id);
+      const cls = score >= 0.92 ? '' : 'med';
+      return `<div class="sim-card" style="cursor:default">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <span class="sim-score ${cls}">${pct}% mirip</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center">
+          <div style="min-width:0">
+            <div class="list-title" style="font-size:11.5px">${esc(a.name)}</div>
+            <div class="list-sub">${aStats.count} toko • per ${esc(itemWeightUnit(a))}</div>
+            <div class="list-sub">${aStats.count > 0 ? fmtRp(aStats.min) : '—'}</div>
+          </div>
+          <i class="fas fa-arrows-left-right" style="color:var(--text-mute);font-size:11px"></i>
+          <div style="min-width:0">
+            <div class="list-title" style="font-size:11.5px">${esc(b.name)}</div>
+            <div class="list-sub">${bStats.count} toko • per ${esc(itemWeightUnit(b))}</div>
+            <div class="list-sub">${bStats.count > 0 ? fmtRp(bStats.min) : '—'}</div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  openSheet('dupModal');
+}
+
+window.scanDuplicates = scanDuplicates;
+window.applyDetectedUnits = applyDetectedUnits;
+
+/* ============================================================ */
 
 function getFilteredStores(){
   const all = [...dbGetAll('stores')].sort((a,b)=>(a.name||'').localeCompare(b.name||''));
@@ -1807,9 +2179,7 @@ document.addEventListener('keydown', e => {
   if(e.key === 'Escape') document.querySelectorAll('.scrim.show').forEach(ov => closeSheet(ov.id));
 });
 
-/* ============================================================
-   MANUAL COMPARISON (ADMIN OVERVIEW) — FUNGSI BARU
-   ============================================================ */
+/* MANUAL COMPARISON (ADMIN OVERVIEW) */
 function renderManualCompareSelector(){
   const sel = document.getElementById('manualItemSelect');
   if(!sel) return;
@@ -1956,8 +2326,6 @@ function renderManualCompare(){
 window.manualAddSelected = manualAddSelected;
 window.manualRemoveItem = manualRemoveItem;
 window.manualClearAll = manualClearAll;
-
-/* ============================================================ */
 
 async function openAgentPicker(){
   if(!isAdmin) return;
@@ -2487,7 +2855,6 @@ function renderFilterPanel(){
 function renderReports(){
   if(!canAccessCompareReports()) return;
 
-  // === Tampilkan/sembunyikan tabel perbandingan manual (admin overview saja) ===
   const manualSection = document.getElementById('manualCompareSection');
   const showManual = isAdmin && !activeAgentUid;
   if(manualSection){
@@ -2950,11 +3317,47 @@ async function bulkAddItem(){
   const qtyUnitEl = document.getElementById('bulkNewQtyUnit');
   const name = nameEl.value.trim();
   if(!name){ snack('Nama barang wajib diisi', 'error'); return; }
+
+  if(!window.__forceBulkCreate){
+    const similar = findSimilarItems(name);
+    if(similar.length > 0){
+      showSimilarItemsModal(
+        similar,
+        name,
+        () => {
+          window.__forceBulkCreate = true;
+          setTimeout(() => { window.__forceBulkCreate = false; }, 500);
+          bulkAddItem();
+        },
+        (existing) => {
+          state.bulkSearch = existing.name;
+          document.getElementById('bulkSearch').value = existing.name;
+          renderBulkList();
+          nameEl.value = '';
+          snack(`Menampilkan "${existing.name}" — silakan isi harganya`);
+          setTimeout(() => {
+            const row = document.querySelector(`.bulk-row .bulk-input[data-item="${existing.id}"]`);
+            if(row) row.scrollIntoView({behavior:'smooth', block:'center'});
+          }, 150);
+        }
+      );
+      return;
+    }
+  }
+  window.__forceBulkCreate = false;
+
+  const det = detectUnits(name);
+  let unit = unitEl.value.trim() || 'kg';
+  let qtyUnit = qtyUnitEl.value.trim() || 'pcs';
+  let detected = false;
+  if(det.weightUnit && (unit === 'kg' || !unit)){ unit = det.weightUnit; detected = true; }
+  if(det.qtyUnit && (qtyUnit === 'pcs' || !qtyUnit)){ qtyUnit = det.qtyUnit; detected = true; }
+
   try {
-    await dbAdd('items', { name, unit: unitEl.value.trim() || 'kg', qtyUnit: qtyUnitEl.value.trim() || 'pcs', category: '', note: '', photoUrl: '' });
+    await dbAdd('items', { name, unit, qtyUnit, category: '', note: '', photoUrl: '' });
     nameEl.value = ''; unitEl.value = 'kg'; qtyUnitEl.value = 'pcs';
     renderBulkList(); renderItems(); renderDashboard();
-    snack('Barang ditambahkan');
+    snack(`Barang ditambahkan${detected ? ' • satuan terdeteksi otomatis' : ''}`);
     nameEl.focus();
   } catch(err){ console.error(err); snack('Gagal menambah barang', 'error'); }
 }
@@ -3755,6 +4158,10 @@ function openItemModal(id){
   document.getElementById('iQtyUnit').value = 'pcs';
   document.getElementById('btnDeleteItem').style.display = 'none';
   resetPhotoField('iPhoto');
+  // Reset panel deteksi
+  const detPanel = document.getElementById('iUnitDetect');
+  if(detPanel){ detPanel.style.display = 'none'; detPanel.dataset.weight = ''; detPanel.dataset.qty = ''; }
+
   if(id){
     const it = getItem(id);
     if(!it) return;
@@ -3771,7 +4178,10 @@ function openItemModal(id){
     document.getElementById('itemModalTitle').textContent = 'Tambah Barang';
   }
   openSheet('itemModal');
-  setTimeout(() => document.getElementById('iName').focus(), 400);
+  setTimeout(() => {
+    document.getElementById('iName').focus();
+    runItemNameDetection();
+  }, 400);
 }
 
 async function saveItem(e){
@@ -3779,6 +4189,31 @@ async function saveItem(e){
   const id = document.getElementById('iId').value;
   const name = document.getElementById('iName').value.trim();
   if(!name){ snack('Nama barang wajib diisi', 'error'); return; }
+
+  // Cek mirip (Jaro-Winkler) hanya untuk barang baru
+  if(!id && !window.__forceItemCreate){
+    const similar = findSimilarItems(name);
+    if(similar.length > 0){
+      showSimilarItemsModal(
+        similar,
+        name,
+        () => {
+          window.__forceItemCreate = true;
+          setTimeout(() => { window.__forceItemCreate = false; }, 500);
+          document.getElementById('itemForm').requestSubmit();
+        },
+        (existing) => {
+          closeSheet('itemModal');
+          resetPhotoField('iPhoto');
+          snack(`Menggunakan barang "${existing.name}" — silakan catat harga`);
+          setTimeout(() => openPriceModal(existing.id), 350);
+        }
+      );
+      return;
+    }
+  }
+  window.__forceItemCreate = false;
+
   const btn = document.getElementById('iSaveBtn');
   const oldHtml = btn.innerHTML;
   btn.disabled = true;
@@ -4104,7 +4539,6 @@ function exportPDF(){
   snack('PDF diunduh');
 }
 
-/* ====== REFRESH ROLE (untuk memuat ulang peran dari Firebase) ====== */
 async function refreshRole(){
   if(!uid){ snack('Belum login', 'error'); return; }
   try {
@@ -4169,6 +4603,8 @@ document.getElementById('bulkSearch').addEventListener('input', e => { state.bul
 document.getElementById('bulkNewItem').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); bulkAddItem(); } });
 document.getElementById('bulkNewUnit').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); bulkAddItem(); } });
 document.getElementById('bulkNewQtyUnit').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); bulkAddItem(); } });
+// Deteksi satuan saat nama barang diketik
+document.getElementById('iName').addEventListener('input', runItemNameDetection);
 ['loginEmail','loginPass'].forEach(id => { document.getElementById(id).addEventListener('keydown', e => { if(e.key === 'Enter') doAuth('login'); }); });
 ['regEmail','regPass','regPass2'].forEach(id => { document.getElementById(id).addEventListener('keydown', e => { if(e.key === 'Enter') doAuth('register'); }); });
 
