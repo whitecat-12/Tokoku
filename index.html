@@ -505,6 +505,9 @@ body.no-store-mode .fab{display:none}
 .merge-btn.warn{background:var(--amber-pale);color:var(--amber-deep)}
 .merge-btn.warn:hover{background:var(--amber);color:#fff}
 
+/* ===== BADGE GROUP ===== */
+.group-count-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:999px;background:var(--violet-pale);color:var(--violet-deep);font-size:8.5px;font-weight:800;margin-left:4px}
+
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-thumb{background:#bfdbfe;border-radius:99px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -678,7 +681,7 @@ body.no-store-mode .fab{display:none}
 
     <section class="view" id="view-compare">
       <div class="field" style="margin-top:6px">
-        <label class="field-label">Pilih Barang</label>
+        <label class="field-label">Pilih Barang (dikelompokkan)</label>
         <div class="field-wrap"><i class="fas fa-box"></i>
           <select class="select" id="compareItemSelect"></select>
         </div>
@@ -694,11 +697,11 @@ body.no-store-mode .fab{display:none}
         </div>
         <div class="bulk-note" style="margin-bottom:8px">
           <i class="fas fa-circle-info"></i>
-          <span>Pilih barang dari dropdown di bawah — berisi <b>semua barang</b> dari agen & petugas yang punya harga. Klik <b>Tambah Baris</b> untuk menambahkan ke tabel perbandingan.</span>
+          <span>Pilih barang dari dropdown di bawah — berisi <b>semua barang</b> yang punya harga. Barang dengan nama & satuan sama otomatis digabung meski dari akun berbeda.</span>
         </div>
         <div class="filter-panel" style="margin-bottom:10px;padding:12px">
           <div class="field" style="margin-bottom:8px">
-            <label class="field-label">Pilih Barang (dari semua agen & petugas)</label>
+            <label class="field-label">Pilih Barang</label>
             <div class="manual-select-wrap">
               <div class="field-wrap"><i class="fas fa-box"></i>
                 <select class="select" id="manualItemSelect">
@@ -972,7 +975,6 @@ body.no-store-mode .fab{display:none}
             <input type="text" class="input" id="iName" placeholder="Contoh: Beras" maxlength="40" required>
           </div>
         </div>
-        <!-- Warning realtime nama mirip -->
         <div class="name-warn" id="iNameWarn" style="display:none"></div>
         <div class="unit-detect" id="iUnitDetect" style="display:none">
           <div class="ud-icon"><i class="fas fa-wand-magic-sparkles"></i></div>
@@ -1127,7 +1129,6 @@ body.no-store-mode .fab{display:none}
         <input type="text" class="input-plain unit-plain" id="bulkNewQtyUnit" value="pcs" maxlength="12" placeholder="pcs">
         <button type="button" onclick="bulkAddItem()"><i class="fas fa-plus"></i></button>
       </div>
-      <!-- Warning realtime nama mirip (bulk) -->
       <div class="name-warn" id="bulkNameWarn" style="display:none;margin-bottom:10px"></div>
       <div class="total-preview"><span class="lbl">Total Harga</span><span class="val" id="bulkTotal">Rp 0</span></div>
       <div class="btn-row">
@@ -1845,12 +1846,112 @@ function storeHistories(storeId){
   return dbGetAll('histories').filter(h => h.storeId === storeId).sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
 }
 
+/* ============================================================
+   VIRTUAL GROUPING — kelompokkan item dengan nama ternormalisasi + satuan identik
+   sehingga barang dari akun berbeda tetap muncul sebagai 1 baris di tabel.
+   ============================================================ */
+function findGroupKeyForItem(itemId){
+  const item = getItem(itemId);
+  if(!item) return null;
+  const norm = normalizeItemName(item.name);
+  if(!norm) return null;
+  return norm + '||' + (item.unit || 'kg') + '||' + (item.qtyUnit || 'pcs');
+}
+
+function getVirtualItemGroups(){
+  const items = [...dbGetAll('items')];
+  const groups = new Map();
+  items.forEach(it => {
+    const norm = normalizeItemName(it.name);
+    if(!norm) return;
+    const key = norm + '||' + (it.unit || 'kg') + '||' + (it.qtyUnit || 'pcs');
+    if(!groups.has(key)){
+      groups.set(key, {
+        key, displayName: it.name, unit: it.unit || 'kg', qtyUnit: it.qtyUnit || 'pcs',
+        memberIds: [], members: []
+      });
+    }
+    const g = groups.get(key);
+    g.memberIds.push(it.id);
+    g.members.push(it);
+    // Pick display name — yang lebih panjang dianggap lebih deskriptif
+    if((it.name || '').length > g.displayName.length) g.displayName = it.name;
+  });
+  return [...groups.values()];
+}
+
+function getLatestPriceForGroup(group, storeId){
+  let best = null;
+  group.memberIds.forEach(itemId => {
+    const p = getLatestPrice(itemId, storeId);
+    if(p && (!best || p.date > best.date || (p.date === best.date && p.id > best.id))){
+      best = p;
+    }
+  });
+  return best;
+}
+
+function groupItemStats(group){
+  const storeLatest = new Map();
+  group.memberIds.forEach(itemId => {
+    dbGetAll('prices').filter(p => p.itemId === itemId).forEach(p => {
+      const existing = storeLatest.get(p.storeId);
+      if(!existing || p.date > existing.date || (p.date === existing.date && p.id > existing.id)){
+        storeLatest.set(p.storeId, p);
+      }
+    });
+  });
+  const rows = [...storeLatest.values()]
+    .map(p => ({ ...p, store: getStore(p.storeId) }))
+    .filter(r => r.store)
+    .sort((a, b) => a.price - b.price);
+  const prices = rows.map(r => r.price);
+  if(prices.length === 0) return { rows:[], min:0, max:0, avg:0, diff:0, count:0, cheapest:null, priciest:null };
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+  return { rows, min, max, avg: prices.reduce((a,b)=>a+b,0)/prices.length, diff: max-min, count: rows.length, cheapest: rows[0], priciest: rows[rows.length - 1] };
+}
+
+function getFilteredGroups(){
+  const all = getVirtualItemGroups().sort((a, b) => a.displayName.localeCompare(b.displayName));
+  if(state.itemFilterNone) return [];
+  if(state.selectedItems.size === 0) return all;
+  return all.filter(g => g.memberIds.some(id => state.selectedItems.has(id)));
+}
+
+function toggleGroupFilter(groupKey){
+  const groups = getVirtualItemGroups();
+  const g = groups.find(x => x.key === groupKey);
+  if(!g) return;
+  if(state.itemFilterNone){ state.itemFilterNone = false; state.selectedItems.clear(); }
+  const anySelected = g.memberIds.some(id => state.selectedItems.has(id));
+  if(state.selectedItems.size === 0){
+    groups.forEach(gg => {
+      if(gg.key !== groupKey) gg.memberIds.forEach(id => state.selectedItems.add(id));
+    });
+  } else if(anySelected){
+    g.memberIds.forEach(id => state.selectedItems.delete(id));
+  } else {
+    g.memberIds.forEach(id => state.selectedItems.add(id));
+    const totalIds = groups.reduce((s, gg) => s + gg.memberIds.length, 0);
+    if(state.selectedItems.size >= totalIds) state.selectedItems.clear();
+  }
+  renderReports();
+  renderReportCharts();
+}
+window.toggleGroupFilter = toggleGroupFilter;
+
+function groupBadgeHTML(group){
+  if(group.memberIds.length <= 1) return '';
+  return `<span class="group-count-badge"><i class="fas fa-layer-group"></i> ${group.memberIds.length} entri</span>`;
+}
+
 const state = {
   view: 'dashboard',
   itemSearch: '',
   storeSearch: '',
-  compareItemId: null,
-  trendItemId: null,
+  compareGroupKey: null,
+  trendGroupKey: null,
   selectedStores: new Set(),
   selectedItems: new Set(),
   bulkDraft: {},
@@ -1957,8 +2058,8 @@ function detectUnits(text){
   const findIn = (defs, type) => {
     for(const d of defs){
       for(const kw of d.keys){
-        const esc = kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const re = new RegExp('(\\d+(?:[.,]\\d+)?)?\\s*\\b' + esc + '\\b', 'i');
+        const esc2 = kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const re = new RegExp('(\\d+(?:[.,]\\d+)?)?\\s*\\b' + esc2 + '\\b', 'i');
         const m = t.match(re);
         if(m){
           const val = m[1] ? Number(m[1].replace(',', '.')) : null;
@@ -1991,7 +2092,6 @@ function findSimilarItems(name, excludeId, threshold){
   return results.slice(0, 6);
 }
 
-/* ===== Similar modal ===== */
 function showSimilarItemsModal(similar, newName, onForceCreate, onUseExisting){
   const topScore = similar[0]?.score || 0;
   const isExact = topScore >= 0.98;
@@ -2014,9 +2114,6 @@ function showSimilarItemsModal(similar, newName, onForceCreate, onUseExisting){
     const thumb = item.photoUrl ? `<img src="${esc(item.photoUrl)}" alt="">` : `<i class="fas fa-box"></i>`;
     const priceTxt = stats.count > 0 ? fmtRp(stats.min) : '—';
     const priceLbl = stats.count > 0 ? 'Termurah' : 'Belum ada harga';
-    const useBtnStyle = score >= 0.98
-      ? 'background:var(--green);color:#fff;font-weight:800;'
-      : '';
     return `<div class="sim-card" style="${score >= 0.98 ? 'border-left-color:var(--green)' : ''}" onclick="__simUseExisting(${item.id})">
       <div class="sim-top">
         <div class="list-avatar prod" style="width:34px;height:34px">${thumb}</div>
@@ -2060,7 +2157,6 @@ function showSimilarItemsModal(similar, newName, onForceCreate, onUseExisting){
   openSheet('similarModal');
 }
 
-/* ===== Unit detection UI ===== */
 function runItemNameDetection(){
   const name = document.getElementById('iName').value;
   const panel = document.getElementById('iUnitDetect');
@@ -2094,7 +2190,6 @@ function applyDetectedUnits(){
   else snack('Tidak ada satuan terdeteksi', 'info');
 }
 
-/* ===== REALTIME NAME WARNING ===== */
 function updateNameWarning(inputId, warnId, source){
   const input = document.getElementById(inputId);
   const warn = document.getElementById(warnId);
@@ -2159,7 +2254,6 @@ function useExistingFromWarning(source, itemId){
 }
 window.useExistingFromWarning = useExistingFromWarning;
 
-/* ===== Scan duplicates + MERGE ===== */
 function scanDuplicates(){
   const items = [...dbGetAll('items')];
   const pairs = [];
@@ -2184,6 +2278,8 @@ function scanDuplicates(){
       const aStats = itemStats(a.id);
       const bStats = itemStats(b.id);
       const cls = score >= 0.92 ? '' : 'med';
+      const canMerge = !(isAdmin && !activeAgentUid) || (a._ownerUid === b._ownerUid);
+      const mergeNote = canMerge ? '' : '<div style="font-size:9px;color:var(--rose-deep);margin-top:6px;font-weight:700"><i class="fas fa-info-circle"></i> Beda akun — tidak bisa merge fisik, gunakan merge otomatis (tampilan)</div>';
       return `<div class="sim-card" style="cursor:default;border-left-color:${score >= 0.98 ? 'var(--rose)' : 'var(--amber)'}">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
           <span class="sim-score ${cls}">${pct}% mirip</span>
@@ -2191,25 +2287,25 @@ function scanDuplicates(){
         </div>
         <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center">
           <div style="min-width:0">
-            <div class="list-title" style="font-size:11.5px">${esc(a.name)}</div>
+            <div class="list-title" style="font-size:11.5px">${esc(a.name)}${ownerBadgeHTML(a)}</div>
             <div class="list-sub">${aStats.count} toko • per ${esc(itemWeightUnit(a))}</div>
             <div class="list-sub">${aStats.count > 0 ? fmtRp(aStats.min) : '—'}</div>
           </div>
           <i class="fas fa-arrows-left-right" style="color:var(--text-mute);font-size:11px"></i>
           <div style="min-width:0">
-            <div class="list-title" style="font-size:11.5px">${esc(b.name)}</div>
+            <div class="list-title" style="font-size:11.5px">${esc(b.name)}${ownerBadgeHTML(b)}</div>
             <div class="list-sub">${bStats.count} toko • per ${esc(itemWeightUnit(b))}</div>
             <div class="list-sub">${bStats.count > 0 ? fmtRp(bStats.min) : '—'}</div>
           </div>
         </div>
-        <div class="merge-actions">
+        ${canMerge ? `<div class="merge-actions">
           <button class="merge-btn" onclick="mergeItemsPrompt(${a.id}, ${b.id})" title="Semua harga '${esc(b.name)}' dipindah ke '${esc(a.name)}', lalu '${esc(b.name)}' dihapus">
             <i class="fas fa-compress"></i> Pertahankan "${esc(a.name.length > 12 ? a.name.slice(0,12)+'…' : a.name)}"
           </button>
           <button class="merge-btn warn" onclick="mergeItemsPrompt(${b.id}, ${a.id})" title="Semua harga '${esc(a.name)}' dipindah ke '${esc(b.name)}', lalu '${esc(a.name)}' dihapus">
             <i class="fas fa-compress"></i> Pertahankan "${esc(b.name.length > 12 ? b.name.slice(0,12)+'…' : b.name)}"
           </button>
-        </div>
+        </div>` : mergeNote}
       </div>`;
     }).join('');
   }
@@ -2220,6 +2316,9 @@ async function mergeItems(masterId, slaveId){
   const master = getItem(masterId);
   const slave = getItem(slaveId);
   if(!master || !slave || masterId === slaveId) return { moved: 0, discarded: 0 };
+  if(isAdmin && !activeAgentUid && master._ownerUid !== slave._ownerUid){
+    throw new Error('Tidak bisa merge barang dari akun berbeda');
+  }
 
   const slavePrices = dbGetAll('prices').filter(p => p.itemId === slaveId);
   let moved = 0, discarded = 0;
@@ -2243,9 +2342,6 @@ async function mergeItems(masterId, slaveId){
 
   state.manualCompareItems.delete(slaveId);
   state.selectedItems.delete(slaveId);
-  if(state.compareItemId === slaveId) state.compareItemId = null;
-  if(state.trendItemId === slaveId) state.trendItemId = null;
-  delete state.bulkDraft[String(slaveId)];
 
   return { moved, discarded };
 }
@@ -2291,7 +2387,7 @@ function mergeItemsPrompt(masterId, slaveId){
       snack(`Digabung: ${res.moved} harga dipindah, ${res.discarded} duplikat dihapus`);
     } catch(err){
       console.error(err);
-      snack('Gagal menggabungkan', 'error');
+      snack(err.message || 'Gagal menggabungkan', 'error');
       confirmOk.disabled = false;
       confirmOk.innerHTML = '<i class="fas fa-compress"></i> Gabungkan';
     }
@@ -2301,16 +2397,14 @@ function mergeItemsPrompt(masterId, slaveId){
 window.mergeItemsPrompt = mergeItemsPrompt;
 
 /* ============================================================
-   AUTO-MERGE BARANG DUPLIKAT (nama + satuan identik)
+   AUTO-MERGE (physical) — hanya dalam 1 akun
    ============================================================ */
 async function autoMergeExactDuplicates(){
-  // Skip di admin overview — data lintas user, tak bisa di-merge satu collection
   if(isAdmin && !activeAgentUid) return 0;
 
   const items = [...dbGetAll('items')];
   if(items.length < 2) return 0;
 
-  // Kelompokkan berdasarkan nama ternormalisasi + satuan (unit + qtyUnit)
   const groups = new Map();
   items.forEach(it => {
     const norm = normalizeItemName(it.name);
@@ -2324,15 +2418,11 @@ async function autoMergeExactDuplicates(){
 
   for(const group of groups.values()){
     if(group.length < 2) continue;
-
-    // Master = item dengan harga terbanyak (tiebreak: id terlama)
     const withCounts = group.map(it => ({
       it,
       count: dbGetAll('prices').filter(p => p.itemId === it.id).length
     })).sort((a,b) => b.count - a.count || a.it.id - b.it.id);
-
     const master = withCounts[0].it;
-
     for(let i = 1; i < withCounts.length; i++){
       try {
         const res = await mergeItems(master.id, withCounts[i].it.id);
@@ -2347,7 +2437,6 @@ async function autoMergeExactDuplicates(){
 
   if(mergedCount > 0){
     snack(`${mergedCount} barang duplikat digabung otomatis${totalDiscarded > 0 ? ` • ${totalDiscarded} harga duplikat dihapus` : ''}`, 'info');
-    console.log('[autoMergeExactDuplicates]', { mergedCount, totalMoved, totalDiscarded });
   }
   return mergedCount;
 }
@@ -2444,21 +2533,22 @@ document.addEventListener('keydown', e => {
   if(e.key === 'Escape') document.querySelectorAll('.scrim.show').forEach(ov => closeSheet(ov.id));
 });
 
-/* MANUAL COMPARISON (ADMIN OVERVIEW) */
+/* MANUAL COMPARISON (ADMIN OVERVIEW) — grouped */
 function renderManualCompareSelector(){
   const sel = document.getElementById('manualItemSelect');
   if(!sel) return;
-  const items = [...dbGetAll('items')].sort((a,b) => (a.name||'').localeCompare(b.name||''));
-  const withPrice = items.filter(i => dbGetAll('prices').some(p => p.itemId === i.id));
+  const groups = getVirtualItemGroups().sort((a, b) => a.displayName.localeCompare(b.displayName));
+  const withPrice = groups.filter(g => g.memberIds.some(id => dbGetAll('prices').some(p => p.itemId === id)));
   const currentVal = sel.value;
   if(withPrice.length === 0){
     sel.innerHTML = '<option value="">Belum ada barang dengan harga</option>';
     return;
   }
   sel.innerHTML = '<option value="">— Pilih barang —</option>' +
-    withPrice.map(i => {
-      const owner = i._ownerName ? ` — ${i._ownerName}` : '';
-      return `<option value="${i.id}">${esc(i.name)}${esc(owner)}</option>`;
+    withPrice.map(g => {
+      const owners = [...new Set(g.members.map(m => m._ownerName).filter(Boolean))];
+      const ownerHint = owners.length > 1 ? ` — ${owners.length} akun` : (owners[0] ? ` — ${owners[0]}` : '');
+      return `<option value="${esc(g.key)}">${esc(g.displayName)}${esc(ownerHint)}</option>`;
     }).join('');
   if(currentVal) sel.value = currentVal;
 }
@@ -2466,17 +2556,17 @@ function renderManualCompareSelector(){
 function manualAddSelected(){
   const sel = document.getElementById('manualItemSelect');
   if(!sel) return;
-  const itemId = Number(sel.value);
-  if(!itemId){ snack('Pilih barang terlebih dahulu', 'info'); return; }
-  if(state.manualCompareItems.has(itemId)){ snack('Barang sudah ada di tabel', 'info'); return; }
-  state.manualCompareItems.add(itemId);
+  const groupKey = sel.value;
+  if(!groupKey){ snack('Pilih barang terlebih dahulu', 'info'); return; }
+  if(state.manualCompareItems.has(groupKey)){ snack('Barang sudah ada di tabel', 'info'); return; }
+  state.manualCompareItems.add(groupKey);
   sel.value = '';
   renderManualCompare();
   snack('Baris ditambahkan ke tabel manual');
 }
 
-function manualRemoveItem(itemId){
-  state.manualCompareItems.delete(itemId);
+function manualRemoveItem(groupKey){
+  state.manualCompareItems.delete(groupKey);
   renderManualCompare();
   snack('Baris dihapus');
 }
@@ -2503,29 +2593,32 @@ function renderManualCompare(){
     return;
   }
 
-  const itemIds = [...state.manualCompareItems];
+  const groupKeys = [...state.manualCompareItems];
+  const allGroups = getVirtualItemGroups();
+  const groups = groupKeys.map(k => allGroups.find(g => g.key === k)).filter(Boolean);
+
   const storeIds = new Set();
-  itemIds.forEach(itemId => {
-    dbGetAll('prices').filter(p => p.itemId === itemId).forEach(p => storeIds.add(p.storeId));
+  groups.forEach(g => {
+    g.memberIds.forEach(itemId => {
+      dbGetAll('prices').filter(p => p.itemId === itemId).forEach(p => storeIds.add(p.storeId));
+    });
   });
   const stores = [...storeIds].map(id => getStore(id)).filter(Boolean)
     .sort((a,b) => (a.name||'').localeCompare(b.name||''));
 
   if(stores.length === 0){
     wrap.innerHTML = `<div class="empty" style="padding:24px"><p style="margin:0">Belum ada data harga untuk barang yang dipilih</p></div>`;
-    if(countEl) countEl.textContent = `${itemIds.length} barang`;
+    if(countEl) countEl.textContent = `${groups.length} barang`;
     return;
   }
 
-  const rows = itemIds.map(itemId => {
-    const item = getItem(itemId);
-    if(!item) return null;
-    const cells = stores.map(store => getLatestPrice(itemId, store.id));
+  const rows = groups.map(group => {
+    const cells = stores.map(store => getLatestPriceForGroup(group, store.id));
     const prices = cells.filter(c => c).map(c => c.price);
     const min = prices.length ? Math.min(...prices) : null;
     const max = prices.length ? Math.max(...prices) : null;
-    return { item, cells, min, max, diff: (min !== null && max !== null) ? max - min : 0, hasData: prices.length > 0 };
-  }).filter(Boolean).filter(r => r.hasData);
+    return { group, cells, min, max, diff: (min !== null && max !== null) ? max - min : 0, hasData: prices.length > 0 };
+  }).filter(r => r.hasData);
 
   if(rows.length === 0){
     wrap.innerHTML = `<div class="empty" style="padding:24px"><p style="margin:0">Tidak ada data harga</p></div>`;
@@ -2568,12 +2661,12 @@ function renderManualCompare(){
               return `<td class="matrix-cell ${cls}">${crown}${fmtRp(c.price)}</td>`;
             }).join('');
             return `<tr>
-              <td class="matrix-item">${esc(r.item.name)}<span class="it-unit">per ${esc(itemWeightUnit(r.item))}</span></td>
+              <td class="matrix-item">${esc(r.group.displayName)}${groupBadgeHTML(r.group)}<span class="it-unit">per ${esc(r.group.unit)}</span></td>
               ${cellsHtml}
               <td class="matrix-sum min">${fmtRp(r.min)}</td>
               <td class="matrix-sum max">${fmtRp(r.max)}</td>
               <td class="matrix-sum diff" ${r.diff > 0 ? '' : 'style="color:var(--text-mute)"'}>${r.diff > 0 ? '+' + fmtRp(r.diff) : '—'}</td>
-              <td style="text-align:center;padding:6px"><button class="icon-btn-sm danger" onclick="manualRemoveItem(${r.item.id})" title="Hapus baris"><i class="fas fa-xmark"></i></button></td>
+              <td style="text-align:center;padding:6px"><button class="icon-btn-sm danger" onclick="manualRemoveItem('${esc(r.group.key).replace(/'/g,"\\'")}')" title="Hapus baris"><i class="fas fa-xmark"></i></button></td>
             </tr>`;
           }).join('')}
         </tbody>
@@ -2642,7 +2735,6 @@ async function selectAgentForEdit(agentUid, agentName, agentRole){
   try {
     snack('Memuat data pengguna...', 'info');
     await loadAllForAgent(agentUid);
-    // PERBAIKAN: auto-merge duplikat setelah load
     await autoMergeExactDuplicates();
     document.getElementById('adminModeName').textContent = agentName;
     document.querySelector('#adminModeBanner .lbl').textContent =
@@ -2715,18 +2807,23 @@ function renderDashboard(){
   const items = dbGetAll('items');
   const prices = dbGetAll('prices');
   const histories = dbGetAll('histories');
+  const groups = getVirtualItemGroups();
+
   let potensi = 0;
-  items.forEach(i => { const st = itemStats(i.id); if(st.count >= 2) potensi += st.diff; });
+  groups.forEach(g => {
+    const st = groupItemStats(g);
+    if(st.count >= 2) potensi += st.diff;
+  });
 
   document.getElementById('heroValue').textContent = fmtRp(potensi);
-  document.getElementById('heroSub').textContent = `${stores.length} toko • ${items.length} barang • ${prices.length} catatan`;
+  document.getElementById('heroSub').textContent = `${stores.length} toko • ${groups.length} barang • ${prices.length} catatan`;
   document.getElementById('heroTitle').textContent = isAdmin && !activeAgentUid ? 'Ringkasan Semua Agen' : 'Ringkasan Perbandingan';
   document.getElementById('statStores').textContent = fmtNum(stores.length);
-  document.getElementById('statItems').textContent  = fmtNum(items.length);
+  document.getElementById('statItems').textContent  = fmtNum(groups.length);
   document.getElementById('statPrices').textContent = fmtNum(prices.length);
   document.getElementById('statToday').textContent  = fmtNum(prices.filter(p => p.date === t).length);
   document.getElementById('infoStores').textContent = fmtNum(stores.length);
-  document.getElementById('infoItems').textContent  = fmtNum(items.length);
+  document.getElementById('infoItems').textContent  = fmtNum(groups.length);
   const infoHist = document.getElementById('infoHist');
   if(infoHist) infoHist.textContent = fmtNum(histories.length);
   const infoRole = document.getElementById('infoRole');
@@ -2736,8 +2833,8 @@ function renderDashboard(){
   document.body.classList.toggle('no-store-mode', noStoreMode);
 
   const cheapestEl = document.getElementById('cheapestList');
-  const withPrice = itemsWithPrice()
-    .map(i => ({ item:i, stats:itemStats(i.id) }))
+  const withPrice = groups
+    .map(g => ({ group: g, stats: groupItemStats(g) }))
     .filter(x => x.stats.count > 0)
     .sort((a,b) => b.stats.diff - a.stats.diff)
     .slice(0, 5);
@@ -2758,17 +2855,18 @@ function renderDashboard(){
       <p>${isAdmin && !activeAgentUid ? 'Pengguna belum mengirimkan data.' : 'Tambahkan barang & catat harganya.'}</p>
     </div></div>`;
   } else {
-    cheapestEl.innerHTML = `<div class="list">${withPrice.map(({item, stats}) => {
-      const thumb = item.photoUrl ? `<img src="${esc(item.photoUrl)}" alt="">` : `<i class="fas fa-box"></i>`;
-      return `<div class="list-item" onclick="openItemDetail(${item.id})">
+    cheapestEl.innerHTML = `<div class="list">${withPrice.map(({group, stats}) => {
+      const repItem = group.members[0];
+      const thumb = repItem && repItem.photoUrl ? `<img src="${esc(repItem.photoUrl)}" alt="">` : `<i class="fas fa-box"></i>`;
+      return `<div class="list-item" onclick="openGroupDetail('${esc(group.key).replace(/'/g,"\\'")}')">
         <div class="list-avatar prod">${thumb}</div>
         <div class="list-body">
-          <div class="list-title">${esc(item.name)}${ownerBadgeHTML(item)}</div>
+          <div class="list-title">${esc(group.displayName)}${groupBadgeHTML(group)}</div>
           <div class="list-sub"><i class="fas fa-store" style="font-size:8.5px"></i> ${esc(stats.cheapest.store.name)} • ${stats.count} toko</div>
         </div>
         <div class="list-trailing">
           <div class="list-amount best">${fmtRp(stats.min)}</div>
-          <div class="list-meta">per ${esc(itemWeightUnit(item))}</div>
+          <div class="list-meta">per ${esc(group.unit)}</div>
         </div>
       </div>`;
     }).join('')}</div>`;
@@ -2955,20 +3053,13 @@ function renderStores(){
   }).join('')}</div>`;
 }
 
-function populateItemSelect(sel, selectedId){
-  if(!sel) return;
-  const items = dbGetAll('items');
-  if(items.length === 0){ sel.innerHTML = '<option value="">Belum ada barang</option>'; return; }
-  const sorted = [...items].sort((a,b) => (a.name||'').localeCompare(b.name||''));
-  sel.innerHTML = sorted.map(i => `<option value="${i.id}">${esc(i.name)}${i.unit ? ' ('+esc(i.unit)+')' : ''}</option>`).join('');
-  if(selectedId) sel.value = String(selectedId);
-}
+/* Group-based compare view */
 function renderCompare(){
   if(!canAccessCompareReports()) return;
   const sel = document.getElementById('compareItemSelect');
   const content = document.getElementById('compareContent');
-  const items = dbGetAll('items');
-  if(items.length === 0){
+  const groups = getVirtualItemGroups().sort((a,b)=>a.displayName.localeCompare(b.displayName));
+  if(groups.length === 0){
     sel.innerHTML = '<option value="">Belum ada barang</option>';
     content.innerHTML = `<div class="list"><div class="empty">
       <div class="empty-icon"><i class="fas fa-right-left"></i></div>
@@ -2977,21 +3068,25 @@ function renderCompare(){
     </div></div>`;
     return;
   }
-  if(!state.compareItemId || !getItem(state.compareItemId)){
-    state.compareItemId = [...items].sort((a,b)=>(a.name||'').localeCompare(b.name||''))[0].id;
+  if(!state.compareGroupKey || !groups.some(g => g.key === state.compareGroupKey)){
+    state.compareGroupKey = groups[0].key;
   }
-  populateItemSelect(sel, state.compareItemId);
-  const item = getItem(state.compareItemId);
-  const stats = itemStats(item.id);
+  sel.innerHTML = groups.map(g => `<option value="${esc(g.key)}" ${g.key===state.compareGroupKey?'selected':''}>${esc(g.displayName)} (${esc(g.unit)})</option>`).join('');
+
+  const group = groups.find(g => g.key === state.compareGroupKey);
+  const stats = groupItemStats(group);
+  const repItemId = group.memberIds[0];
+
   if(stats.count === 0){
     content.innerHTML = `<div class="list"><div class="empty">
       <div class="empty-icon"><i class="fas fa-tags"></i></div>
       <h3>Belum Ada Harga</h3>
-      <p>Belum ada harga untuk <b>${esc(item.name)}</b>.</p>
-      <button class="btn-text" onclick="openPriceModal(${item.id})"><i class="fas fa-plus"></i> Catat Harga</button>
+      <p>Belum ada harga untuk <b>${esc(group.displayName)}</b>.</p>
+      ${!isAdmin || activeAgentUid ? `<button class="btn-text" onclick="openPriceModal(${repItemId})"><i class="fas fa-plus"></i> Catat Harga</button>` : ''}
     </div></div>`;
     return;
   }
+
   const maxPrice = stats.max || 1;
   const tied = stats.diff === 0 && stats.count > 1;
   let heroHtml = '';
@@ -3008,7 +3103,6 @@ function renderCompare(){
         <div class="cmp-hero-price"><div class="cmp-hero-label">Hemat</div><div class="p">${fmtRp(stats.diff)}</div></div></div>`;
     }
   }
-  const qUnit = itemQtyUnit(item);
   const cardsHtml = stats.rows.map((r, idx) => {
     const rank = idx + 1;
     const diff = r.price - stats.min;
@@ -3026,8 +3120,8 @@ function renderCompare(){
     else if(diff === 0){ diffText = 'Termurah'; diffClass = 'pos'; }
     else { diffText = '+' + fmtRp(diff) + '  (+' + pct.toFixed(1) + '%)'; diffClass = isWorst ? 'neg' : 'neutral'; }
     const chips = [];
-    if(r.weight) chips.push(`⚖ ${fmtWeight(r.weight)} ${esc(itemWeightUnit(item))}`);
-    if(r.qty) chips.push(`${fmtQty(r.qty)} ${esc(qUnit)}`);
+    if(r.weight) chips.push(`⚖ ${fmtWeight(r.weight)} ${esc(group.unit)}`);
+    if(r.qty) chips.push(`${fmtQty(r.qty)} ${esc(group.qtyUnit)}`);
     const chipTxt = chips.length ? ` • ${chips.join(' • ')}` : '';
     const addrHtml = r.store.address
       ? `<i class="fas fa-location-dot"></i> ${esc(r.store.address)}${chipTxt}`
@@ -3048,10 +3142,12 @@ function renderCompare(){
     </div>`;
   }).join('');
   const rangeText = stats.diff > 0 ? fmtRp(stats.diff) : '—';
+
+  const canWrite = !isAdmin || activeAgentUid;
   content.innerHTML = `
     ${heroHtml}
     <div class="section-head" style="margin-top:6px">
-      <h2><i class="fas fa-list-ol"></i> Urutan Harga ${esc(item.name)}</h2>
+      <h2><i class="fas fa-list-ol"></i> Urutan Harga ${esc(group.displayName)}</h2>
       <span class="count">${stats.count} toko</span>
     </div>
     <div class="cmp-list">${cardsHtml}</div>
@@ -3061,11 +3157,105 @@ function renderCompare(){
       <div class="cmp-stat save"><div class="cmp-stat-label">Hemat</div><div class="cmp-stat-value green">${stats.diff > 0 ? 'Rp ' + Number(stats.diff).toLocaleString('id-ID') : '—'}</div></div>
     </div>
     <div class="btn-row" style="margin-top:12px">
-      <button class="btn btn-outlined" onclick="openItemDetail(${item.id})"><i class="fas fa-circle-info"></i> Detail Barang</button>
-      <button class="btn btn-filled" onclick="openPriceModal(${item.id})"><i class="fas fa-plus"></i> Catat Harga</button>
+      <button class="btn btn-outlined" onclick="openGroupDetail('${esc(group.key).replace(/'/g,"\\'")}')"><i class="fas fa-circle-info"></i> Detail Barang</button>
+      ${canWrite ? `<button class="btn btn-filled" onclick="openPriceModal(${repItemId})"><i class="fas fa-plus"></i> Catat Harga</button>` : '<button class="btn btn-tonal" onclick="openAgentPicker()"><i class="fas fa-users-gear"></i> Kelola Data</button>'}
     </div>
   `;
 }
+
+/* Group detail modal */
+function openGroupDetail(groupKey){
+  const groups = getVirtualItemGroups();
+  const group = groups.find(g => g.key === groupKey);
+  if(!group) return;
+  const stats = groupItemStats(group);
+  document.getElementById('detailIcon').className = 'fas fa-layer-group';
+  document.getElementById('detailTitle').textContent = group.displayName;
+  let html = `<div class="info-hero" style="padding-top:0">
+    <div class="info-hero-icon" style="width:52px;height:52px;font-size:20px;border-radius:16px"><i class="fas fa-layer-group"></i></div>
+    <h3>${esc(group.displayName)}</h3>
+    <p>Satuan: ${esc(group.unit)} • Stok: ${esc(group.qtyUnit)} • ${group.memberIds.length} entri data${group.memberIds.length > 1 ? ' (digabung dari akun/entri berbeda)' : ''}</p>
+  </div>`;
+  if(stats.count === 0){
+    html += `<div class="empty" style="padding:20px 10px"><p style="margin:0">Belum ada harga tercatat.</p></div>`;
+  } else {
+    html += `
+      <div class="fin-grid">
+        <div class="fin-card fin-income">
+          <div class="fin-icon"><i class="fas fa-arrow-down-short-wide"></i></div>
+          <div class="fin-content"><div class="fin-label">Terendah</div><div class="fin-value">${fmtRp(stats.min)}</div><div class="fin-sub">${esc(stats.cheapest.store.name)}</div></div>
+        </div>
+        <div class="fin-card fin-expense">
+          <div class="fin-icon"><i class="fas fa-arrow-up-short-wide"></i></div>
+          <div class="fin-content"><div class="fin-label">Tertinggi</div><div class="fin-value">${fmtRp(stats.max)}</div><div class="fin-sub">${esc(stats.priciest.store.name)}</div></div>
+        </div>
+      </div>
+      <div class="total-preview" style="margin-bottom:12px">
+        <span class="lbl">Selisih Harga</span><span class="val">${fmtRp(stats.diff)}</span>
+      </div>
+      <div class="section-head" style="margin:4px 2px 8px">
+        <h2><i class="fas fa-store"></i> Harga di Tiap Toko</h2>
+        <span class="count">${stats.count} toko</span>
+      </div>
+      <div class="list">
+    `;
+    stats.rows.forEach((r, idx) => {
+      const isBest = idx === 0 && stats.count > 1;
+      const isWorst = idx === stats.count - 1 && stats.count > 1 && stats.diff > 0;
+      const cls = isBest ? 'best' : (isWorst ? 'worst' : '');
+      const tag = isBest ? 'Termurah' : (isWorst ? 'Tertinggi' : 'Tercatat');
+      const parts = [];
+      if(r.weight) parts.push(`<span><i class="fas fa-weight-hanging" style="font-size:8.5px"></i> ${fmtWeight(r.weight)} ${esc(group.unit)}</span>`);
+      if(r.qty) parts.push(`<span><i class="fas fa-hashtag" style="font-size:8.5px"></i> ${fmtQty(r.qty)} ${esc(group.qtyUnit)}</span>`);
+      const extraTxt = parts.length ? `<span>•</span>${parts.join('<span>•</span>')}` : '';
+      const storeAvatar = r.store.photoUrl ? `<img src="${esc(r.store.photoUrl)}" alt="">` : `<i class="fas fa-store"></i>`;
+      html += `<div class="list-item" onclick="closeSheet('detailModal'); openPriceModal(${r.itemId}, ${r.storeId}, ${r.id});">
+        <div class="list-avatar ${isBest ? 'in' : (isWorst ? 'out' : 'prod')}">${storeAvatar}</div>
+        <div class="list-body">
+          <div class="list-title">${esc(r.store.name)}${ownerBadgeHTML(r.store)}</div>
+          <div class="list-sub"><span>${fmtDate(r.date)}</span>${extraTxt}${r.note ? `<span>•</span><span style="font-style:italic">${esc(r.note)}</span>` : ''}</div>
+        </div>
+        <div class="list-trailing">
+          <div class="list-amount ${cls}">${fmtRp(r.price)}</div>
+          <div class="list-meta">${tag}</div>
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // Show member items (for admin overview debugging)
+  if(group.memberIds.length > 1){
+    html += `<div class="section-head" style="margin:14px 2px 8px">
+      <h2><i class="fas fa-layer-group"></i> Entri Digabung</h2>
+      <span class="count">${group.memberIds.length}</span>
+    </div>
+    <div class="list">`;
+    group.members.forEach(m => {
+      html += `<div class="list-item" onclick="closeSheet('detailModal'); openItemDetail(${m.id});">
+        <div class="list-avatar prod"><i class="fas fa-cube"></i></div>
+        <div class="list-body">
+          <div class="list-title">${esc(m.name)}${ownerBadgeHTML(m)}</div>
+          <div class="list-sub">per ${esc(itemWeightUnit(m))} • ${esc(itemQtyUnit(m))}</div>
+        </div>
+        <i class="fas fa-chevron-right" style="color:var(--text-mute);font-size:11px"></i>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  const repItemId = group.memberIds[0];
+  const canWrite = !isAdmin || activeAgentUid;
+  if(canWrite){
+    html += `<div class="btn-row" style="margin-top:12px">
+      <button class="btn btn-outlined" onclick="closeSheet('detailModal'); openItemDetail(${repItemId})"><i class="fas fa-pen"></i> Edit Entri</button>
+      <button class="btn btn-filled" onclick="closeSheet('detailModal'); openPriceModal(${repItemId})"><i class="fas fa-plus"></i> Catat Harga</button>
+    </div>`;
+  }
+  document.getElementById('detailBody').innerHTML = html;
+  openSheet('detailModal');
+}
+window.openGroupDetail = openGroupDetail;
 
 let reportCharts = { compare:null, trend:null };
 function destroyReportCharts(){
@@ -3077,15 +3267,16 @@ const CHART_COLORS = ['#3b82f6','#8b5cf6','#10b981','#f59e0b','#f43f5e','#38bdf8
 
 function renderFilterPanel(){
   const stores = [...dbGetAll('stores')].sort((a,b)=>(a.name||'').localeCompare(b.name||''));
-  const items  = [...dbGetAll('items')].sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  const groups = getVirtualItemGroups().sort((a,b)=>a.displayName.localeCompare(b.displayName));
   const storeChips = document.getElementById('storeFilterChips');
   const itemChips  = document.getElementById('itemFilterChips');
   const allStoresMode = state.selectedStores.size === 0 && !state.storeFilterNone;
   const allItemsMode  = state.selectedItems.size === 0 && !state.itemFilterNone;
   const storesActive = state.storeFilterNone ? [] : (allStoresMode ? stores.map(s=>s.id) : [...state.selectedStores]);
-  const itemsActive  = state.itemFilterNone  ? [] : (allItemsMode  ? items.map(i=>i.id)  : [...state.selectedItems]);
+  const activeGroupKeys = state.itemFilterNone ? [] : (allItemsMode ? groups.map(g => g.key) : groups.filter(g => g.memberIds.some(id => state.selectedItems.has(id))).map(g => g.key));
   document.getElementById('storeFilterCount').textContent = storesActive.length;
-  document.getElementById('itemFilterCount').textContent  = itemsActive.length;
+  document.getElementById('itemFilterCount').textContent  = activeGroupKeys.length;
+
   if(stores.length === 0){
     storeChips.innerHTML = '<p class="empty-chips">Belum ada toko</p>';
   } else {
@@ -3096,26 +3287,27 @@ function renderFilterPanel(){
       </button>`;
     }).join('');
   }
-  if(items.length === 0){
+  if(groups.length === 0){
     itemChips.innerHTML = '<p class="empty-chips">Belum ada barang</p>';
   } else {
-    itemChips.innerHTML = items.map(i => {
-      const active = itemsActive.includes(i.id);
-      return `<button class="sel-chip ${active?'active':''}" onclick="toggleFilter('item', ${i.id})">
-        <span class="check"><i class="fas fa-check"></i></span><span class="nm">${esc(i.name)}</span>
+    itemChips.innerHTML = groups.map(g => {
+      const active = activeGroupKeys.includes(g.key);
+      return `<button class="sel-chip ${active?'active':''}" onclick="toggleGroupFilter('${esc(g.key).replace(/'/g,"\\'")}')">
+        <span class="check"><i class="fas fa-check"></i></span><span class="nm">${esc(g.displayName)}</span>
       </button>`;
     }).join('');
   }
+
   const trendSel = document.getElementById('trendItemSelect');
-  const itemList = getFilteredItems();
-  if(itemList.length === 0){
+  const filteredGroups = getFilteredGroups();
+  if(filteredGroups.length === 0){
     trendSel.innerHTML = '<option value="">—</option>';
-    state.trendItemId = null;
+    state.trendGroupKey = null;
   } else {
-    if(!state.trendItemId || !itemList.some(i => i.id === state.trendItemId)){
-      state.trendItemId = itemList[0].id;
+    if(!state.trendGroupKey || !filteredGroups.some(g => g.key === state.trendGroupKey)){
+      state.trendGroupKey = filteredGroups[0].key;
     }
-    trendSel.innerHTML = itemList.map(i => `<option value="${i.id}" ${i.id===state.trendItemId?'selected':''}>${esc(i.name)}</option>`).join('');
+    trendSel.innerHTML = filteredGroups.map(g => `<option value="${esc(g.key)}" ${g.key===state.trendGroupKey?'selected':''}>${esc(g.displayName)}</option>`).join('');
   }
 }
 
@@ -3134,19 +3326,19 @@ function renderReports(){
 
   renderFilterPanel();
   const stores = getFilteredStores();
-  const items  = getFilteredItems();
+  const groups = getFilteredGroups();
   let min = Infinity, max = -Infinity, sum = 0, cnt = 0;
   let minInfo = null, maxInfo = null;
   let totalPotensi = 0;
-  items.forEach(it => {
-    const stats = itemStats(it.id);
+  groups.forEach(g => {
+    const stats = groupItemStats(g);
     const visible = stats.rows.filter(r => stores.some(s => s.id === r.storeId));
     if(visible.length === 0) return;
     const prices = visible.map(r => r.price);
     const localMin = Math.min(...prices);
     const localMax = Math.max(...prices);
-    if(localMin < min){ min = localMin; minInfo = { item: it, row: visible.find(r => r.price === localMin) }; }
-    if(localMax > max){ max = localMax; maxInfo = { item: it, row: visible.find(r => r.price === localMax) }; }
+    if(localMin < min){ min = localMin; minInfo = { group: g, row: visible.find(r => r.price === localMin) }; }
+    if(localMax > max){ max = localMax; maxInfo = { group: g, row: visible.find(r => r.price === localMax) }; }
     prices.forEach(p => { sum += p; cnt++; });
     totalPotensi += (localMax - localMin);
   });
@@ -3155,21 +3347,21 @@ function renderReports(){
   document.getElementById('repHigh').textContent = hasData ? fmtRp(max) : 'Rp 0';
   document.getElementById('repDiff').textContent = hasData ? fmtRp(totalPotensi) : 'Rp 0';
   document.getElementById('repAvg').textContent  = hasData ? fmtRp(Math.round(sum / cnt)) : 'Rp 0';
-  document.getElementById('repLowStore').textContent  = hasData && minInfo ? `${esc(minInfo.item.name)} • ${esc(minInfo.row.store.name)}` : '—';
-  document.getElementById('repHighStore').textContent = hasData && maxInfo ? `${esc(maxInfo.item.name)} • ${esc(maxInfo.row.store.name)}` : '—';
+  document.getElementById('repLowStore').textContent  = hasData && minInfo ? `${esc(minInfo.group.displayName)} • ${esc(minInfo.row.store.name)}` : '—';
+  document.getElementById('repHighStore').textContent = hasData && maxInfo ? `${esc(maxInfo.group.displayName)} • ${esc(maxInfo.row.store.name)}` : '—';
   const banner = document.getElementById('profitBanner');
   banner.classList.toggle('neg', !hasData || totalPotensi === 0);
-  document.getElementById('vizCount').textContent = `${items.length} barang • ${stores.length} toko`;
-  renderMatrixTable(stores, items, totalPotensi);
+  document.getElementById('vizCount').textContent = `${groups.length} barang • ${stores.length} toko`;
+  renderMatrixTable(stores, groups, totalPotensi);
 }
 
-function renderMatrixTable(stores, items, totalPotensi){
+function renderMatrixTable(stores, groups, totalPotensi){
   const table = document.getElementById('summaryTable');
   const thead = table.querySelector('thead');
   const tbody = table.querySelector('tbody');
   const emptyEl = document.getElementById('summaryEmpty');
   const footer  = document.getElementById('summaryFooter');
-  if(stores.length === 0 || items.length === 0){
+  if(stores.length === 0 || groups.length === 0){
     thead.innerHTML = ''; tbody.innerHTML = '';
     table.style.display = 'none';
     emptyEl.style.display = 'block';
@@ -3177,14 +3369,13 @@ function renderMatrixTable(stores, items, totalPotensi){
     document.getElementById('matrixCount').textContent = '—';
     return;
   }
-  const rows = items.map(item => {
-    const cells = stores.map(store => getLatestPrice(item.id, store.id));
-    const valid = cells.map((c, i) => c ? { storeId: stores[i].id, price: c.price } : null).filter(Boolean);
-    const prices = valid.map(v => v.price);
+  const rows = groups.map(group => {
+    const cells = stores.map(store => getLatestPriceForGroup(group, store.id));
+    const prices = cells.filter(c => c).map(c => c.price);
     const min = prices.length ? Math.min(...prices) : null;
     const max = prices.length ? Math.max(...prices) : null;
     const diff = (min !== null && max !== null) ? max - min : 0;
-    return { item, cells, min, max, diff, hasData: prices.length > 0 };
+    return { group, cells, min, max, diff, hasData: prices.length > 0 };
   }).filter(r => r.hasData);
   if(rows.length === 0){
     thead.innerHTML = ''; tbody.innerHTML = '';
@@ -3222,7 +3413,7 @@ function renderMatrixTable(stores, items, totalPotensi){
     }).join('');
     const diffStyle = r.diff > 0 ? '' : 'style="color:var(--text-mute)"';
     return `<tr>
-      <td class="matrix-item">${esc(r.item.name)}<span class="it-unit">per ${esc(itemWeightUnit(r.item))}</span></td>
+      <td class="matrix-item">${esc(r.group.displayName)}${groupBadgeHTML(r.group)}<span class="it-unit">per ${esc(r.group.unit)}</span></td>
       ${cellsHtml}
       <td class="matrix-sum min">${fmtRp(r.min)}</td>
       <td class="matrix-sum max">${fmtRp(r.max)}</td>
@@ -3232,15 +3423,25 @@ function renderMatrixTable(stores, items, totalPotensi){
   document.getElementById('summaryTotal').textContent = fmtRp(totalPotensi);
 }
 
-function buildTrendData(itemId, stores){
-  const entries = dbGetAll('prices').filter(p => p.itemId === itemId && stores.some(s => s.id === p.storeId))
-    .sort((a,b) => a.date.localeCompare(b.date) || (a.id - b.id));
-  const storeIds = stores.map(s => s.id).filter(sid => entries.some(e => e.storeId === sid));
-  const labels = [...new Set(entries.map(e => e.date))].sort();
+function buildGroupTrendData(group, stores){
+  const entries = [];
+  group.memberIds.forEach(itemId => {
+    dbGetAll('prices').filter(p => p.itemId === itemId && stores.some(s => s.id === p.storeId))
+      .forEach(p => entries.push(p));
+  });
+  const storeDateLatest = new Map();
+  entries.forEach(p => {
+    const k = p.storeId + '||' + p.date;
+    const ex = storeDateLatest.get(k);
+    if(!ex || p.id > ex.id) storeDateLatest.set(k, p);
+  });
+  const unique = [...storeDateLatest.values()].sort((a,b) => a.date.localeCompare(b.date));
+  const storeIds = stores.map(s => s.id).filter(sid => unique.some(e => e.storeId === sid));
+  const labels = [...new Set(unique.map(e => e.date))].sort();
   const datasets = storeIds.map((sid, i) => {
     const s = getStore(sid);
     const map = new Map();
-    entries.filter(e => e.storeId === sid).forEach(e => map.set(e.date, e.price));
+    unique.filter(e => e.storeId === sid).forEach(e => map.set(e.date, e.price));
     const color = CHART_COLORS[i % CHART_COLORS.length];
     return { label: s ? s.name : 'Toko', data: labels.map(l => map.has(l) ? map.get(l) : null), backgroundColor: color + 'E6', borderRadius: 6, borderSkipped: false, maxBarThickness: 28 };
   });
@@ -3260,13 +3461,13 @@ function renderReportCharts(){
   if(typeof Chart === 'undefined') return;
   destroyReportCharts();
   const stores = getFilteredStores();
-  const items = getFilteredItems();
-  if(stores.length === 0 || items.length === 0) return;
+  const groups = getFilteredGroups();
+  if(stores.length === 0 || groups.length === 0) return;
   const ctx1 = document.getElementById('chartCompare');
   if(ctx1){
-    const rows = items.map(it => {
-      const cells = stores.map(s => getLatestPrice(it.id, s.id));
-      return { item: it, cells };
+    const rows = groups.map(g => {
+      const cells = stores.map(s => getLatestPriceForGroup(g, s.id));
+      return { group: g, cells };
     }).filter(r => r.cells.some(c => c));
     if(rows.length === 0){
       drawEmptyCanvas(ctx1, 'Belum ada data');
@@ -3296,11 +3497,11 @@ function renderReportCharts(){
         options: chartBarOptions(false)
       });
     } else {
-      document.getElementById('cmpHint').textContent = `${items.length} barang × ${stores.length} toko`;
+      document.getElementById('cmpHint').textContent = `${groups.length} barang × ${stores.length} toko`;
       reportCharts.compare = new Chart(ctx1, {
         type: 'bar',
         data: {
-          labels: rows.map(r => r.item.name.length > 10 ? r.item.name.slice(0,10)+'…' : r.item.name),
+          labels: rows.map(r => r.group.displayName.length > 10 ? r.group.displayName.slice(0,10)+'…' : r.group.displayName),
           datasets: stores.map((s, si) => {
             const color = CHART_COLORS[si % CHART_COLORS.length];
             return {
@@ -3320,11 +3521,12 @@ function renderReportCharts(){
   }
   const ctx2 = document.getElementById('chartTrend');
   if(ctx2){
-    const trendItemId = state.trendItemId;
-    if(!trendItemId){
+    const trendKey = state.trendGroupKey;
+    const group = trendKey ? getVirtualItemGroups().find(g => g.key === trendKey) : null;
+    if(!group){
       drawEmptyCanvas(ctx2, 'Pilih barang untuk melihat tren');
     } else {
-      const trend = buildTrendData(trendItemId, stores);
+      const trend = buildGroupTrendData(group, stores);
       if(trend.labels.length === 0){
         drawEmptyCanvas(ctx2, 'Belum ada data tren');
       } else {
@@ -3402,10 +3604,6 @@ function renderActionSheet(){
       <div class="action-item" onclick="closeSheet('actionSheet'); openAgentPicker();">
         <i class="ic-amber fas fa-users-gear"></i>
         <div class="action-text"><h4>Kelola Data Pengguna</h4><p>Pilih agen / petugas untuk edit data mereka</p></div>
-      </div>
-      <div class="action-item" onclick="closeSheet('actionSheet'); openPriceModal();">
-        <i class="ic-blue fas fa-tag"></i>
-        <div class="action-text"><h4>Catat Harga Manual</h4><p>Input harga sebagai admin</p></div>
       </div>
     `;
   } else {
@@ -3656,7 +3854,9 @@ async function saveBulk(){
     }
     closeSheet('bulkModal');
     state.bulkDraft = {};
-    state.compareItemId = Number(entries[0][0]);
+    // update compare group key to first saved item's group
+    const firstItemId = Number(entries[0][0]);
+    state.compareGroupKey = findGroupKeyForItem(firstItemId);
     renderAll();
     if(state.view === 'reports') renderReportCharts();
     snack(`${saved} harga tersimpan${updated ? ' • ' + updated + ' diperbarui' : ''}`);
@@ -4547,9 +4747,13 @@ function confirmDeleteItem(id){
       await dbDelete('items', id);
       state.selectedItems.delete(id);
       delete state.bulkDraft[String(id)];
-      state.manualCompareItems.delete(id);
-      if(state.compareItemId === id) state.compareItemId = null;
-      if(state.trendItemId === id) state.trendItemId = null;
+      // clear group keys if now empty
+      const remainingGroups = getVirtualItemGroups();
+      if(state.compareGroupKey && !remainingGroups.some(g => g.key === state.compareGroupKey)) state.compareGroupKey = null;
+      if(state.trendGroupKey && !remainingGroups.some(g => g.key === state.trendGroupKey)) state.trendGroupKey = null;
+      // Cleanup manualCompareItems that no longer exist
+      const existingKeys = new Set(remainingGroups.map(g => g.key));
+      [...state.manualCompareItems].forEach(k => { if(!existingKeys.has(k)) state.manualCompareItems.delete(k); });
       closeSheet('confirmModal');
       renderAll();
       if(state.view === 'reports') renderReportCharts();
@@ -4682,7 +4886,8 @@ async function savePrice(e){
     if(id){ data.id = Number(id); await dbPut('prices', data); snack('Harga diperbarui'); }
     else { await dbAdd('prices', data); snack('Harga dicatat'); }
     closeSheet('priceModal');
-    state.compareItemId = itemId;
+    const gk = findGroupKeyForItem(itemId);
+    if(gk) state.compareGroupKey = gk;
     renderAll();
     if(state.view === 'reports') renderReportCharts();
   } catch(err){ console.error(err); snack('Gagal simpan', 'error'); }
@@ -4773,15 +4978,14 @@ function exportPDF(){
   if(!window.jspdf || !window.jspdf.jsPDF){ snack('PDF belum termuat', 'error'); return; }
   const { jsPDF } = window.jspdf;
   const stores = getFilteredStores();
-  const items  = getFilteredItems();
-  if(stores.length === 0 || items.length === 0){ snack('Pilih minimal 1 toko & 1 barang', 'info'); return; }
-  const rows = items.map(item => {
-    const cells = stores.map(s => getLatestPrice(item.id, s.id));
-    const valid = cells.map((c, i) => c ? { store: stores[i], price: c.price } : null).filter(Boolean);
-    const prices = valid.map(v => v.price);
+  const groups = getFilteredGroups();
+  if(stores.length === 0 || groups.length === 0){ snack('Pilih minimal 1 toko & 1 barang', 'info'); return; }
+  const rows = groups.map(group => {
+    const cells = stores.map(s => getLatestPriceForGroup(group, s.id));
+    const prices = cells.filter(c => c).map(c => c.price);
     const min = prices.length ? Math.min(...prices) : null;
     const max = prices.length ? Math.max(...prices) : null;
-    return { item, cells, min, max, diff: (min !== null && max !== null) ? max - min : 0, hasData: prices.length > 0 };
+    return { group, cells, min, max, diff: (min !== null && max !== null) ? max - min : 0, hasData: prices.length > 0 };
   }).filter(r => r.hasData);
   if(rows.length === 0){ snack('Tidak ada data', 'info'); return; }
   const orientation = stores.length >= 4 ? 'landscape' : 'portrait';
@@ -4805,7 +5009,7 @@ function exportPDF(){
   y += 4;
   const head = [['#', 'Barang', 'Sat.', ...stores.map(s => s.name), 'Terendah', 'Tertinggi', 'Selisih']];
   const body = rows.map((r, i) => {
-    const row = [String(i + 1), r.item.name, itemWeightUnit(r.item)];
+    const row = [String(i + 1), r.group.displayName, r.group.unit];
     r.cells.forEach(c => row.push(c ? fmtRp(c.price) : '—'));
     row.push(r.min !== null ? fmtRp(r.min) : '—');
     row.push(r.max !== null ? fmtRp(r.max) : '—');
@@ -4854,7 +5058,6 @@ async function refreshRole(){
       await loadAdminOverviewData();
     } else {
       await loadAll();
-      // PERBAIKAN: auto-merge duplikat setelah load
       await autoMergeExactDuplicates();
     }
     renderAll();
@@ -4882,15 +5085,14 @@ document.getElementById('btnInfo').addEventListener('click', () => openSheet('in
 document.getElementById('btnKelolaAgen').addEventListener('click', openAgentPicker);
 document.getElementById('searchItem').addEventListener('input', e => { state.itemSearch = e.target.value; renderItems(); });
 document.getElementById('searchStore').addEventListener('input', e => { state.storeSearch = e.target.value; renderStores(); });
-document.getElementById('compareItemSelect').addEventListener('change', e => { state.compareItemId = Number(e.target.value); renderCompare(); });
-document.getElementById('trendItemSelect').addEventListener('change', e => { state.trendItemId = Number(e.target.value); renderReportCharts(); });
+document.getElementById('compareItemSelect').addEventListener('change', e => { state.compareGroupKey = e.target.value; renderCompare(); });
+document.getElementById('trendItemSelect').addEventListener('change', e => { state.trendGroupKey = e.target.value; renderReportCharts(); });
 document.getElementById('bulkStore').addEventListener('change', () => { state.bulkDraft = {}; renderBulkList(); });
 document.getElementById('bulkSearch').addEventListener('input', e => { state.bulkSearch = e.target.value; renderBulkList(); });
 document.getElementById('bulkNewItem').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); bulkAddItem(); } });
 document.getElementById('bulkNewUnit').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); bulkAddItem(); } });
 document.getElementById('bulkNewQtyUnit').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); bulkAddItem(); } });
 
-// Realtime: unit detection + name warning
 document.getElementById('iName').addEventListener('input', () => {
   runItemNameDetection();
   updateNameWarning('iName', 'iNameWarn', 'item');
@@ -5049,7 +5251,6 @@ onAuthStateChanged(auth, async user => {
         Splash.setProgress(50, 'Memuat data...');
         await loadAll();
         await ensureAgentRegistered();
-        // PERBAIKAN: auto-merge duplikat setelah load (bersihkan data lama)
         Splash.setProgress(70, 'Membersihkan duplikat...');
         await autoMergeExactDuplicates();
       }
