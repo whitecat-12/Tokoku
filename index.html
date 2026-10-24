@@ -508,6 +508,303 @@ body.no-store-mode .fab{display:none}
 /* ===== BADGE GROUP ===== */
 .group-count-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:999px;background:var(--violet-pale);color:var(--violet-deep);font-size:8.5px;font-weight:800;margin-left:4px}
 
+/* ============================================================
+   REPORT VIEW — TIDY REDESIGN (admin friendly)
+   ============================================================ */
+.report-block{
+  background:var(--surface);
+  border-radius:var(--r-lg);
+  padding:14px;
+  margin-bottom:12px;
+  box-shadow:var(--shadow);
+  border:1px solid var(--line);
+}
+.report-block-head{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:12px;
+  padding-bottom:10px;
+  border-bottom:1px solid var(--line);
+}
+.rbh-icon{
+  width:34px;height:34px;border-radius:11px;
+  display:grid;place-items:center;
+  font-size:13px;flex-shrink:0;
+}
+.rbh-icon.blue{background:var(--blue-pale);color:var(--blue-deep)}
+.rbh-icon.amber{background:var(--amber-pale);color:var(--amber-deep)}
+.rbh-icon.violet{background:var(--violet-pale);color:var(--violet-deep)}
+.rbh-icon.green{background:var(--green-pale);color:var(--green-deep)}
+.rbh-body{flex:1;min-width:0}
+.rbh-body h3{font-size:12.5px;font-weight:800;color:var(--text);line-height:1.2}
+.rbh-body p{font-size:10px;color:var(--text-mute);font-weight:600;margin-top:2px}
+.rbh-badge{
+  font-size:8.5px;font-weight:800;padding:4px 9px;
+  border-radius:999px;background:linear-gradient(135deg,#fbbf24,#f59e0b);
+  color:#fff;letter-spacing:0.4px;flex-shrink:0;
+  display:inline-flex;align-items:center;gap:4px;
+}
+.rbh-badge i{font-size:8px}
+.rbh-reset{
+  font-family:inherit;font-size:10px;font-weight:800;
+  padding:6px 11px;border-radius:9px;border:none;
+  background:var(--surface-3);color:var(--text-soft);
+  cursor:pointer;display:inline-flex;align-items:center;gap:4px;
+  flex-shrink:0;
+}
+.rbh-reset:hover{background:var(--blue-pale);color:var(--blue-deep)}
+
+.filter-grid{display:flex;flex-direction:column;gap:10px}
+.filter-group{background:var(--surface-2);border-radius:12px;padding:10px}
+.filter-label{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:8px;
+}
+.filter-label > span:first-child{
+  font-size:10px;font-weight:800;color:var(--text-soft);
+  text-transform:uppercase;letter-spacing:0.3px;
+  display:inline-flex;align-items:center;gap:5px;
+}
+.filter-label > span:first-child i{font-size:9px;color:var(--blue)}
+.filter-count{
+  font-size:9.5px;font-weight:800;color:var(--blue-deep);
+  background:var(--blue-pale);padding:2px 8px;border-radius:999px;
+}
+.filter-actions{display:flex;gap:4px;margin-bottom:8px}
+.filter-actions button{
+  font-family:inherit;font-size:9.5px;font-weight:700;
+  padding:4px 9px;border-radius:7px;border:none;
+  background:var(--surface);color:var(--text-soft);cursor:pointer;
+  transition:all .15s;
+}
+.filter-actions button:hover{background:var(--blue-pale);color:var(--blue-deep)}
+.filter-group .chip-select{max-height:118px}
+
+.manual-toolbar{display:flex;gap:6px;margin-bottom:8px}
+.manual-toolbar .select{
+  flex:1;padding:10px 32px 10px 34px;border-radius:11px;
+  border:1.5px solid var(--line);background:var(--surface-2);
+  font-size:12px;font-weight:600;
+}
+.manual-toolbar .select:focus{border-color:var(--blue);background:#fff}
+.manual-toolbar .btn{width:auto;flex-shrink:0}
+.manual-actions{
+  display:flex;align-items:center;gap:6px;
+  margin-bottom:12px;flex-wrap:wrap;
+}
+.manual-actions .btn-mini{
+  font-family:inherit;font-size:10px;font-weight:700;
+  padding:6px 11px;border-radius:8px;border:none;
+  background:var(--surface-3);color:var(--text-soft);
+  cursor:pointer;display:inline-flex;align-items:center;gap:4px;
+  transition:all .15s;
+}
+.manual-actions .btn-mini:hover{background:var(--blue-pale);color:var(--blue-deep)}
+.manual-actions .manual-count{
+  margin-left:auto;font-size:10px;font-weight:700;
+  color:var(--text-mute);
+}
+
+/* KPI cards */
+.kpi-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-bottom:12px;
+}
+.kpi-card{
+  background:var(--surface);
+  border-radius:16px;
+  padding:12px;
+  box-shadow:var(--shadow-sm);
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  position:relative;
+  overflow:hidden;
+  border:1px solid var(--line);
+}
+.kpi-card::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;height:3px;
+  background:var(--blue);
+}
+.kpi-card.kpi-low::before{background:linear-gradient(90deg,var(--green),var(--green-deep))}
+.kpi-card.kpi-high::before{background:linear-gradient(90deg,var(--rose),var(--rose-deep))}
+.kpi-card.kpi-save::before{background:linear-gradient(90deg,var(--blue),var(--blue-deep))}
+.kpi-card.kpi-avg::before{background:linear-gradient(90deg,var(--violet),var(--violet-deep))}
+.kpi-icon{
+  width:26px;height:26px;border-radius:8px;
+  display:grid;place-items:center;font-size:10px;
+  flex-shrink:0;
+}
+.kpi-card.kpi-low .kpi-icon{background:var(--green-pale);color:var(--green-deep)}
+.kpi-card.kpi-high .kpi-icon{background:var(--rose-pale);color:var(--rose-deep)}
+.kpi-card.kpi-save .kpi-icon{background:var(--blue-pale);color:var(--blue-deep)}
+.kpi-card.kpi-avg .kpi-icon{background:var(--violet-pale);color:var(--violet-deep)}
+.kpi-label{
+  font-size:9px;font-weight:800;color:var(--text-mute);
+  text-transform:uppercase;letter-spacing:0.3px;
+}
+.kpi-value{
+  font-size:14.5px;font-weight:800;color:var(--text);
+  line-height:1.15;margin-top:3px;word-break:break-word;
+}
+.kpi-card.kpi-low .kpi-value{color:var(--green-deep)}
+.kpi-card.kpi-high .kpi-value{color:var(--rose-deep)}
+.kpi-card.kpi-save .kpi-value{color:var(--blue-deep)}
+.kpi-card.kpi-avg .kpi-value{color:var(--violet-deep)}
+.kpi-sub{
+  font-size:9.5px;color:var(--text-mute);
+  font-weight:600;line-height:1.35;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+/* Chart block */
+.chart-block{
+  background:var(--surface);
+  border-radius:var(--r-lg);
+  padding:14px;
+  margin-bottom:12px;
+  box-shadow:var(--shadow);
+  border:1px solid var(--line);
+}
+.chart-block-head{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:12px;
+}
+.cbh-icon{
+  width:32px;height:32px;border-radius:10px;
+  display:grid;place-items:center;font-size:12px;
+  flex-shrink:0;
+}
+.cbh-icon.blue{background:var(--blue-pale);color:var(--blue-deep)}
+.cbh-body{flex:1;min-width:0}
+.cbh-body h3{font-size:12px;font-weight:800;color:var(--text);line-height:1.2}
+.cbh-body p{font-size:9.5px;color:var(--text-mute);font-weight:600;margin-top:2px}
+.chart-card-new{
+  background:var(--surface-2);
+  border-radius:14px;
+  padding:12px;
+  margin-bottom:10px;
+  border:1px solid var(--line);
+}
+.chart-card-new:last-child{margin-bottom:0}
+.chart-head{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:8px;margin-bottom:10px;
+}
+.chart-head > span:first-child{
+  font-size:10.5px;font-weight:800;color:var(--text-soft);
+  text-transform:uppercase;letter-spacing:0.3px;
+  display:inline-flex;align-items:center;gap:5px;
+}
+.chart-head > span:first-child i{color:var(--blue);font-size:10px}
+.chart-hint{
+  font-size:9px;font-weight:600;color:var(--text-mute);
+  text-transform:none;letter-spacing:0;
+}
+.chart-card-new canvas{width:100%!important;height:200px!important;display:block}
+
+/* Table block */
+.table-block{
+  background:var(--surface);
+  border-radius:var(--r-lg);
+  padding:14px;
+  margin-bottom:12px;
+  box-shadow:var(--shadow);
+  border:1px solid var(--line);
+}
+.table-block-head{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:12px;
+}
+.tbh-icon{
+  width:32px;height:32px;border-radius:10px;
+  display:grid;place-items:center;font-size:12px;
+  flex-shrink:0;
+}
+.tbh-icon.violet{background:var(--violet-pale);color:var(--violet-deep)}
+.tbh-body{flex:1;min-width:0}
+.tbh-body h3{font-size:12px;font-weight:800;color:var(--text);line-height:1.2}
+.tbh-body p{font-size:9.5px;color:var(--text-mute);font-weight:600;margin-top:2px}
+.table-block .table-wrap{box-shadow:none;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.table-block .table-scroll{max-height:420px;border-radius:14px 14px 0 0}
+.table-block .table-foot{border-radius:0 0 14px 14px}
+
+/* Export block */
+.export-block{
+  background:var(--surface);
+  border-radius:var(--r-lg);
+  padding:14px;
+  margin-bottom:12px;
+  box-shadow:var(--shadow);
+  border:1px solid var(--line);
+}
+.export-block-head{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:12px;
+}
+.ebh-icon{
+  width:32px;height:32px;border-radius:10px;
+  display:grid;place-items:center;font-size:12px;
+  flex-shrink:0;
+}
+.ebh-icon.green{background:var(--green-pale);color:var(--green-deep)}
+.ebh-body{flex:1;min-width:0}
+.ebh-body h3{font-size:12px;font-weight:800;color:var(--text);line-height:1.2}
+.ebh-body p{font-size:9.5px;color:var(--text-mute);font-weight:600;margin-top:2px}
+
+.export-grid-new{display:flex;flex-direction:column;gap:8px}
+.export-card{
+  display:flex;align-items:center;gap:11px;
+  padding:12px;border-radius:13px;
+  background:var(--surface-2);cursor:pointer;
+  border:1.5px solid var(--line);
+  transition:all .15s;
+}
+.export-card:hover{
+  border-color:var(--blue-pale);
+  background:var(--surface);
+  transform:translateY(-1px);
+  box-shadow:var(--shadow-sm);
+}
+.export-card:active{transform:translateY(0)}
+.export-card.main{
+  background:linear-gradient(135deg,rgba(59,130,246,.08),rgba(139,92,246,.05));
+  border-color:rgba(59,130,246,.2);
+}
+.export-card .ec-icon{
+  width:38px;height:38px;border-radius:11px;
+  display:grid;place-items:center;font-size:15px;
+  flex-shrink:0;
+}
+.ec-icon.pdf{background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;box-shadow:0 4px 10px rgba(220,38,38,.3)}
+.ec-icon.violet{background:linear-gradient(135deg,var(--violet),var(--violet-deep));color:#fff}
+.ec-icon.blue{background:var(--blue-pale);color:var(--blue-deep)}
+.ec-icon.red{background:var(--rose-pale);color:var(--rose-deep)}
+.ec-body{flex:1;min-width:0}
+.ec-body h4{font-size:11.5px;font-weight:800;color:var(--text);line-height:1.2}
+.ec-body p{font-size:9.5px;color:var(--text-mute);font-weight:500;margin-top:2px}
+.ec-arrow{color:var(--text-mute);font-size:10px;flex-shrink:0}
+.export-row{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+}
+.export-card.small{
+  flex-direction:column;
+  align-items:flex-start;
+  gap:8px;
+  padding:10px;
+}
+.export-card.small .ec-body h4{font-size:10px}
+.export-card.small .ec-icon{
+  width:32px;height:32px;font-size:13px;border-radius:9px;
+}
+
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-thumb{background:#bfdbfe;border-radius:99px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -690,170 +987,196 @@ body.no-store-mode .fab{display:none}
     </section>
 
     <section class="view" id="view-reports">
+      <!-- Manual compare (admin only) -->
       <div id="manualCompareSection" style="display:none">
-        <div class="section-head" style="margin-top:8px">
-          <h2><i class="fas fa-hand-pointer"></i> Perbandingan Manual <span class="manual-badge"><i class="fas fa-crown"></i> ADMIN</span></h2>
-          <span class="count" id="manualCompareCount">0 item</span>
-        </div>
-        <div class="bulk-note" style="margin-bottom:8px">
-          <i class="fas fa-circle-info"></i>
-          <span>Pilih barang dari dropdown di bawah — berisi <b>semua barang</b> yang punya harga. Barang dengan nama & satuan sama otomatis digabung meski dari akun berbeda.</span>
-        </div>
-        <div class="filter-panel" style="margin-bottom:10px;padding:12px">
-          <div class="field" style="margin-bottom:8px">
-            <label class="field-label">Pilih Barang</label>
-            <div class="manual-select-wrap">
-              <div class="field-wrap"><i class="fas fa-box"></i>
-                <select class="select" id="manualItemSelect">
-                  <option value="">— Pilih barang —</option>
-                </select>
-              </div>
-              <button class="btn btn-filled manual-add-btn" onclick="manualAddSelected()"><i class="fas fa-plus"></i> Tambah</button>
+        <div class="report-block">
+          <div class="report-block-head">
+            <div class="rbh-icon amber"><i class="fas fa-hand-pointer"></i></div>
+            <div class="rbh-body">
+              <h3>Perbandingan Manual</h3>
+              <p>Susun sendiri barang yang ingin dibandingkan</p>
             </div>
+            <span class="rbh-badge"><i class="fas fa-crown"></i> ADMIN</span>
           </div>
-          <div class="btn-row" style="margin-top:0">
-            <button class="btn btn-outlined" onclick="manualClearAll()"><i class="fas fa-eraser"></i> Kosongkan Tabel</button>
-            <button class="btn btn-tonal" onclick="openAgentPicker()"><i class="fas fa-users-gear"></i> Kelola Data</button>
+          <div class="manual-toolbar">
+            <select class="select" id="manualItemSelect">
+              <option value="">— Pilih barang —</option>
+            </select>
+            <button class="btn btn-filled" onclick="manualAddSelected()" style="width:auto;padding:0 16px">
+              <i class="fas fa-plus"></i>
+            </button>
           </div>
+          <div class="manual-actions">
+            <button class="btn-mini" onclick="manualClearAll()"><i class="fas fa-eraser"></i> Kosongkan</button>
+            <button class="btn-mini" onclick="openAgentPicker()"><i class="fas fa-users-gear"></i> Kelola Data</button>
+            <span class="manual-count" id="manualCompareCount">0 item</span>
+          </div>
+          <div id="manualCompareContent"></div>
         </div>
-        <div id="manualCompareContent"></div>
       </div>
 
-      <div class="filter-panel" id="filterPanel">
-        <div class="fp-header">
-          <h3><i class="fas fa-sliders"></i> Pilih Perbandingan</h3>
-          <button class="fp-reset" onclick="resetReportFilters()"><i class="fas fa-rotate-left"></i> Reset</button>
+      <!-- Filter -->
+      <div class="report-block">
+        <div class="report-block-head">
+          <div class="rbh-icon blue"><i class="fas fa-sliders"></i></div>
+          <div class="rbh-body">
+            <h3>Filter Perbandingan</h3>
+            <p>Pilih toko & barang untuk ditampilkan</p>
+          </div>
+          <button class="rbh-reset" onclick="resetReportFilters()"><i class="fas fa-rotate-left"></i> Reset</button>
         </div>
-        <div class="fp-section">
-          <div class="fp-label">
-            <span><i class="fas fa-store"></i> Toko <span class="fp-count" id="storeFilterCount">0</span></span>
-            <div class="fp-actions">
+        <div class="filter-grid">
+          <div class="filter-group">
+            <div class="filter-label">
+              <span><i class="fas fa-store"></i> Toko</span>
+              <span class="filter-count" id="storeFilterCount">0</span>
+            </div>
+            <div class="filter-actions">
               <button onclick="setAllFilter('store', true)">Semua</button>
               <button onclick="setAllFilter('store', false)">Kosong</button>
             </div>
+            <div class="chip-select" id="storeFilterChips"></div>
           </div>
-          <div class="chip-select" id="storeFilterChips"></div>
-        </div>
-        <div class="fp-section">
-          <div class="fp-label">
-            <span><i class="fas fa-box"></i> Barang <span class="fp-count" id="itemFilterCount">0</span></span>
-            <div class="fp-actions">
+          <div class="filter-group">
+            <div class="filter-label">
+              <span><i class="fas fa-box"></i> Barang</span>
+              <span class="filter-count" id="itemFilterCount">0</span>
+            </div>
+            <div class="filter-actions">
               <button onclick="setAllFilter('item', true)">Semua</button>
               <button onclick="setAllFilter('item', false)">Kosong</button>
             </div>
-          </div>
-          <div class="chip-select" id="itemFilterChips"></div>
-        </div>
-      </div>
-
-      <div class="fin-grid">
-        <div class="fin-card fin-income">
-          <div class="fin-icon"><i class="fas fa-arrow-down-short-wide"></i></div>
-          <div class="fin-content">
-            <div class="fin-label">Harga Terendah</div>
-            <div class="fin-value" id="repLow">Rp 0</div>
-            <div class="fin-sub" id="repLowStore">—</div>
-          </div>
-        </div>
-        <div class="fin-card fin-expense">
-          <div class="fin-icon"><i class="fas fa-arrow-up-short-wide"></i></div>
-          <div class="fin-content">
-            <div class="fin-label">Harga Tertinggi</div>
-            <div class="fin-value" id="repHigh">Rp 0</div>
-            <div class="fin-sub" id="repHighStore">—</div>
+            <div class="chip-select" id="itemFilterChips"></div>
           </div>
         </div>
       </div>
 
-      <div class="profit-banner" id="profitBanner">
-        <div class="profit-icon"><i class="fas fa-scale-balanced"></i></div>
-        <div class="profit-text">
-          <div class="profit-label">Total Potensi Hemat</div>
-          <div class="profit-value" id="repDiff">Rp 0</div>
-        </div>
-        <div class="profit-stock">
-          <div class="profit-label">Rata-rata</div>
-          <div class="profit-value-sm" id="repAvg">Rp 0</div>
-        </div>
-      </div>
-
-      <div class="section-head">
-        <h2><i class="fas fa-chart-column"></i> Visualisasi Data</h2>
-        <span class="count" id="vizCount">0 data</span>
-      </div>
-
-      <div class="chart-card">
-        <div class="chart-title">
-          <i class="fas fa-chart-simple"></i> Perbandingan Harga
-          <span class="hint" id="cmpHint">barang × toko</span>
-        </div>
-        <canvas id="chartCompare"></canvas>
-      </div>
-
-      <div class="chart-card">
-        <div class="chart-title">
-          <i class="fas fa-arrow-trend-up"></i> Tren Harga
-          <select class="chart-select" id="trendItemSelect"></select>
-        </div>
-        <canvas id="chartTrend"></canvas>
-      </div>
-
-      <div class="section-head">
-        <h2><i class="fas fa-table-list"></i> Tabel Perbandingan Harga</h2>
-        <span class="count" id="matrixCount">—</span>
-      </div>
-
-      <div class="table-wrap" id="tableWrap">
-        <div class="table-scroll">
-          <table class="matrix-table" id="summaryTable">
-            <thead></thead>
-            <tbody></tbody>
-          </table>
-          <div id="summaryEmpty" class="empty" style="padding:24px 10px;display:none">
-            <p style="margin:0">Belum ada data harga</p>
+      <!-- KPI -->
+      <div id="profitBanner" style="display:none"></div>
+      <div class="kpi-grid">
+        <div class="kpi-card kpi-low">
+          <div class="kpi-icon"><i class="fas fa-arrow-down-short-wide"></i></div>
+          <div>
+            <div class="kpi-label">Harga Terendah</div>
+            <div class="kpi-value" id="repLow">Rp 0</div>
+            <div class="kpi-sub" id="repLowStore">—</div>
           </div>
         </div>
-        <div class="table-foot" id="summaryFooter" style="display:none">
-          <div class="tf-label"><i class="fas fa-calculator"></i> Total Potensi Hemat</div>
-          <div class="tf-value" id="summaryTotal">Rp 0</div>
+        <div class="kpi-card kpi-high">
+          <div class="kpi-icon"><i class="fas fa-arrow-up-short-wide"></i></div>
+          <div>
+            <div class="kpi-label">Harga Tertinggi</div>
+            <div class="kpi-value" id="repHigh">Rp 0</div>
+            <div class="kpi-sub" id="repHighStore">—</div>
+          </div>
+        </div>
+        <div class="kpi-card kpi-save">
+          <div class="kpi-icon"><i class="fas fa-piggy-bank"></i></div>
+          <div>
+            <div class="kpi-label">Potensi Hemat</div>
+            <div class="kpi-value" id="repDiff">Rp 0</div>
+            <div class="kpi-sub">Selisih tertinggi - terendah</div>
+          </div>
+        </div>
+        <div class="kpi-card kpi-avg">
+          <div class="kpi-icon"><i class="fas fa-scale-balanced"></i></div>
+          <div>
+            <div class="kpi-label">Rata-rata</div>
+            <div class="kpi-value" id="repAvg">Rp 0</div>
+            <div class="kpi-sub">Dari semua harga</div>
+          </div>
         </div>
       </div>
 
-      <div class="section-head">
-        <h2><i class="fas fa-file-export"></i> Export Data</h2>
+      <!-- Charts -->
+      <div class="chart-block">
+        <div class="chart-block-head">
+          <div class="cbh-icon blue"><i class="fas fa-chart-column"></i></div>
+          <div class="cbh-body">
+            <h3>Visualisasi Data</h3>
+            <p id="vizCount">0 data</p>
+          </div>
+        </div>
+        <div class="chart-card-new">
+          <div class="chart-head">
+            <span><i class="fas fa-chart-simple"></i> Perbandingan Harga</span>
+            <span class="chart-hint" id="cmpHint">barang × toko</span>
+          </div>
+          <canvas id="chartCompare"></canvas>
+        </div>
+        <div class="chart-card-new">
+          <div class="chart-head">
+            <span><i class="fas fa-arrow-trend-up"></i> Tren Harga</span>
+            <select class="chart-select" id="trendItemSelect"></select>
+          </div>
+          <canvas id="chartTrend"></canvas>
+        </div>
       </div>
-      <div class="export-grid">
-        <div class="export-item" onclick="exportPDF()">
-          <div class="ex-icon pdf"><i class="fas fa-file-pdf"></i></div>
-          <div class="ex-text">
-            <h4>Laporan PDF Lengkap</h4>
-            <p>Tabel matriks, ringkasan, dan analisis sesuai filter</p>
+
+      <!-- Table -->
+      <div class="table-block">
+        <div class="table-block-head">
+          <div class="tbh-icon violet"><i class="fas fa-table-list"></i></div>
+          <div class="tbh-body">
+            <h3>Tabel Perbandingan</h3>
+            <p id="matrixCount">—</p>
           </div>
-          <i class="fas fa-chevron-right ex-arrow"></i>
         </div>
-        <div class="export-item" onclick="openPDFSettings()">
-          <div class="ex-icon pdf" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff"><i class="fas fa-gear"></i></div>
-          <div class="ex-text">
-            <h4>Pengaturan PDF</h4>
-            <p>Atur logo, tanda tangan & nama penanda tangan</p>
+        <div class="table-wrap" id="tableWrap">
+          <div class="table-scroll">
+            <table class="matrix-table" id="summaryTable">
+              <thead></thead>
+              <tbody></tbody>
+            </table>
+            <div id="summaryEmpty" class="empty" style="padding:24px 10px;display:none">
+              <p style="margin:0">Belum ada data harga</p>
+            </div>
           </div>
-          <i class="fas fa-chevron-right ex-arrow"></i>
+          <div class="table-foot" id="summaryFooter" style="display:none">
+            <div class="tf-label"><i class="fas fa-calculator"></i> Total Potensi Hemat</div>
+            <div class="tf-value" id="summaryTotal">Rp 0</div>
+          </div>
         </div>
-        <div class="export-item" onclick="exportCSV('all')">
-          <div class="ex-icon blue"><i class="fas fa-table"></i></div>
-          <div class="ex-text">
-            <h4>Semua Catatan Harga</h4>
-            <p>Barang, toko, harga, berat, jumlah, tanggal</p>
+      </div>
+
+      <!-- Export -->
+      <div class="export-block">
+        <div class="export-block-head">
+          <div class="ebh-icon green"><i class="fas fa-file-export"></i></div>
+          <div class="ebh-body">
+            <h3>Export Data</h3>
+            <p>Unduh laporan sesuai filter aktif</p>
           </div>
-          <i class="fas fa-chevron-right ex-arrow"></i>
         </div>
-        <div class="export-item" onclick="exportCSV('stores')">
-          <div class="ex-icon red"><i class="fas fa-store"></i></div>
-          <div class="ex-text">
-            <h4>Daftar Toko</h4>
-            <p>Nama, alamat, kontak, total berat & jumlah</p>
+        <div class="export-grid-new">
+          <div class="export-card main" onclick="exportPDF()">
+            <div class="ec-icon pdf"><i class="fas fa-file-pdf"></i></div>
+            <div class="ec-body">
+              <h4>Laporan PDF Lengkap</h4>
+              <p>Matriks, grafik, dan tanda tangan</p>
+            </div>
+            <i class="fas fa-arrow-right ec-arrow"></i>
           </div>
-          <i class="fas fa-chevron-right ex-arrow"></i>
+          <div class="export-row">
+            <div class="export-card small" onclick="openPDFSettings()">
+              <div class="ec-icon violet"><i class="fas fa-gear"></i></div>
+              <div class="ec-body">
+                <h4>Atur PDF</h4>
+              </div>
+            </div>
+            <div class="export-card small" onclick="exportCSV('all')">
+              <div class="ec-icon blue"><i class="fas fa-table"></i></div>
+              <div class="ec-body">
+                <h4>CSV Harga</h4>
+              </div>
+            </div>
+            <div class="export-card small" onclick="exportCSV('stores')">
+              <div class="ec-icon red"><i class="fas fa-store"></i></div>
+              <div class="ec-body">
+                <h4>CSV Toko</h4>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1671,7 +1994,7 @@ function effectiveRole(){
 }
 function canAccessCompareReports(){
   const r = effectiveRole();
-  return r === 'admin' || r === 'petugas';
+  return r === 'admin';
 }
 
 function applyRoleUI(){
@@ -2824,7 +3147,7 @@ window.exitAgentMode = exitAgentMode;
 
 function switchView(name){
   if(!canAccessCompareReports() && (name === 'compare' || name === 'reports')){
-    snack('Fitur ini hanya untuk admin & petugas', 'info');
+    snack('Fitur ini hanya untuk admin', 'info');
     return;
   }
   state.view = name;
@@ -3398,7 +3721,7 @@ function renderReports(){
   document.getElementById('repLowStore').textContent  = hasData && minInfo ? `${esc(minInfo.group.displayName)} • ${esc(minInfo.row.store.name)}` : '—';
   document.getElementById('repHighStore').textContent = hasData && maxInfo ? `${esc(maxInfo.group.displayName)} • ${esc(maxInfo.row.store.name)}` : '—';
   const banner = document.getElementById('profitBanner');
-  banner.classList.toggle('neg', !hasData || totalPotensi === 0);
+  if(banner) banner.classList.toggle('neg', !hasData || totalPotensi === 0);
   document.getElementById('vizCount').textContent = `${groups.length} barang • ${stores.length} toko`;
   renderMatrixTable(stores, groups, totalPotensi);
 }
@@ -4455,7 +4778,7 @@ async function loadImageAsBase64(url, maxW = 700){
 }
 
 async function exportHistoryPDF(histId){
-  if(!canAccessCompareReports()){ snack('Fitur PDF hanya untuk admin & petugas', 'info'); return; }
+  if(!canAccessCompareReports()){ snack('Fitur PDF hanya untuk admin', 'info'); return; }
   if(!window.jspdf || !window.jspdf.jsPDF){ snack('PDF belum termuat', 'error'); return; }
   const h = getHistory(histId);
   if(!h){ snack('History tidak ditemukan', 'error'); return; }
@@ -5091,7 +5414,7 @@ function clearPDFConfigPhoto(key, ev){
 }
 
 function openPDFSettings(){
-  if(!canAccessCompareReports()){ snack('Fitur PDF hanya untuk admin & petugas', 'info'); return; }
+  if(!canAccessCompareReports()){ snack('Fitur PDF hanya untuk admin', 'info'); return; }
   const cfg = getPDFConfig();
   ['pdfLogo', 'pdfSig'].forEach(key => {
     const drop = document.getElementById(key + 'Drop');
@@ -5136,22 +5459,140 @@ window.resetPDFSettings = resetPDFSettings;
 window.handlePDFConfigSelect = handlePDFConfigSelect;
 window.clearPDFConfigPhoto = clearPDFConfigPhoto;
 
-function exportPDF(){
-  if(!canAccessCompareReports()){ snack('Fitur PDF hanya untuk admin & petugas', 'info'); return; }
+/* ============================================================
+   GRAFIK UNTUK PDF
+   ============================================================ */
+async function renderPriceChartImage(stores, rows){
+  return new Promise((resolve) => {
+    try {
+      if(typeof Chart === 'undefined'){ resolve(null); return; }
+
+      const canvas = document.createElement('canvas');
+      canvas.width  = 1600;
+      canvas.height = 800;
+      canvas.style.position = 'fixed';
+      canvas.style.left = '-9999px';
+      canvas.style.top  = '0';
+      canvas.style.pointerEvents = 'none';
+      document.body.appendChild(canvas);
+
+      const labels = rows.map(r =>
+        r.group.displayName.length > 14 ? r.group.displayName.slice(0,14)+'…' : r.group.displayName
+      );
+
+      const datasets = stores.map((s, si) => {
+        const color = CHART_COLORS[si % CHART_COLORS.length];
+        const sIdx  = stores.findIndex(x => x.id === s.id);
+        return {
+          label: s.name,
+          data: rows.map(r => {
+            const c = r.cells[sIdx];
+            return c ? c.price : null;
+          }),
+          backgroundColor: color + 'E6',
+          borderColor: color,
+          borderWidth: 1.5,
+          borderRadius: 5,
+          borderSkipped: false,
+          maxBarThickness: 38
+        };
+      });
+
+      const chart = new Chart(canvas, {
+        type: 'bar',
+        data: { labels, datasets },
+        options: {
+          responsive: false,
+          maintainAspectRatio: false,
+          animation: false,
+          layout: { padding: { top: 16, right: 16, bottom: 8, left: 8 } },
+          plugins: {
+            legend: {
+              display: stores.length > 1,
+              position: 'top', align: 'end',
+              labels: {
+                boxWidth: 16, boxHeight: 16, padding: 18,
+                font: { size: 16, family: 'Inter', weight: '700' },
+                color: '#475569', usePointStyle: true, pointStyle: 'circle'
+              }
+            },
+            tooltip: { enabled: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                color: '#64748b',
+                font: { size: 14, family: 'Inter', weight: '600' },
+                callback: v => v >= 1000000
+                  ? (v/1000000).toFixed(1)+'jt'
+                  : v >= 1000 ? Math.round(v/1000)+'rb' : v
+              },
+              grid: { color: 'rgba(226,232,240,.7)' }
+            },
+            x: {
+              ticks: {
+                color: '#475569',
+                font: { size: 13, family: 'Inter', weight: '700' },
+                maxRotation: 45, minRotation: 0
+              },
+              grid: { display: false }
+            }
+          }
+        }
+      });
+
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        try {
+          const whiteCanvas = document.createElement('canvas');
+          whiteCanvas.width  = canvas.width;
+          whiteCanvas.height = canvas.height;
+          const wctx = whiteCanvas.getContext('2d');
+          wctx.fillStyle = '#ffffff';
+          wctx.fillRect(0, 0, whiteCanvas.width, whiteCanvas.height);
+          wctx.drawImage(canvas, 0, 0);
+          const dataUrl = whiteCanvas.toDataURL('image/png', 1.0);
+          try { chart.destroy(); } catch(e){}
+          canvas.remove();
+          resolve(dataUrl);
+        } catch(e){
+          console.warn('Chart composite error:', e);
+          try { chart.destroy(); } catch(_e){}
+          canvas.remove();
+          resolve(null);
+        }
+      }));
+    } catch(e){
+      console.warn('Chart render error:', e);
+      resolve(null);
+    }
+  });
+}
+
+/* ============================================================
+   EXPORT PDF UTAMA (Tabel 1 + Grafik + Tabel 2 + Tanda Tangan)
+   ============================================================ */
+async function exportPDF(){
+  if(!canAccessCompareReports()){ snack('Fitur PDF hanya untuk admin', 'info'); return; }
   if(!window.jspdf || !window.jspdf.jsPDF){ snack('PDF belum termuat', 'error'); return; }
+
   const { jsPDF } = window.jspdf;
   const stores = getFilteredStores();
   const groups = getFilteredGroups();
   if(stores.length === 0 || groups.length === 0){ snack('Pilih minimal 1 toko & 1 barang', 'info'); return; }
 
   const rows = groups.map(group => {
-    const cells = stores.map(s => getLatestPriceForGroup(group, s.id));
+    const cells  = stores.map(s => getLatestPriceForGroup(group, s.id));
     const prices = cells.filter(c => c).map(c => c.price);
     const min = prices.length ? Math.min(...prices) : null;
     const max = prices.length ? Math.max(...prices) : null;
     return { group, cells, min, max, diff: (min !== null && max !== null) ? max - min : 0, hasData: prices.length > 0 };
   }).filter(r => r.hasData);
   if(rows.length === 0){ snack('Tidak ada data', 'info'); return; }
+
+  snack('Membuat PDF dengan grafik...', 'info');
+
+  const chartImage = await renderPriceChartImage(stores, rows);
 
   const cfg = getPDFConfig();
   const orientation = stores.length >= 3 ? 'landscape' : 'portrait';
@@ -5160,7 +5601,6 @@ function exportPDF(){
   const pageH = doc.internal.pageSize.getHeight();
   const M = 10;
 
-  /* HEADER BIRU */
   doc.setFillColor(37, 99, 235);
   doc.rect(0, 0, pageW, 26, 'F');
   doc.setTextColor(255, 255, 255);
@@ -5171,20 +5611,22 @@ function exportPDF(){
   doc.setFontSize(8.5);
   doc.text(isAdmin && !activeAgentUid ? 'Laporan Gabungan' : 'Laporan Perbandingan Harga', M + 4, 19);
 
-  // Logo di kanan header
   if(cfg.logoUrl){
     try {
-      const logoW = 20, logoH = 18;
-      doc.addImage(cfg.logoUrl, 'PNG', pageW - M - logoW - 2, 4, logoW, logoH, undefined, 'FAST');
-    } catch(e){ console.warn('Logo gagal ditambahkan:', e); }
+      doc.addImage(cfg.logoUrl, 'PNG', pageW - M - 22, 4, 20, 18, undefined, 'FAST');
+    } catch(e){ console.warn('Logo gagal:', e); }
   }
 
-  let y = 33;
+  let y = 32;
   doc.setTextColor(15, 23, 42);
   doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.text(`Tanggal: ${fmtDate(todayStr())}   •   ${stores.length} Toko   •   ${rows.length} Barang`, M, y);
+  y += 6;
+
   doc.setFontSize(11);
-  doc.text('Tabel Perbandingan Harga', M, y);
-  y += 4;
+  doc.text('Tabel 1. Perbandingan Harga', M, y);
+  y += 3;
 
   const numStores = stores.length;
   let baseFont = 8;
@@ -5193,8 +5635,8 @@ function exportPDF(){
   else if(numStores >= 4) baseFont = 7;
   else if(numStores >= 3) baseFont = 7.5;
 
-  const head = [['#', 'Barang', 'Sat.', ...stores.map(s => s.name), 'Terendah', 'Tertinggi', 'Selisih']];
-  const body = rows.map((r, i) => {
+  const head1 = [['#', 'Barang', 'Sat.', ...stores.map(s => s.name), 'Terendah', 'Tertinggi', 'Selisih']];
+  const body1 = rows.map((r, i) => {
     const row = [String(i + 1), r.group.displayName, r.group.unit];
     r.cells.forEach(c => row.push(c ? fmtRp(c.price) : '—'));
     row.push(r.min !== null ? fmtRp(r.min) : '—');
@@ -5206,21 +5648,11 @@ function exportPDF(){
   let totalSavings = 0;
   rows.forEach(r => { if(r.diff > 0) totalSavings += r.diff; });
 
-  const hasSig = !!(cfg.signatureUrl || cfg.signatureName);
-  const bottomMargin = hasSig ? 55 : 15;
-
   doc.autoTable({
-    head, body, startY: y, theme: 'grid',
-    margin: { left: M, right: M, top: 30, bottom: bottomMargin },
-    tableWidth: 'auto',
-    styles: {
-      font: 'helvetica', fontSize: baseFont, cellPadding: 1.8,
-      textColor: [30, 41, 59], overflow: 'linebreak', valign: 'middle'
-    },
-    headStyles: {
-      fillColor: [37, 99, 235], textColor: [255, 255, 255],
-      fontStyle: 'bold', halign: 'center', fontSize: baseFont, cellPadding: 1.5
-    },
+    head: head1, body: body1, startY: y, theme: 'grid',
+    margin: { left: M, right: M },
+    styles: { font: 'helvetica', fontSize: baseFont, cellPadding: 1.8, textColor: [30, 41, 59], overflow: 'linebreak', valign: 'middle' },
+    headStyles: { fillColor: [37, 99, 235], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', fontSize: baseFont, cellPadding: 1.5 },
     alternateRowStyles: { fillColor: [248, 251, 255] },
     columnStyles: {
       0: { halign: 'center', cellWidth: 7 },
@@ -5229,14 +5661,119 @@ function exportPDF(){
     }
   });
 
-  let finalY = doc.lastAutoTable.finalY || (pageH - bottomMargin);
-
-  // Total potensi hemat
+  let finalY = doc.lastAutoTable.finalY || (pageH - 15);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(9.5);
   doc.setTextColor(37, 99, 235);
-  doc.text(`Total Potensi Hemat: ${fmtRp(totalSavings)}`, M, finalY + 7);
+  doc.text(`Total Potensi Hemat: ${fmtRp(totalSavings)}`, M, finalY + 5);
+  finalY += 10;
 
+  if(chartImage){
+    let chartW = pageW - M * 2;
+    let chartH = chartW * 0.5;
+    const maxH = pageH * 0.48;
+    if(chartH > maxH){ chartH = maxH; chartW = chartH * 2; }
+    const chartX = M + ((pageW - M * 2) - chartW) / 2;
+
+    if(finalY + chartH + 16 > pageH - 12){
+      doc.addPage();
+      finalY = 20;
+    }
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.setTextColor(15, 23, 42);
+    doc.text('Grafik Perbandingan Harga', M, finalY);
+    finalY += 3;
+
+    try {
+      doc.addImage(chartImage, 'PNG', chartX, finalY, chartW, chartH, undefined, 'FAST');
+      finalY += chartH + 8;
+    } catch(e){ console.warn('Chart gagal:', e); }
+  }
+
+  const storeItemRows = [];
+  let grandTotal = 0;
+
+  stores.forEach(store => {
+    groups.forEach(group => {
+      const priceRec = getLatestPriceForGroup(group, store.id);
+      if(!priceRec) return;
+
+      const qty    = Number(priceRec.qty)    || 0;
+      const weight = Number(priceRec.weight) || 0;
+      const price  = Number(priceRec.price)  || 0;
+      const qtyUnit = group.qtyUnit || 'pcs';
+      const wUnit   = group.unit    || 'kg';
+
+      let stockTxt = '—';
+      let estNum   = 0;
+      let estTxt   = '—';
+
+      if(qty > 0){
+        stockTxt = fmtQty(qty) + ' ' + qtyUnit;
+        estNum   = price * qty;
+        estTxt   = fmtRp(estNum);
+      } else if(weight > 0){
+        stockTxt = fmtWeight(weight) + ' ' + wUnit;
+        estNum   = price * weight;
+        estTxt   = fmtRp(estNum);
+      }
+
+      grandTotal += estNum;
+
+      storeItemRows.push([
+        store.name,
+        group.displayName + ' (' + group.unit + ')',
+        stockTxt,
+        fmtRp(price),
+        estTxt
+      ]);
+    });
+  });
+
+  if(storeItemRows.length > 0){
+    if(finalY + 30 > pageH - 12){
+      doc.addPage();
+      finalY = 20;
+    }
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.setTextColor(15, 23, 42);
+    doc.text('Tabel 2. Rekapitulasi Stok & Estimasi Nilai', M, finalY);
+    finalY += 3;
+
+    const head2 = [['Toko', 'Jenis Barang', 'Stok', 'Harga', 'Estimasi']];
+    const body2 = storeItemRows.slice();
+    body2.push(['', '', '', 'TOTAL', fmtRp(grandTotal)]);
+
+    doc.autoTable({
+      head: head2, body: body2, startY: finalY, theme: 'striped',
+      margin: { left: M, right: M },
+      styles: { font: 'helvetica', fontSize: 8, cellPadding: 2, textColor: [30, 41, 59], overflow: 'linebreak', valign: 'middle' },
+      headStyles: { fillColor: [139, 92, 246], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', fontSize: 8.5 },
+      alternateRowStyles: { fillColor: [250, 245, 255] },
+      columnStyles: {
+        0: { cellWidth: 'auto', fontStyle: 'bold' },
+        1: { cellWidth: 'auto' },
+        2: { halign: 'right', cellWidth: 26 },
+        3: { halign: 'right', cellWidth: 28 },
+        4: { halign: 'right', fontStyle: 'bold', cellWidth: 30, textColor: [4, 120, 87] }
+      },
+      didParseCell: (data) => {
+        if(data.section === 'body' && data.row.index === body2.length - 1){
+          data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.fillColor = [219, 234, 254];
+          data.cell.styles.textColor = [37, 99, 235];
+        }
+      }
+    });
+
+    finalY = doc.lastAutoTable.finalY || finalY;
+  }
+
+  const hasSig = !!(cfg.signatureUrl || cfg.signatureName);
   if(hasSig){
     let sigY = finalY + 12;
     if(sigY + 40 > pageH - 10){
@@ -5257,7 +5794,7 @@ function exportPDF(){
         doc.addImage(cfg.signatureUrl, 'PNG', sigX, imgY, sigW, 20, undefined, 'FAST');
         imgY += 20;
       } catch(e){
-        console.warn('Signature gagal ditambahkan:', e);
+        console.warn('Signature gagal:', e);
         imgY += 15;
       }
     } else {
@@ -5276,7 +5813,7 @@ function exportPDF(){
   }
 
   doc.save(`Laporan_bapok_${todayStr()}.pdf`);
-  snack('PDF diunduh');
+  snack('PDF dengan grafik berhasil diunduh');
 }
 
 async function refreshRole(){
