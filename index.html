@@ -936,6 +936,17 @@ body.no-store-mode .fab{display:none}
             </div>
             <i class="fas fa-arrow-right ec-arrow"></i>
           </div>
+          <div class="export-card main" onclick="openDocExportModal()"
+               style="background:linear-gradient(135deg,rgba(20,184,166,.08),rgba(13,148,136,.05));border-color:rgba(20,184,166,.25)">
+            <div class="ec-icon" style="background:linear-gradient(135deg,#14b8a6,#0d9488);color:#fff;box-shadow:0 4px 10px rgba(20,184,166,.35)">
+              <i class="fas fa-images"></i>
+            </div>
+            <div class="ec-body">
+              <h4>PDF Dokumentasi Harian</h4>
+              <p>Foto + keterangan • 8 dokumentasi per halaman</p>
+            </div>
+            <i class="fas fa-arrow-right ec-arrow"></i>
+          </div>
           <div class="export-row">
             <div class="export-card small" onclick="openPDFSettings()">
               <div class="ec-icon violet"><i class="fas fa-gear"></i></div>
@@ -1420,7 +1431,7 @@ body.no-store-mode .fab{display:none}
   </div>
 </div>
 
-<!-- ===== DOCUMENTATION MODAL (NEW) ===== -->
+<!-- ===== DOCUMENTATION MODAL ===== -->
 <div class="scrim" id="docModal">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -1474,6 +1485,64 @@ body.no-store-mode .fab{display:none}
         </div>
         <button type="button" class="btn btn-danger" id="btnDeleteDoc" style="margin-top:8px;display:none" onclick="deleteDocFromModal()"><i class="fas fa-trash"></i> Hapus Dokumentasi</button>
       </form>
+    </div>
+  </div>
+</div>
+
+<!-- ===== EXPORT DOKUMENTASI PDF MODAL ===== -->
+<div class="scrim" id="docExportModal">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <i class="fas fa-images" style="background:var(--teal-pale);color:var(--teal-deep)"></i>
+      <h2>Export PDF Dokumentasi</h2>
+    </div>
+    <div class="sheet-body">
+      <div class="bulk-note" style="margin-bottom:12px;background:var(--teal-pale);border:1px solid rgba(20,184,166,.2)">
+        <i class="fas fa-circle-info" style="color:var(--teal-deep)"></i>
+        <span>Setiap halaman PDF berisi maksimal <b>8 dokumentasi</b> (grid 2×4). Foto + keterangan ditata rapi dengan <b>header</b> dan <b>nomor halaman</b>.</span>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Filter Toko</label>
+        <div class="field-wrap"><i class="fas fa-store"></i>
+          <select class="select" id="docExportStore">
+            <option value="">Semua Toko</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">Dari Tanggal</label>
+          <div class="field-wrap"><i class="fas fa-calendar"></i>
+            <input type="date" class="input" id="docExportFrom">
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Sampai Tanggal</label>
+          <div class="field-wrap"><i class="fas fa-calendar"></i>
+            <input type="date" class="input" id="docExportTo">
+          </div>
+        </div>
+      </div>
+
+      <div class="bulk-note" style="margin-bottom:10px">
+        <i class="fas fa-lightbulb" style="color:var(--amber)"></i>
+        <span>Kosongkan filter tanggal untuk mengambil <b>semua dokumentasi</b>. Deskripsi yang sangat panjang akan dipotong otomatis menjadi ±4 baris per sel.</span>
+      </div>
+
+      <div class="total-preview" style="background:var(--teal-pale)">
+        <span class="lbl" style="color:var(--teal-deep)">Total Dokumentasi</span>
+        <span class="val" id="docExportCount" style="color:var(--teal-deep)">0 • 0 halaman</span>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn btn-outlined" onclick="closeSheet('docExportModal')">Batal</button>
+        <button type="button" class="btn btn-pdf" id="docExportBtn" onclick="generateDocPDF()">
+          <i class="fas fa-file-pdf"></i> Export PDF
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -2880,6 +2949,221 @@ function openDocDetail(docId){
   openSheet('detailModal');
 }
 window.openDocDetail = openDocDetail;
+
+/* ============================================================
+   EXPORT PDF DOKUMENTASI HARIAN — 8 foto/halaman (grid 2×4)
+   ============================================================ */
+function openDocExportModal(){
+  if(!canAccessCompareReports()){ snack('Fitur ini hanya untuk admin', 'info'); return; }
+
+  const stores = [...dbGetAll('stores')].sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  const sel = document.getElementById('docExportStore');
+  sel.innerHTML = '<option value="">Semua Toko</option>' +
+    stores.map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join('');
+
+  document.getElementById('docExportFrom').value = '';
+  document.getElementById('docExportTo').value = '';
+
+  updateDocExportCount();
+  openSheet('docExportModal');
+}
+window.openDocExportModal = openDocExportModal;
+
+function getFilteredDocsForExport(){
+  const storeId = document.getElementById('docExportStore').value;
+  const from = document.getElementById('docExportFrom').value;
+  const to = document.getElementById('docExportTo').value;
+
+  return [...dbGetAll('documentations')]
+    .filter(d => d && d.photoUrl)
+    .filter(d => !storeId || String(d.storeId) === String(storeId))
+    .filter(d => !from || (d.date || '') >= from)
+    .filter(d => !to   || (d.date || '') <= to)
+    .sort((a, b) =>
+      (b.date || '').localeCompare(a.date || '') ||
+      (b.createdAt || 0) - (a.createdAt || 0)
+    );
+}
+
+function updateDocExportCount(){
+  const docs = getFilteredDocsForExport();
+  const pages = Math.ceil(docs.length / 8);
+  const el = document.getElementById('docExportCount');
+  if(el) el.textContent = `${docs.length} dokumentasi • ${pages} halaman`;
+  const btn = document.getElementById('docExportBtn');
+  if(btn) btn.disabled = docs.length === 0;
+}
+
+(function bindDocExportFilters(){
+  ['docExportStore','docExportFrom','docExportTo'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el && !el.dataset.bound){
+      el.addEventListener('change', updateDocExportCount);
+      el.dataset.bound = '1';
+    }
+  });
+})();
+
+async function generateDocPDF(){
+  if(!canAccessCompareReports()){ snack('Fitur ini hanya untuk admin', 'info'); return; }
+  if(!window.jspdf || !window.jspdf.jsPDF){ snack('PDF belum termuat', 'error'); return; }
+
+  const docs = getFilteredDocsForExport();
+  if(docs.length === 0){ snack('Belum ada dokumentasi sesuai filter', 'info'); return; }
+
+  const btn = document.getElementById('docExportBtn');
+  const oldHtml = btn.innerHTML;
+  btn.disabled = true;
+
+  try {
+    // -------- 1) Preload semua foto --------
+    const photoCache = {};
+    for(let i = 0; i < docs.length; i++){
+      const d = docs[i];
+      btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Memuat foto ${i+1}/${docs.length}...`;
+      if(!photoCache[d.photoUrl]){
+        try {
+          photoCache[d.photoUrl] = await loadImageAsBase64(d.photoUrl, 500);
+        } catch(e){
+          console.warn('Gagal load foto:', d.photoUrl, e);
+          photoCache[d.photoUrl] = null;
+        }
+      }
+    }
+
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Membuat PDF...';
+
+    // -------- 2) Setup layout PDF --------
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+
+    const pageW = pdf.internal.pageSize.getWidth();   // 210
+    const pageH = pdf.internal.pageSize.getHeight();  // 297
+    const M = 8;
+    const headerH = 14;
+    const gap = 4;
+    const colW = (pageW - M*2 - gap) / 2;              // 95mm
+    const availH = pageH - M - headerH - M;
+    const rowH = (availH - gap*3) / 4;
+    const photoH = rowH - 22;
+    const perPage = 8;
+    const totalPages = Math.ceil(docs.length / perPage);
+    const MAX_DESC_LINES = 4;
+
+    // -------- 3) Loop halaman --------
+    for(let p = 0; p < totalPages; p++){
+      if(p > 0) pdf.addPage();
+
+      // Header halaman
+      pdf.setFillColor(13, 148, 136);
+      pdf.rect(0, 0, pageW, headerH, 'F');
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(12);
+      pdf.text('Dokumentasi Harian Toko', M, 9);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(7.5);
+      pdf.text(
+        `Hal. ${p+1}/${totalPages}  •  ${docs.length} dokumentasi`,
+        pageW - M, 9, { align: 'right' }
+      );
+
+      const startY = headerH + M;
+
+      for(let i = 0; i < perPage; i++){
+        const idx = p * perPage + i;
+        if(idx >= docs.length) break;
+
+        const d = docs[idx];
+        const col = i % 2;
+        const row = Math.floor(i / 2);
+        const x = M + col * (colW + gap);
+        const y = startY + row * (rowH + gap);
+
+        // Border cell
+        pdf.setDrawColor(203, 213, 225);
+        pdf.setLineWidth(0.25);
+        pdf.roundedRect(x, y, colW, rowH, 2, 2);
+
+        // Foto
+        const photo = photoCache[d.photoUrl];
+        if(photo && photo.data){
+          try {
+            let drawW = colW - 2;
+            let drawH = photo.h * (drawW / photo.w);
+            if(drawH > photoH - 2){
+              drawH = photoH - 2;
+              drawW = photo.w * (drawH / photo.h);
+            }
+            const drawX = x + (colW - drawW) / 2;
+            const drawY = y + 1 + (photoH - 2 - drawH) / 2;
+            pdf.addImage(photo.data, 'JPEG', drawX, drawY, drawW, drawH, undefined, 'FAST');
+          } catch(e){ console.warn('addImage gagal:', e); }
+        } else {
+          pdf.setTextColor(180, 180, 180);
+          pdf.setFontSize(7);
+          pdf.text('Foto tidak tersedia', x + colW/2, y + photoH/2, { align: 'center' });
+        }
+
+        // Divider
+        pdf.setDrawColor(230, 239, 255);
+        pdf.setLineWidth(0.3);
+        pdf.line(x + 2, y + photoH, x + colW - 2, y + photoH);
+
+        // Teks: tanggal + toko
+        const textY = y + photoH + 4;
+        pdf.setTextColor(13, 148, 136);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(7.5);
+        const dateTxt = fmtDate(d.date);
+        pdf.text(dateTxt, x + 2, textY);
+
+        pdf.setTextColor(15, 23, 42);
+        pdf.setFontSize(7);
+        const storeTxt = '• ' + (d.storeName || 'Toko');
+        const dateW = pdf.getTextWidth(dateTxt);
+        pdf.text(storeTxt, x + 2 + dateW + 1.5, textY, { maxWidth: colW - dateW - 6 });
+
+        // Teks: keterangan
+        pdf.setTextColor(71, 85, 105);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(6.5);
+        let desc = d.description || '—';
+        let lines = pdf.splitTextToSize(desc, colW - 4);
+        if(lines.length > MAX_DESC_LINES){
+          lines = lines.slice(0, MAX_DESC_LINES);
+          lines[MAX_DESC_LINES - 1] = lines[MAX_DESC_LINES - 1].replace(/\s+$/, '') + '…';
+        }
+        pdf.text(lines, x + 2, textY + 4);
+      }
+    }
+
+    // Footer
+    const totalPg = pdf.internal.getNumberOfPages();
+    for(let p = 1; p <= totalPg; p++){
+      pdf.setPage(p);
+      pdf.setTextColor(148, 163, 184);
+      pdf.setFont('helvetica', 'italic');
+      pdf.setFontSize(6.5);
+      pdf.text(
+        `Dibuat otomatis oleh bapok • ${fmtDate(todayStr())}`,
+        pageW / 2, pageH - 4, { align: 'center' }
+      );
+    }
+
+    pdf.save(`Dokumentasi_Harian_${todayStr()}.pdf`);
+    closeSheet('docExportModal');
+    snack(`PDF ${totalPages} halaman berhasil diunduh`);
+  } catch(err){
+    console.error(err);
+    snack('Gagal membuat PDF: ' + (err.message || err), 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = oldHtml;
+    updateDocExportCount();
+  }
+}
+window.generateDocPDF = generateDocPDF;
 
 /* ============================================================
    MANUAL COMPARE
@@ -5354,7 +5638,7 @@ function exportCSV(type){
 }
 
 /* ============================================================
-   PDF CONFIG — Logo, Tanda Tangan & Nama
+   PDF CONFIG
    ============================================================ */
 const PDF_CONFIG_KEY = 'bapok_pdf_config_v1';
 
