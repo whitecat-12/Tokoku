@@ -6206,6 +6206,13 @@ async function exportPDF(){
     { content:'Selisih',   styles:{ halign:'right' } }
   ]];
 
+  // ========== MULAI PERUBAHAN WARNA ==========
+  // Hanya 2 keluarga warna: murah = HIJAU, tengah/mahal = MERAH
+  const GREEN_FILL = [220, 252, 231];   // hijau muda (background)
+  const GREEN_TEXT = [4, 120, 87];      // hijau tua (teks)
+  const RED_FILL   = [254, 226, 226];   // merah muda (background)
+  const RED_TEXT   = [190, 18, 60];     // merah tua (teks)
+
   const body1 = rows.map((r, i) => {
     const row = [
       { content:String(i + 1),          styles:{ halign:'center', textColor:[100,116,139] } },
@@ -6213,18 +6220,37 @@ async function exportPDF(){
       { content:r.group.unit,           styles:{ halign:'center', textColor:[100,116,139] } }
     ];
     r.cells.forEach(c => {
-      const isMin = c && r.min !== null && c.price === r.min && r.min !== r.max;
-      const isMax = c && r.max !== null && c.price === r.max && r.min !== r.max;
-      let color = [30, 41, 59], fontStyle = 'normal';
-      if(isMin){ color = [4, 120, 87]; fontStyle = 'bold'; }
-      else if(isMax){ color = [190, 18, 60]; fontStyle = 'bold'; }
-      row.push({ content: c ? (isMin ? '★ ' : '') + fmtRp(c.price) : '—', styles:{ halign:'right', textColor:color, fontStyle:fontStyle } });
+      if(!c){
+        row.push({ content: '—', styles:{ halign:'right', textColor:[148,163,184] } });
+        return;
+      }
+      const isMin = r.min !== null && c.price === r.min;
+      // Murah → hijau, tengah & mahal → merah
+      const fill = isMin ? GREEN_FILL : RED_FILL;
+      const text = isMin ? GREEN_TEXT : RED_TEXT;
+      row.push({
+        content: (isMin ? '★ ' : '') + fmtRp(c.price),
+        styles:{ halign:'right', textColor:text, fontStyle:'bold', fillColor:fill }
+      });
     });
-    row.push({ content: r.min !== null ? fmtRp(r.min) : '—', styles:{ halign:'right', textColor:[4,120,87], fontStyle:'bold' } });
-    row.push({ content: r.max !== null ? fmtRp(r.max) : '—', styles:{ halign:'right', textColor:[190,18,60], fontStyle:'bold' } });
-    row.push({ content: r.diff > 0 ? '+' + fmtRp(r.diff) : '—', styles:{ halign:'right', textColor: r.diff > 0 ? [37,99,235] : [148,163,184], fontStyle:'bold' } });
+    // Kolom "Terendah" → hijau
+    row.push({
+      content: r.min !== null ? fmtRp(r.min) : '—',
+      styles:{ halign:'right', textColor:GREEN_TEXT, fontStyle:'bold', fillColor:GREEN_FILL }
+    });
+    // Kolom "Tertinggi" → merah
+    row.push({
+      content: r.max !== null ? fmtRp(r.max) : '—',
+      styles:{ halign:'right', textColor:RED_TEXT, fontStyle:'bold', fillColor:RED_FILL }
+    });
+    // Kolom "Selisih" tetap biru (bukan harga barang)
+    row.push({
+      content: r.diff > 0 ? '+' + fmtRp(r.diff) : '—',
+      styles:{ halign:'right', textColor: r.diff > 0 ? [37,99,235] : [148,163,184], fontStyle:'bold' }
+    });
     return row;
   });
+  // ========== SELESAI PERUBAHAN WARNA ==========
 
   doc.autoTable({
     head: head1, body: body1, startY: y, theme: 'grid',
