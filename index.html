@@ -919,6 +919,19 @@ body.no-store-mode .fab{display:none}
         </div>
       </div>
 
+      <div class="table-block" id="stockTotalBlock" style="display:none">
+        <div class="table-block-head">
+          <div class="tbh-icon" style="background:var(--green-pale);color:var(--green-deep)">
+            <i class="fas fa-cubes-stacked"></i>
+          </div>
+          <div class="tbh-body">
+            <h3>Tabel Stok Total</h3>
+            <p id="stockTotalCount">—</p>
+          </div>
+        </div>
+        <div id="stockTotalWrap"></div>
+      </div>
+
       <div class="export-block">
         <div class="export-block-head">
           <div class="ebh-icon green"><i class="fas fa-file-export"></i></div>
@@ -1431,7 +1444,6 @@ body.no-store-mode .fab{display:none}
   </div>
 </div>
 
-<!-- ===== DOCUMENTATION MODAL ===== -->
 <div class="scrim" id="docModal">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -1489,7 +1501,6 @@ body.no-store-mode .fab{display:none}
   </div>
 </div>
 
-<!-- ===== EXPORT DOKUMENTASI PDF MODAL ===== -->
 <div class="scrim" id="docExportModal">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -1608,7 +1619,7 @@ body.no-store-mode .fab{display:none}
     <div class="sheet-body">
       <div class="bulk-note">
         <i class="fas fa-circle-info"></i>
-        <span>Logo tampil di <b>header PDF</b>. Tanda tangan & nama tampil di <b>bagian bawah</b> setiap laporan. Data disimpan di perangkat ini.</span>
+        <span>Logo tampil di <b>header PDF</b>. Tanda tangan, nama, jabatan & NIP tampil di <b>bagian bawah</b> setiap laporan. Data disimpan di perangkat ini.</span>
       </div>
 
       <div class="photo-field">
@@ -1643,6 +1654,20 @@ body.no-store-mode .fab{display:none}
         <label class="field-label">Nama di Bawah Tanda Tangan</label>
         <div class="field-wrap"><i class="fas fa-user"></i>
           <input type="text" class="input" id="pdfSigName" placeholder="Nama lengkap penanda tangan" maxlength="60">
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Jabatan</label>
+        <div class="field-wrap"><i class="fas fa-user-tie"></i>
+          <input type="text" class="input" id="pdfSigTitle" placeholder="Contoh: Kepala Pasar / Admin Bapok" maxlength="60">
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">NIP</label>
+        <div class="field-wrap"><i class="fas fa-id-card"></i>
+          <input type="text" class="input" id="pdfSigNip" placeholder="Nomor Induk Pegawai" maxlength="30">
         </div>
       </div>
 
@@ -3016,139 +3041,125 @@ async function generateDocPDF(){
   btn.disabled = true;
 
   try {
-    // -------- 1) Preload semua foto --------
     const photoCache = {};
     for(let i = 0; i < docs.length; i++){
       const d = docs[i];
       btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Memuat foto ${i+1}/${docs.length}...`;
       if(!photoCache[d.photoUrl]){
-        try {
-          photoCache[d.photoUrl] = await loadImageAsBase64(d.photoUrl, 500);
-        } catch(e){
-          console.warn('Gagal load foto:', d.photoUrl, e);
-          photoCache[d.photoUrl] = null;
-        }
+        try { photoCache[d.photoUrl] = await loadImageAsBase64(d.photoUrl, 500); }
+        catch(e){ console.warn('Gagal load foto:', d.photoUrl, e); photoCache[d.photoUrl] = null; }
       }
     }
-
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Membuat PDF...';
 
-    // -------- 2) Setup layout PDF --------
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
-
-    const pageW = pdf.internal.pageSize.getWidth();   // 210
-    const pageH = pdf.internal.pageSize.getHeight();  // 297
+    const cfg = getPDFConfig();
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
     const M = 8;
-    const headerH = 14;
+    const headerH = 18;
+    const footerH = 8;
     const gap = 4;
-    const colW = (pageW - M*2 - gap) / 2;              // 95mm
-    const availH = pageH - M - headerH - M;
+    const colW = (pageW - M*2 - gap) / 2;
+    const availH = pageH - headerH - footerH - M*2;
     const rowH = (availH - gap*3) / 4;
-    const photoH = rowH - 22;
+    const photoH = rowH - 24;
     const perPage = 8;
     const totalPages = Math.ceil(docs.length / perPage);
-    const MAX_DESC_LINES = 4;
+    const MAX_DESC_LINES = 3;
 
-    // -------- 3) Loop halaman --------
-    for(let p = 0; p < totalPages; p++){
-      if(p > 0) pdf.addPage();
-
-      // Header halaman
+    function drawHeader(pageNum){
       pdf.setFillColor(13, 148, 136);
       pdf.rect(0, 0, pageW, headerH, 'F');
-      pdf.setTextColor(255, 255, 255);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(12);
-      pdf.text('Dokumentasi Harian Toko', M, 9);
-      pdf.setFont('helvetica', 'normal');
-      pdf.setFontSize(7.5);
-      pdf.text(
-        `Hal. ${p+1}/${totalPages}  •  ${docs.length} dokumentasi`,
-        pageW - M, 9, { align: 'right' }
-      );
+      pdf.setFillColor(20, 184, 166);
+      pdf.rect(0, headerH, pageW, 1, 'F');
+      if(cfg.logoUrl){
+        try { pdf.addImage(cfg.logoUrl, 'PNG', M, 3, 12, 12, undefined, 'FAST'); } catch(e){}
+      }
+      const tx = cfg.logoUrl ? M + 15 : M + 2;
+      pdf.setTextColor(255,255,255);
+      pdf.setFont('helvetica','bold'); pdf.setFontSize(13);
+      pdf.text('Dokumentasi Harian', tx, 9);
+      pdf.setFont('helvetica','normal'); pdf.setFontSize(7);
+      pdf.setTextColor(204, 251, 241);
+      pdf.text(`${totalPages} halaman • ${docs.length} dokumentasi`, tx, 14);
+      pdf.setFillColor(255, 255, 255);
+      pdf.roundedRect(pageW - M - 26, 5, 26, 8, 2, 2, 'F');
+      pdf.setTextColor(13, 148, 136);
+      pdf.setFont('helvetica','bold'); pdf.setFontSize(8);
+      pdf.text(`Hal. ${pageNum}/${totalPages}`, pageW - M - 13, 10.2, { align:'center' });
+    }
 
+    function drawFooter(){
+      pdf.setTextColor(148, 163, 184);
+      pdf.setFont('helvetica','italic'); pdf.setFontSize(6.5);
+      pdf.text('Dibuat otomatis oleh bapok • ' + fmtDate(todayStr()), pageW/2, pageH - 4, { align:'center' });
+    }
+
+    for(let p = 0; p < totalPages; p++){
+      if(p > 0) pdf.addPage();
+      drawHeader(p + 1);
       const startY = headerH + M;
 
       for(let i = 0; i < perPage; i++){
         const idx = p * perPage + i;
         if(idx >= docs.length) break;
-
         const d = docs[idx];
-        const col = i % 2;
-        const row = Math.floor(i / 2);
+        const col = i % 2, row = Math.floor(i / 2);
         const x = M + col * (colW + gap);
         const y = startY + row * (rowH + gap);
 
-        // Border cell
-        pdf.setDrawColor(203, 213, 225);
+        pdf.setFillColor(255, 255, 255);
+        pdf.setDrawColor(226, 232, 240);
         pdf.setLineWidth(0.25);
-        pdf.roundedRect(x, y, colW, rowH, 2, 2);
+        pdf.roundedRect(x, y, colW, rowH, 2, 2, 'FD');
 
-        // Foto
         const photo = photoCache[d.photoUrl];
         if(photo && photo.data){
           try {
-            let drawW = colW - 2;
+            let drawW = colW - 4;
             let drawH = photo.h * (drawW / photo.w);
-            if(drawH > photoH - 2){
-              drawH = photoH - 2;
-              drawW = photo.w * (drawH / photo.h);
-            }
-            const drawX = x + (colW - drawW) / 2;
-            const drawY = y + 1 + (photoH - 2 - drawH) / 2;
+            if(drawH > photoH - 2){ drawH = photoH - 2; drawW = photo.w * (drawH / photo.h); }
+            const drawX = x + 2 + (colW - 4 - drawW) / 2;
+            const drawY = y + 2 + (photoH - 2 - drawH) / 2;
             pdf.addImage(photo.data, 'JPEG', drawX, drawY, drawW, drawH, undefined, 'FAST');
           } catch(e){ console.warn('addImage gagal:', e); }
         } else {
+          pdf.setFillColor(241, 245, 249);
+          pdf.rect(x + 2, y + 2, colW - 4, photoH - 2, 'F');
           pdf.setTextColor(180, 180, 180);
-          pdf.setFontSize(7);
-          pdf.text('Foto tidak tersedia', x + colW/2, y + photoH/2, { align: 'center' });
+          pdf.setFont('helvetica','italic'); pdf.setFontSize(7);
+          pdf.text('Foto tidak tersedia', x + colW/2, y + photoH/2, { align:'center' });
         }
 
-        // Divider
-        pdf.setDrawColor(230, 239, 255);
+        pdf.setDrawColor(203, 213, 225);
         pdf.setLineWidth(0.3);
-        pdf.line(x + 2, y + photoH, x + colW - 2, y + photoH);
+        pdf.line(x + 3, y + photoH, x + colW - 3, y + photoH);
 
-        // Teks: tanggal + toko
-        const textY = y + photoH + 4;
-        pdf.setTextColor(13, 148, 136);
-        pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(7.5);
+        const textY = y + photoH + 5;
         const dateTxt = fmtDate(d.date);
-        pdf.text(dateTxt, x + 2, textY);
+        pdf.setTextColor(13, 148, 136);
+        pdf.setFont('helvetica','bold'); pdf.setFontSize(6.5);
+        const dateWidth = pdf.getTextWidth(dateTxt) + 8;
+        pdf.setFillColor(204, 251, 241);
+        pdf.roundedRect(x + 3, textY - 3.5, dateWidth, 5, 1.2, 1.2, 'F');
+        pdf.text(dateTxt, x + 5, textY);
 
         pdf.setTextColor(15, 23, 42);
-        pdf.setFontSize(7);
-        const storeTxt = '• ' + (d.storeName || 'Toko');
-        const dateW = pdf.getTextWidth(dateTxt);
-        pdf.text(storeTxt, x + 2 + dateW + 1.5, textY, { maxWidth: colW - dateW - 6 });
+        pdf.setFont('helvetica','bold'); pdf.setFontSize(7.5);
+        pdf.text(d.storeName || 'Toko', x + 3, textY + 5, { maxWidth: colW - 6 });
 
-        // Teks: keterangan
         pdf.setTextColor(71, 85, 105);
-        pdf.setFont('helvetica', 'normal');
-        pdf.setFontSize(6.5);
-        let desc = d.description || '—';
-        let lines = pdf.splitTextToSize(desc, colW - 4);
+        pdf.setFont('helvetica','normal'); pdf.setFontSize(6);
+        let lines = pdf.splitTextToSize(d.description || '—', colW - 6);
         if(lines.length > MAX_DESC_LINES){
           lines = lines.slice(0, MAX_DESC_LINES);
           lines[MAX_DESC_LINES - 1] = lines[MAX_DESC_LINES - 1].replace(/\s+$/, '') + '…';
         }
-        pdf.text(lines, x + 2, textY + 4);
+        pdf.text(lines, x + 3, textY + 9.5);
       }
-    }
-
-    // Footer
-    const totalPg = pdf.internal.getNumberOfPages();
-    for(let p = 1; p <= totalPg; p++){
-      pdf.setPage(p);
-      pdf.setTextColor(148, 163, 184);
-      pdf.setFont('helvetica', 'italic');
-      pdf.setFontSize(6.5);
-      pdf.text(
-        `Dibuat otomatis oleh bapok • ${fmtDate(todayStr())}`,
-        pageW / 2, pageH - 4, { align: 'center' }
-      );
+      drawFooter();
     }
 
     pdf.save(`Dokumentasi_Harian_${todayStr()}.pdf`);
@@ -3986,6 +3997,7 @@ function renderReports(){
   if(banner) banner.classList.toggle('neg', !hasData || totalPotensi === 0);
   document.getElementById('vizCount').textContent = `${groups.length} barang • ${stores.length} toko`;
   renderMatrixTable(stores, groups, totalPotensi);
+  renderStockTotalTable(stores, groups);
 }
 
 function renderMatrixTable(stores, groups, totalPotensi){
@@ -4054,6 +4066,116 @@ function renderMatrixTable(stores, groups, totalPotensi){
     </tr>`;
   }).join('');
   document.getElementById('summaryTotal').textContent = fmtRp(totalPotensi);
+}
+
+/* ============================================================
+   TABEL STOK TOTAL — Jumlah keseluruhan lintas toko
+   ============================================================ */
+function renderStockTotalTable(stores, groups){
+  const block   = document.getElementById('stockTotalBlock');
+  const wrap    = document.getElementById('stockTotalWrap');
+  const countEl = document.getElementById('stockTotalCount');
+  if(!block || !wrap) return;
+
+  if(stores.length === 0 || groups.length === 0){
+    block.style.display = 'none';
+    return;
+  }
+
+  const rows = groups.map(group => {
+    let totalQty = 0, totalWeight = 0, totalValue = 0, storeCount = 0;
+
+    stores.forEach(store => {
+      const rec = getLatestPriceForGroup(group, store.id);
+      if(!rec) return;
+      const q = Number(rec.qty) || 0;
+      const w = Number(rec.weight) || 0;
+      const price = Number(rec.price) || 0;
+
+      totalQty    += q;
+      totalWeight += w;
+      if(q > 0)      totalValue += price * q;
+      else if(w > 0) totalValue += price * w;
+      else           totalValue += price;
+      storeCount++;
+    });
+
+    return { group, totalQty, totalWeight, totalValue, storeCount, hasData: storeCount > 0 };
+  }).filter(r => r.hasData);
+
+  if(rows.length === 0){
+    block.style.display = 'none';
+    return;
+  }
+
+  block.style.display = 'block';
+
+  let grandWeight = 0, grandValue = 0;
+  const qtyByUnit = {};
+
+  rows.forEach(r => {
+    grandWeight += r.totalWeight;
+    grandValue  += r.totalValue;
+    if(r.totalQty > 0){
+      const u = r.group.qtyUnit || 'pcs';
+      qtyByUnit[u] = (qtyByUnit[u] || 0) + r.totalQty;
+    }
+  });
+
+  const qtyChipList = Object.entries(qtyByUnit).map(([u, v]) =>
+    `<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;background:var(--violet-pale);color:var(--violet-deep);font-size:10.5px;font-weight:800">
+      <i class="fas fa-hashtag" style="font-size:9px"></i> ${fmtQty(v)} ${esc(u)}
+    </span>`
+  ).join(' ');
+
+  const tbody = rows.map(r => {
+    const qtyUnit = r.group.qtyUnit || 'pcs';
+    const wUnit   = r.group.unit    || 'kg';
+    return `<tr>
+      <td class="matrix-item">
+        ${esc(r.group.displayName)}
+        <span class="it-unit">${r.storeCount} toko</span>
+      </td>
+      <td class="num">${r.totalQty > 0
+        ? fmtQty(r.totalQty) + ' <span style="font-size:9px;color:var(--text-mute);font-weight:600">' + esc(qtyUnit) + '</span>'
+        : '—'}</td>
+      <td class="num">${r.totalWeight > 0
+        ? fmtWeight(r.totalWeight) + ' <span style="font-size:9px;color:var(--text-mute);font-weight:600">' + esc(wUnit) + '</span>'
+        : '—'}</td>
+      <td class="num" style="color:var(--green-deep)">${fmtRp(r.totalValue)}</td>
+    </tr>`;
+  }).join('');
+
+  wrap.innerHTML = `
+    <div class="table-wrap" style="box-shadow:none;border:1px solid var(--line);border-radius:14px;overflow:hidden">
+      <div class="table-scroll" style="max-height:460px;border-radius:14px 14px 0 0">
+        <table style="min-width:460px">
+          <thead><tr>
+            <th style="min-width:150px">Barang</th>
+            <th class="num">Total Stok</th>
+            <th class="num">Total Berat</th>
+            <th class="num">Estimasi Nilai</th>
+          </tr></thead>
+          <tbody>${tbody}</tbody>
+        </table>
+      </div>
+      <div class="table-foot" style="border-radius:0 0 14px 14px;flex-wrap:wrap;gap:8px">
+        <div class="tf-label"><i class="fas fa-calculator"></i> Total Keseluruhan</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          ${qtyChipList || '<span style="font-size:11px;color:var(--text-mute)">—</span>'}
+          <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;background:var(--blue-pale);color:var(--blue-deep);font-size:10.5px;font-weight:800">
+            <i class="fas fa-weight-hanging" style="font-size:9px"></i>
+            ${grandWeight > 0 ? fmtWeight(grandWeight) + ' kg' : '—'}
+          </span>
+          <span style="font-size:13px;font-weight:800;color:var(--green-deep);padding-left:6px">
+            ${fmtRp(grandValue)}
+          </span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  if(countEl) countEl.textContent = `${rows.length} barang • ${stores.length} toko`;
 }
 
 function buildGroupTrendData(group, stores){
@@ -4691,7 +4813,6 @@ function openStoreDetail(storeId){
     <button class="btn btn-tonal" onclick="closeSheet('detailModal'); openPriceModal(null, ${storeId})"><i class="fas fa-plus"></i> Catat Harga</button>
   </div>`;
 
-  // === Dokumentasi Harian ===
   const canWrite = !isAdmin || activeAgentUid;
   const docs = storeDocumentations(storeId);
   html += `<div class="section-head" style="margin:18px 2px 8px">
@@ -5069,44 +5190,98 @@ async function loadImageAsBase64(url, maxW = 700){
   });
 }
 
+/* ============================================================
+   EXPORT PDF HISTORY SNAPSHOT — Desain Baru
+   ============================================================ */
 async function exportHistoryPDF(histId){
   if(!canAccessCompareReports()){ snack('Fitur PDF hanya untuk admin', 'info'); return; }
   if(!window.jspdf || !window.jspdf.jsPDF){ snack('PDF belum termuat', 'error'); return; }
   const h = getHistory(histId);
   if(!h){ snack('History tidak ditemukan', 'error'); return; }
+
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+  const cfg = getPDFConfig();
   const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
   const M = 12;
+
   let photoData = null;
   if(h.photoUrl){
     try { const img = await loadImageAsBase64(h.photoUrl, 700); photoData = img.data; } catch(e){ console.warn(e); }
   }
+
+  // HEADER
   doc.setFillColor(37, 99, 235);
-  doc.rect(0, 0, pageW, 30, 'F');
-  doc.setTextColor(255, 255, 255);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(18);
-  doc.text('bapok', M + 4, 14);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
-  doc.text('Laporan Snapshot History', M + 4, 20.5);
-  let y = 40;
-  if(photoData){
-    try {
-      doc.addImage(photoData, 'JPEG', pageW - M - 60, y - 2, 57, 42, undefined, 'FAST');
-    } catch(e){ console.warn(e); }
+  doc.rect(0, 0, pageW, 28, 'F');
+  doc.setFillColor(96, 165, 250);
+  doc.rect(0, 28, pageW, 1, 'F');
+  if(cfg.logoUrl){
+    try { doc.addImage(cfg.logoUrl, 'PNG', M, 5, 18, 18, undefined, 'FAST'); } catch(e){}
+  } else {
+    doc.setFillColor(59, 130, 246);
+    doc.roundedRect(M, 7, 14, 14, 3, 3, 'F');
+    doc.setTextColor(255,255,255);
+    doc.setFont('helvetica','bold'); doc.setFontSize(11);
+    doc.text('b', M + 4.2, 16.5);
   }
-  doc.setTextColor(15, 23, 42);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(15);
+  const titleX = cfg.logoUrl ? M + 22 : M + 18;
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold'); doc.setFontSize(18);
+  doc.text('bapok', titleX, 14);
+  doc.setFont('helvetica','normal'); doc.setFontSize(8);
+  doc.setTextColor(219, 234, 254);
+  doc.text('Laporan Snapshot History', titleX, 20);
+
+  doc.setFillColor(255, 255, 255);
+  doc.roundedRect(pageW - M - 40, 6, 40, 9, 2, 2, 'F');
+  doc.setTextColor(37, 99, 235);
+  doc.setFont('helvetica','bold'); doc.setFontSize(8);
+  doc.text(fmtDate(todayStr()), pageW - M - 20, 11.5, { align:'center' });
+
+  let y = 36;
+
+  // TITLE
+  doc.setTextColor(15,23,42);
+  doc.setFont('helvetica','bold'); doc.setFontSize(15);
   doc.text(h.label || 'History', M, y);
-  y += 7;
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(10);
-  doc.setTextColor(71, 85, 105);
+  y += 6;
+  doc.setFont('helvetica','normal'); doc.setFontSize(9.5);
+  doc.setTextColor(71,85,105);
   doc.text(`${h.storeName || 'Toko'}  •  ${fmtDate(h.date)}`, M, y);
   y += 8;
+
+  if(photoData){
+    try { doc.addImage(photoData, 'JPEG', pageW - M - 55, y - 22, 55, 40, undefined, 'FAST'); } catch(e){}
+  }
+
+  // INFO CARDS
+  const infoCards = [
+    { label:'TANGGAL',         value: fmtDate(h.date) },
+    { label:'JUMLAH BARANG',   value: fmtNum(h.itemCount||0) + ' item' },
+    { label:'TOTAL NILAI',     value: fmtRp(h.totalValue||0) }
+  ];
+  const cardGap = 4;
+  const cardW = (pageW - M*2 - cardGap*2) / 3;
+  const cardH = 16;
+  infoCards.forEach((card, i) => {
+    const x = M + i * (cardW + cardGap);
+    doc.setFillColor(248, 250, 252);
+    doc.setDrawColor(226, 232, 240); doc.setLineWidth(0.3);
+    doc.roundedRect(x, y, cardW, cardH, 2, 2, 'FD');
+    doc.setFillColor(37, 99, 235);
+    doc.roundedRect(x, y, cardW, 2, 2, 2, 'F');
+    doc.rect(x, y + 1, cardW, 1, 'F');
+    doc.setTextColor(100, 116, 139);
+    doc.setFont('helvetica','bold'); doc.setFontSize(6.5);
+    doc.text(card.label, x + 3, y + 8);
+    doc.setTextColor(37, 99, 235);
+    doc.setFontSize(10.5);
+    doc.text(card.value, x + 3, y + 14);
+  });
+  y += cardH + 8;
+
+  // TABLE
   const head = [['#', 'Barang', 'Harga', 'Berat', 'Stok', 'Subtotal']];
   const body = (h.items||[]).map((it, i) => {
     const price = Number(it.price) || 0;
@@ -5121,12 +5296,35 @@ async function exportHistoryPDF(histId){
       fmtRp(qty > 0 ? price * qty : price)
     ];
   });
+
   doc.autoTable({
-    head, body, startY: y, theme: 'grid', margin: { left: M, right: M },
-    styles: { font: 'helvetica', fontSize: 8.5, cellPadding: 2.5, textColor: [30, 41, 59] },
-    headStyles: { fillColor: [139, 92, 246], textColor: [255, 255, 255], fontStyle: 'bold' },
-    columnStyles: { 0: { halign: 'center', cellWidth: 10 }, 1: { fontStyle: 'bold' }, 2: { halign: 'right' }, 3: { halign: 'right' }, 4: { halign: 'right' }, 5: { halign: 'right', fontStyle: 'bold', textColor: [4, 120, 87] } }
+    head, body, startY: y, theme: 'grid',
+    margin: { left: M, right: M },
+    styles: { font:'helvetica', fontSize:8.5, cellPadding:2.5, textColor:[30,41,59], lineColor:[226,232,240], lineWidth:0.15, valign:'middle' },
+    headStyles: { fillColor:[139,92,246], textColor:[255,255,255], fontStyle:'bold', halign:'center', fontSize:9 },
+    alternateRowStyles: { fillColor:[250,245,255] },
+    columnStyles: {
+      0:{ halign:'center', cellWidth:10, textColor:[100,116,139] },
+      1:{ fontStyle:'bold' },
+      2:{ halign:'right' },
+      3:{ halign:'right' },
+      4:{ halign:'right' },
+      5:{ halign:'right', fontStyle:'bold', textColor:[4,120,87] }
+    }
   });
+
+  // FOOTER
+  const totalPages = doc.internal.getNumberOfPages();
+  for(let p = 1; p <= totalPages; p++){
+    doc.setPage(p);
+    doc.setDrawColor(226, 232, 240); doc.setLineWidth(0.3);
+    doc.line(M, pageH - 12, pageW - M, pageH - 12);
+    doc.setTextColor(148, 163, 184);
+    doc.setFont('helvetica','normal'); doc.setFontSize(7.5);
+    doc.text('Dibuat otomatis oleh bapok', M, pageH - 7);
+    doc.text(`Halaman ${p} / ${totalPages}`, pageW - M, pageH - 7, { align:'right' });
+  }
+
   doc.save(`History_${(h.label || 'snapshot').replace(/[^a-z0-9]+/gi,'_')}.pdf`);
   snack('PDF diunduh');
 }
@@ -5638,7 +5836,7 @@ function exportCSV(type){
 }
 
 /* ============================================================
-   PDF CONFIG
+   PDF CONFIG — with Jabatan & NIP
    ============================================================ */
 const PDF_CONFIG_KEY = 'bapok_pdf_config_v1';
 
@@ -5650,11 +5848,13 @@ function getPDFConfig(){
       return {
         logoUrl: cfg.logoUrl || '',
         signatureUrl: cfg.signatureUrl || '',
-        signatureName: cfg.signatureName || ''
+        signatureName: cfg.signatureName || '',
+        signatureTitle: cfg.signatureTitle || '',
+        signatureNip: cfg.signatureNip || ''
       };
     }
   } catch(e){ console.warn('getPDFConfig:', e); }
-  return { logoUrl: '', signatureUrl: '', signatureName: '' };
+  return { logoUrl: '', signatureUrl: '', signatureName: '', signatureTitle: '', signatureNip: '' };
 }
 
 function savePDFConfig(cfg){
@@ -5727,7 +5927,9 @@ function openPDFSettings(){
       drop.dataset.dataUrl = '';
     }
   });
-  document.getElementById('pdfSigName').value = cfg.signatureName || '';
+  document.getElementById('pdfSigName').value  = cfg.signatureName  || '';
+  document.getElementById('pdfSigTitle').value = cfg.signatureTitle || '';
+  document.getElementById('pdfSigNip').value   = cfg.signatureNip   || '';
   openSheet('pdfSettingsModal');
 }
 
@@ -5735,7 +5937,9 @@ function savePDFSettings(){
   const cfg = {
     logoUrl: document.getElementById('pdfLogoDrop').dataset.dataUrl || '',
     signatureUrl: document.getElementById('pdfSigDrop').dataset.dataUrl || '',
-    signatureName: document.getElementById('pdfSigName').value.trim()
+    signatureName:  document.getElementById('pdfSigName').value.trim(),
+    signatureTitle: document.getElementById('pdfSigTitle').value.trim(),
+    signatureNip:   document.getElementById('pdfSigNip').value.trim()
   };
   savePDFConfig(cfg);
   closeSheet('pdfSettingsModal');
@@ -5745,7 +5949,9 @@ function savePDFSettings(){
 function resetPDFSettings(){
   try { localStorage.removeItem(PDF_CONFIG_KEY); } catch(e){}
   ['pdfLogo', 'pdfSig'].forEach(key => clearPDFConfigPhoto(key));
-  document.getElementById('pdfSigName').value = '';
+  document.getElementById('pdfSigName').value  = '';
+  document.getElementById('pdfSigTitle').value = '';
+  document.getElementById('pdfSigNip').value   = '';
   snack('Pengaturan PDF direset', 'info');
 }
 
@@ -5755,9 +5961,6 @@ window.resetPDFSettings = resetPDFSettings;
 window.handlePDFConfigSelect = handlePDFConfigSelect;
 window.clearPDFConfigPhoto = clearPDFConfigPhoto;
 
-/* ============================================================
-   GRAFIK UNTUK PDF
-   ============================================================ */
 async function renderPriceChartImage(stores, rows){
   return new Promise((resolve) => {
     try {
@@ -5866,7 +6069,7 @@ async function renderPriceChartImage(stores, rows){
 }
 
 /* ============================================================
-   EXPORT PDF UTAMA
+   EXPORT PDF LAPORAN PERBANDINGAN — Desain Baru
    ============================================================ */
 async function exportPDF(){
   if(!canAccessCompareReports()){ snack('Fitur PDF hanya untuk admin', 'info'); return; }
@@ -5887,42 +6090,104 @@ async function exportPDF(){
   if(rows.length === 0){ snack('Tidak ada data', 'info'); return; }
 
   snack('Membuat PDF dengan grafik...', 'info');
-
   const chartImage = await renderPriceChartImage(stores, rows);
-
   const cfg = getPDFConfig();
   const orientation = stores.length >= 3 ? 'landscape' : 'portrait';
   const doc = new jsPDF({ orientation, unit:'mm', format:'a4' });
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
-  const M = 10;
+  const M = 12;
 
-  doc.setFillColor(37, 99, 235);
-  doc.rect(0, 0, pageW, 26, 'F');
-  doc.setTextColor(255, 255, 255);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(17);
-  doc.text('bapok', M + 4, 12.5);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8.5);
-  doc.text(isAdmin && !activeAgentUid ? 'Laporan Gabungan' : 'Laporan Perbandingan Harga', M + 4, 19);
-
-  if(cfg.logoUrl){
-    try {
-      doc.addImage(cfg.logoUrl, 'PNG', pageW - M - 22, 4, 20, 18, undefined, 'FAST');
-    } catch(e){ console.warn('Logo gagal:', e); }
+  // HELPERS
+  function drawHeader(){
+    doc.setFillColor(37, 99, 235);
+    doc.rect(0, 0, pageW, 28, 'F');
+    doc.setFillColor(96, 165, 250);
+    doc.rect(0, 28, pageW, 1.2, 'F');
+    if(cfg.logoUrl){
+      try { doc.addImage(cfg.logoUrl, 'PNG', M, 5, 18, 18, undefined, 'FAST'); } catch(e){}
+    } else {
+      doc.setFillColor(59, 130, 246);
+      doc.roundedRect(M, 7, 14, 14, 3, 3, 'F');
+      doc.setTextColor(255,255,255);
+      doc.setFont('helvetica','bold'); doc.setFontSize(11);
+      doc.text('b', M + 4.2, 16.5);
+    }
+    const titleX = cfg.logoUrl ? M + 22 : M + 18;
+    doc.setTextColor(255,255,255);
+    doc.setFont('helvetica','bold'); doc.setFontSize(18);
+    doc.text('bapok', titleX, 14);
+    doc.setFont('helvetica','normal'); doc.setFontSize(8);
+    doc.setTextColor(219, 234, 254);
+    doc.text(isAdmin && !activeAgentUid ? 'Laporan Gabungan Perbandingan Harga' : 'Laporan Perbandingan Harga', titleX, 20);
+    doc.setTextColor(255,255,255);
+    doc.setFont('helvetica','bold'); doc.setFontSize(9);
+    doc.text(fmtDate(todayStr()), pageW - M, 14, { align: 'right' });
+    doc.setFont('helvetica','normal'); doc.setFontSize(7.5);
+    doc.setTextColor(219, 234, 254);
+    doc.text(`${stores.length} Toko • ${rows.length} Barang`, pageW - M, 20, { align: 'right' });
   }
 
-  let y = 32;
-  doc.setTextColor(15, 23, 42);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-  doc.text(`Tanggal: ${fmtDate(todayStr())}   •   ${stores.length} Toko   •   ${rows.length} Barang`, M, y);
-  y += 6;
+  function drawFooter(pageNum, totalPages){
+    doc.setDrawColor(226, 232, 240); doc.setLineWidth(0.3);
+    doc.line(M, pageH - 12, pageW - M, pageH - 12);
+    doc.setTextColor(148, 163, 184);
+    doc.setFont('helvetica','normal'); doc.setFontSize(7.5);
+    doc.text('Dibuat otomatis oleh bapok • ' + new Date().toLocaleString('id-ID', {day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit'}), M, pageH - 7);
+    doc.text(`Halaman ${pageNum} / ${totalPages}`, pageW - M, pageH - 7, { align: 'right' });
+  }
 
-  doc.setFontSize(11);
-  doc.text('Tabel 1. Perbandingan Harga', M, y);
-  y += 3;
+  function sectionTitle(y, title, subtitle){
+    doc.setFillColor(59, 130, 246);
+    doc.rect(M, y - 4, 2.5, 7, 'F');
+    doc.setTextColor(15, 23, 42);
+    doc.setFont('helvetica','bold'); doc.setFontSize(11.5);
+    doc.text(title, M + 6, y + 1);
+    if(subtitle){
+      doc.setFont('helvetica','normal'); doc.setFontSize(8);
+      doc.setTextColor(100, 116, 139);
+      doc.text(subtitle, M + 6, y + 6);
+      return y + 10;
+    }
+    return y + 6;
+  }
+
+  drawHeader();
+  let y = 38;
+
+  // SUMMARY STAT CARDS
+  let totalSavings = 0;
+  rows.forEach(r => { if(r.diff > 0) totalSavings += r.diff; });
+  const lowest  = rows.reduce((a, b) => (a.min !== null && (b.min === null || a.min < b.min)) ? a : b, {min:null});
+  const cardCount = 4, cardGap = 4;
+  const cardW = (pageW - M*2 - cardGap*(cardCount-1)) / cardCount;
+  const cardH = 20;
+  const cards = [
+    { label:'JUMLAH TOKO',     value:String(stores.length),           color:[59,130,246] },
+    { label:'JENIS BARANG',    value:String(rows.length),             color:[139,92,246] },
+    { label:'HARGA TERENDAH',  value:lowest.min!==null?fmtRp(lowest.min):'—', color:[16,185,129] },
+    { label:'POTENSI HEMAT',   value:fmtRp(totalSavings),             color:[245,158,11] }
+  ];
+  cards.forEach((card, i) => {
+    const x = M + i * (cardW + cardGap);
+    doc.setFillColor(248, 250, 252);
+    doc.setDrawColor(226, 232, 240); doc.setLineWidth(0.3);
+    doc.roundedRect(x, y, cardW, cardH, 2.5, 2.5, 'FD');
+    doc.setFillColor(card.color[0], card.color[1], card.color[2]);
+    doc.roundedRect(x, y, cardW, 2.5, 2.5, 2.5, 'F');
+    doc.rect(x, y + 1.5, cardW, 1, 'F');
+    doc.setTextColor(100, 116, 139);
+    doc.setFont('helvetica','bold'); doc.setFontSize(6.5);
+    doc.text(card.label, x + 3, y + 8);
+    doc.setTextColor(card.color[0], card.color[1], card.color[2]);
+    doc.setFontSize(11);
+    doc.text(card.value, x + 3, y + 15.5);
+  });
+  y += cardH + 8;
+
+  // TABLE 1
+  y = sectionTitle(y, 'Tabel 1. Perbandingan Harga', `${rows.length} barang × ${stores.length} toko`);
+  y += 2;
 
   const numStores = stores.length;
   let baseFont = 8;
@@ -5931,131 +6196,113 @@ async function exportPDF(){
   else if(numStores >= 4) baseFont = 7;
   else if(numStores >= 3) baseFont = 7.5;
 
-  const head1 = [['#', 'Barang', 'Sat.', ...stores.map(s => s.name), 'Terendah', 'Tertinggi', 'Selisih']];
+  const head1 = [[
+    { content:'#',      styles:{ halign:'center' } },
+    { content:'Barang', styles:{ halign:'left' } },
+    { content:'Sat.',   styles:{ halign:'center' } },
+    ...stores.map(s => ({ content:s.name, styles:{ halign:'center' } })),
+    { content:'Terendah',  styles:{ halign:'right' } },
+    { content:'Tertinggi', styles:{ halign:'right' } },
+    { content:'Selisih',   styles:{ halign:'right' } }
+  ]];
+
   const body1 = rows.map((r, i) => {
-    const row = [String(i + 1), r.group.displayName, r.group.unit];
-    r.cells.forEach(c => row.push(c ? fmtRp(c.price) : '—'));
-    row.push(r.min !== null ? fmtRp(r.min) : '—');
-    row.push(r.max !== null ? fmtRp(r.max) : '—');
-    row.push(r.diff > 0 ? '+' + fmtRp(r.diff) : '—');
+    const row = [
+      { content:String(i + 1),          styles:{ halign:'center', textColor:[100,116,139] } },
+      { content:r.group.displayName,    styles:{ fontStyle:'bold', halign:'left' } },
+      { content:r.group.unit,           styles:{ halign:'center', textColor:[100,116,139] } }
+    ];
+    r.cells.forEach(c => {
+      const isMin = c && r.min !== null && c.price === r.min && r.min !== r.max;
+      const isMax = c && r.max !== null && c.price === r.max && r.min !== r.max;
+      let color = [30, 41, 59], fontStyle = 'normal';
+      if(isMin){ color = [4, 120, 87]; fontStyle = 'bold'; }
+      else if(isMax){ color = [190, 18, 60]; fontStyle = 'bold'; }
+      row.push({ content: c ? (isMin ? '★ ' : '') + fmtRp(c.price) : '—', styles:{ halign:'right', textColor:color, fontStyle:fontStyle } });
+    });
+    row.push({ content: r.min !== null ? fmtRp(r.min) : '—', styles:{ halign:'right', textColor:[4,120,87], fontStyle:'bold' } });
+    row.push({ content: r.max !== null ? fmtRp(r.max) : '—', styles:{ halign:'right', textColor:[190,18,60], fontStyle:'bold' } });
+    row.push({ content: r.diff > 0 ? '+' + fmtRp(r.diff) : '—', styles:{ halign:'right', textColor: r.diff > 0 ? [37,99,235] : [148,163,184], fontStyle:'bold' } });
     return row;
   });
-
-  let totalSavings = 0;
-  rows.forEach(r => { if(r.diff > 0) totalSavings += r.diff; });
 
   doc.autoTable({
     head: head1, body: body1, startY: y, theme: 'grid',
     margin: { left: M, right: M },
-    styles: { font: 'helvetica', fontSize: baseFont, cellPadding: 1.8, textColor: [30, 41, 59], overflow: 'linebreak', valign: 'middle' },
-    headStyles: { fillColor: [37, 99, 235], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', fontSize: baseFont, cellPadding: 1.5 },
-    alternateRowStyles: { fillColor: [248, 251, 255] },
+    styles: { font:'helvetica', fontSize:baseFont, cellPadding:2, textColor:[30,41,59], overflow:'linebreak', valign:'middle', lineColor:[226,232,240], lineWidth:0.15 },
+    headStyles: { fillColor:[37,99,235], textColor:[255,255,255], fontStyle:'bold', halign:'center', fontSize:baseFont, cellPadding:2.2 },
+    alternateRowStyles: { fillColor:[248,251,255] },
     columnStyles: {
-      0: { halign: 'center', cellWidth: 7 },
-      1: { halign: 'left', fontStyle: 'bold', cellWidth: numStores >= 5 ? 28 : 35 },
-      2: { halign: 'center', cellWidth: 10 }
+      0: { cellWidth:8 },
+      1: { cellWidth: numStores >= 5 ? 32 : 40 },
+      2: { cellWidth: 11 }
     }
   });
+  y = doc.lastAutoTable.finalY + 8;
 
-  let finalY = doc.lastAutoTable.finalY || (pageH - 15);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9.5);
+  // Highlight Total Hemat
+  doc.setFillColor(219, 234, 254);
+  doc.roundedRect(M, y, pageW - M*2, 10, 2, 2, 'F');
   doc.setTextColor(37, 99, 235);
-  doc.text(`Total Potensi Hemat: ${fmtRp(totalSavings)}`, M, finalY + 5);
-  finalY += 10;
+  doc.setFont('helvetica','bold'); doc.setFontSize(10);
+  doc.text('Total Potensi Hemat', M + 4, y + 6.5);
+  doc.setFontSize(11);
+  doc.text(fmtRp(totalSavings), pageW - M - 4, y + 6.5, { align:'right' });
+  y += 16;
 
+  // CHART
   if(chartImage){
-    let chartW = pageW - M * 2;
-    let chartH = chartW * 0.5;
-    const maxH = pageH * 0.48;
-    if(chartH > maxH){ chartH = maxH; chartW = chartH * 2; }
-    const chartX = M + ((pageW - M * 2) - chartW) / 2;
-
-    if(finalY + chartH + 16 > pageH - 12){
-      doc.addPage();
-      finalY = 20;
+    if(y + 70 > pageH - 25){
+      doc.addPage(); drawHeader(); y = 38;
     }
-
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11);
-    doc.setTextColor(15, 23, 42);
-    doc.text('Grafik Perbandingan Harga', M, finalY);
-    finalY += 3;
-
+    y = sectionTitle(y, 'Grafik Perbandingan Harga', 'Visualisasi harga per toko');
+    y += 2;
+    let chartW = pageW - M*2;
+    let chartH = chartW * 0.5;
+    const maxH = pageH * 0.42;
+    if(chartH > maxH){ chartH = maxH; chartW = chartH * 2; }
+    const chartX = M + ((pageW - M*2) - chartW) / 2;
     try {
-      doc.addImage(chartImage, 'PNG', chartX, finalY, chartW, chartH, undefined, 'FAST');
-      finalY += chartH + 8;
+      doc.addImage(chartImage, 'PNG', chartX, y, chartW, chartH, undefined, 'FAST');
+      y += chartH + 8;
     } catch(e){ console.warn('Chart gagal:', e); }
   }
 
+  // TABLE 2
   const storeItemRows = [];
   let grandTotal = 0;
-
   stores.forEach(store => {
     groups.forEach(group => {
-      const priceRec = getLatestPriceForGroup(group, store.id);
-      if(!priceRec) return;
-
-      const qty    = Number(priceRec.qty)    || 0;
-      const weight = Number(priceRec.weight) || 0;
-      const price  = Number(priceRec.price)  || 0;
-      const qtyUnit = group.qtyUnit || 'pcs';
-      const wUnit   = group.unit    || 'kg';
-
-      let stockTxt = '—';
-      let estNum   = 0;
-      let estTxt   = '—';
-
-      if(qty > 0){
-        stockTxt = fmtQty(qty) + ' ' + qtyUnit;
-        estNum   = price * qty;
-        estTxt   = fmtRp(estNum);
-      } else if(weight > 0){
-        stockTxt = fmtWeight(weight) + ' ' + wUnit;
-        estNum   = price * weight;
-        estTxt   = fmtRp(estNum);
-      }
-
+      const rec = getLatestPriceForGroup(group, store.id);
+      if(!rec) return;
+      const qty = Number(rec.qty)||0, weight = Number(rec.weight)||0, price = Number(rec.price)||0;
+      let stockTxt = '—', estNum = 0, estTxt = '—';
+      if(qty > 0){ stockTxt = fmtQty(qty)+' '+(group.qtyUnit||'pcs'); estNum = price*qty; estTxt = fmtRp(estNum); }
+      else if(weight > 0){ stockTxt = fmtWeight(weight)+' '+(group.unit||'kg'); estNum = price*weight; estTxt = fmtRp(estNum); }
       grandTotal += estNum;
-
-      storeItemRows.push([
-        store.name,
-        group.displayName + ' (' + group.unit + ')',
-        stockTxt,
-        fmtRp(price),
-        estTxt
-      ]);
+      storeItemRows.push([store.name, group.displayName+' ('+group.unit+')', stockTxt, fmtRp(price), estTxt]);
     });
   });
 
   if(storeItemRows.length > 0){
-    if(finalY + 30 > pageH - 12){
-      doc.addPage();
-      finalY = 20;
-    }
-
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11);
-    doc.setTextColor(15, 23, 42);
-    doc.text('Tabel 2. Rekapitulasi Stok & Estimasi Nilai', M, finalY);
-    finalY += 3;
-
+    if(y + 40 > pageH - 25){ doc.addPage(); drawHeader(); y = 38; }
+    y = sectionTitle(y, 'Tabel 2. Rekapitulasi Stok & Estimasi Nilai', 'Total nilai aset per toko');
+    y += 2;
     const head2 = [['Toko', 'Jenis Barang', 'Stok', 'Harga', 'Estimasi']];
     const body2 = storeItemRows.slice();
     body2.push(['', '', '', 'TOTAL', fmtRp(grandTotal)]);
-
     doc.autoTable({
-      head: head2, body: body2, startY: finalY, theme: 'striped',
+      head: head2, body: body2, startY: y, theme: 'striped',
       margin: { left: M, right: M },
-      styles: { font: 'helvetica', fontSize: 8, cellPadding: 2, textColor: [30, 41, 59], overflow: 'linebreak', valign: 'middle' },
-      headStyles: { fillColor: [139, 92, 246], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', fontSize: 8.5 },
-      alternateRowStyles: { fillColor: [250, 245, 255] },
+      styles: { font:'helvetica', fontSize:8, cellPadding:2, textColor:[30,41,59], overflow:'linebreak', valign:'middle', lineColor:[226,232,240], lineWidth:0.15 },
+      headStyles: { fillColor:[139,92,246], textColor:[255,255,255], fontStyle:'bold', halign:'center', fontSize:8.5, cellPadding:2.2 },
+      alternateRowStyles: { fillColor:[250,245,255] },
       columnStyles: {
-        0: { cellWidth: 'auto', fontStyle: 'bold' },
-        1: { cellWidth: 'auto' },
-        2: { halign: 'right', cellWidth: 26 },
-        3: { halign: 'right', cellWidth: 28 },
-        4: { halign: 'right', fontStyle: 'bold', cellWidth: 30, textColor: [4, 120, 87] }
+        0:{ cellWidth:'auto', fontStyle:'bold' },
+        1:{ cellWidth:'auto' },
+        2:{ halign:'right', cellWidth:28 },
+        3:{ halign:'right', cellWidth:30 },
+        4:{ halign:'right', fontStyle:'bold', cellWidth:32, textColor:[4,120,87] }
       },
       didParseCell: (data) => {
         if(data.section === 'body' && data.row.index === body2.length - 1){
@@ -6065,47 +6312,56 @@ async function exportPDF(){
         }
       }
     });
-
-    finalY = doc.lastAutoTable.finalY || finalY;
+    y = doc.lastAutoTable.finalY;
   }
 
-  const hasSig = !!(cfg.signatureUrl || cfg.signatureName);
+  // SIGNATURE
+  const hasSig = !!(cfg.signatureUrl || cfg.signatureName || cfg.signatureTitle || cfg.signatureNip);
   if(hasSig){
-    let sigY = finalY + 12;
-    if(sigY + 40 > pageH - 10){
-      doc.addPage();
-      sigY = 22;
-    }
-    const sigW = 55;
+    let sigY = y + 12;
+    if(sigY + 55 > pageH - 15){ doc.addPage(); drawHeader(); sigY = 38; }
+    const sigW = 60;
     const sigX = pageW - M - sigW;
+    const centerX = sigX + sigW / 2;
 
     doc.setTextColor(30, 41, 59);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    doc.text('Tanda Tangan,', sigX, sigY);
+    doc.setFont('helvetica','normal'); doc.setFontSize(9);
+    doc.text(fmtDate(todayStr()), sigX, sigY);
+    doc.text('Tanda Tangan,', sigX, sigY + 5);
 
-    let imgY = sigY + 3;
+    let imgY = sigY + 8;
     if(cfg.signatureUrl){
-      try {
-        doc.addImage(cfg.signatureUrl, 'PNG', sigX, imgY, sigW, 20, undefined, 'FAST');
-        imgY += 20;
-      } catch(e){
-        console.warn('Signature gagal:', e);
-        imgY += 15;
-      }
-    } else {
-      imgY += 15;
-    }
+      try { doc.addImage(cfg.signatureUrl, 'PNG', sigX, imgY, sigW, 20, undefined, 'FAST'); imgY += 20; }
+      catch(e){ imgY += 18; }
+    } else { imgY += 18; }
 
-    doc.setDrawColor(30, 41, 59);
-    doc.setLineWidth(0.3);
+    doc.setDrawColor(30, 41, 59); doc.setLineWidth(0.4);
     doc.line(sigX, imgY, sigX + sigW, imgY);
 
+    let textY = imgY + 5;
     if(cfg.signatureName){
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(10);
-      doc.text(cfg.signatureName, sigX + sigW / 2, imgY + 5, { align: 'center' });
+      doc.setFont('helvetica','bold'); doc.setFontSize(10);
+      doc.setTextColor(15,23,42);
+      doc.text(cfg.signatureName, centerX, textY, { align:'center' });
+      textY += 5;
     }
+    if(cfg.signatureTitle){
+      doc.setFont('helvetica','normal'); doc.setFontSize(8.5);
+      doc.setTextColor(71,85,105);
+      doc.text(cfg.signatureTitle, centerX, textY, { align:'center' });
+      textY += 4.5;
+    }
+    if(cfg.signatureNip){
+      doc.setFontSize(8.5);
+      doc.text('NIP. ' + cfg.signatureNip, centerX, textY, { align:'center' });
+    }
+  }
+
+  // FOOTER ALL PAGES
+  const totalPages = doc.internal.getNumberOfPages();
+  for(let p = 1; p <= totalPages; p++){
+    doc.setPage(p);
+    drawFooter(p, totalPages);
   }
 
   doc.save(`Laporan_bapok_${todayStr()}.pdf`);
