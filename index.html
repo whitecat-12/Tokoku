@@ -594,6 +594,195 @@ body.no-store-mode .fab{display:none}
 ::-webkit-scrollbar-thumb{background:#bfdbfe;border-radius:99px}
 ::-webkit-scrollbar-track{background:transparent}
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}}
+
+/* ============================================================
+   DESKTOP / PC WINDOWS LAYOUT (≥ 1024px)
+   Sidebar kiri + topbar full-width + konten grid multi-kolom
+   ============================================================ */
+@media (min-width: 1024px) {
+  html, body {
+    height: 100vh;
+    overflow: hidden;
+  }
+  body {
+    padding: 0;
+    display: block;
+    align-items: stretch;
+  }
+  .app {
+    width: 100%;
+    max-width: 100%;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .topbar {
+    padding: 16px 28px;
+    background: rgba(239, 246, 255, 0.94);
+    border-bottom: 1px solid rgba(59, 130, 246, 0.08);
+  }
+  .brand-logo { width: 40px; height: 40px; font-size: 16px; border-radius: 13px; }
+  .brand-text h1 { font-size: 16px; }
+  .brand-text p  { font-size: 11.5px; }
+  .topbar-actions { gap: 10px; }
+  .topbar-btn { width: 38px; height: 38px; font-size: 14px; }
+
+  .admin-mode-banner {
+    margin: 12px 28px 12px calc(240px + 28px);
+    border-radius: 14px;
+    padding: 12px 18px;
+  }
+
+  .main {
+    margin-left: 240px;
+    padding: 20px 28px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .main > .view {
+    width: 100%;
+    max-width: 1400px;
+  }
+
+  /* SIDEBAR */
+  .dock {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: auto;
+    margin: 0;
+    width: 240px;
+    max-width: none;
+    height: 100vh;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 24px 12px;
+    border-radius: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(248,251,255,0.92) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 2px 0 24px rgba(59,130,246,0.06);
+    border-right: 1px solid rgba(59,130,246,0.08);
+    z-index: 55;
+  }
+  .nav-item {
+    width: 100%;
+    flex: 0 0 auto;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-bottom: 6px;
+    text-align: left;
+  }
+  .nav-item i { font-size: 15px; width: 22px; text-align: center; flex-shrink: 0; }
+  .nav-item span { font-size: 13px; font-weight: 600; text-align: left; }
+  .nav-item.active { box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35); }
+
+  .sidebar-brand { display: flex !important; }
+  .sidebar-brand {
+    align-items: center;
+    gap: 10px;
+    padding: 0 8px 20px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(59,130,246,0.08);
+  }
+  .sidebar-brand .brand-logo { width: 38px; height: 38px; font-size: 15px; border-radius: 12px; }
+  .sidebar-brand .brand-text h1 { font-size: 15px; font-weight: 800; color: var(--text); line-height: 1.2; }
+  .sidebar-brand .brand-text p { font-size: 10.5px; color: var(--text-mute); font-weight: 500; margin-top: 1px; }
+
+  .fab {
+    bottom: 32px;
+    right: 32px;
+    left: auto;
+    width: 56px;
+    height: 56px;
+    font-size: 20px;
+  }
+
+  .bento { grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px; }
+  .bento-item { padding: 14px 16px; }
+  .bento-value { font-size: 18px; }
+
+  .hero { padding: 24px 28px; border-radius: 24px; }
+  .hero-value { font-size: 36px; }
+  .hero-chip { font-size: 11.5px; padding: 6px 12px; }
+
+  #itemList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 12px;
+  }
+  #itemList .product { margin-bottom: 0; height: 100%; }
+
+  #storeList .list,
+  #cheapestList .list,
+  #recentList .list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 10px;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+    overflow: visible;
+  }
+  #storeList .list-item,
+  #cheapestList .list-item,
+  #recentList .list-item {
+    background: var(--surface);
+    border-radius: 14px;
+    box-shadow: var(--shadow-sm);
+    border-top: none !important;
+    padding: 12px 14px;
+    min-height: 62px;
+  }
+
+  .cmp-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 10px;
+  }
+
+  .kpi-grid { grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .kpi-value { font-size: 16px; }
+
+  .chart-card-new canvas { height: 300px !important; }
+  .chart-card canvas     { height: 280px !important; }
+
+  .section-head { margin: 24px 2px 12px; }
+  .section-head h2 { font-size: 14px; }
+
+  .scrim { padding: 24px; }
+  .sheet {
+    max-width: 560px;
+    border-radius: 24px;
+    max-height: calc(100vh - 48px);
+  }
+  #bulkModal .sheet,
+  #editHistModal .sheet,
+  #histDetailModal .sheet,
+  #detailModal .sheet,
+  #docExportModal .sheet {
+    max-width: 760px;
+  }
+
+  #snackbar-container { bottom: 24px; }
+
+  .auth-card { max-width: 440px; padding: 32px 28px 24px; }
+}
 </style>
 </head>
 <body>
@@ -981,6 +1170,12 @@ body.no-store-mode .fab{display:none}
 </div>
 
 <button class="fab" id="fab" aria-label="Tambah"><i class="fas fa-plus"></i></button>
+
+<!-- Sidebar brand (hanya tampil di desktop ≥ 1024px) -->
+<div class="sidebar-brand" style="display:none">
+  <div class="brand-logo"><i class="fas fa-tags"></i></div>
+  <div class="brand-text"><h1>bapok</h1><p>Perbandingan Harga</p></div>
+</div>
 
 <nav class="dock">
   <button class="nav-item active" data-view="dashboard"><i class="fas fa-house"></i><span>Dashboard</span></button>
@@ -1686,6 +1881,10 @@ body.no-store-mode .fab{display:none}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script type="module">
+/* ==================== SEMUA JS TETAP SAMA SEPERTI SEBELUMNYA ==================== */
+/* Silakan salin utuh dari file HTML asli bagian <script type="module"> ... </script> */
+/* (Tidak ada perubahan JS pada versi ini, hanya CSS + penambahan elemen .sidebar-brand) */
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
 import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-analytics.js";
 import {
@@ -6206,12 +6405,10 @@ async function exportPDF(){
     { content:'Selisih',   styles:{ halign:'right' } }
   ]];
 
-  // ========== MULAI PERUBAHAN WARNA ==========
-  // Hanya 2 keluarga warna: murah = HIJAU, tengah/mahal = MERAH
-  const GREEN_FILL = [220, 252, 231];   // hijau muda (background)
-  const GREEN_TEXT = [4, 120, 87];      // hijau tua (teks)
-  const RED_FILL   = [254, 226, 226];   // merah muda (background)
-  const RED_TEXT   = [190, 18, 60];     // merah tua (teks)
+  const GREEN_FILL = [220, 252, 231];
+  const GREEN_TEXT = [4, 120, 87];
+  const RED_FILL   = [254, 226, 226];
+  const RED_TEXT   = [190, 18, 60];
 
   const body1 = rows.map((r, i) => {
     const row = [
@@ -6225,7 +6422,6 @@ async function exportPDF(){
         return;
       }
       const isMin = r.min !== null && c.price === r.min;
-      // Murah → hijau, tengah & mahal → merah
       const fill = isMin ? GREEN_FILL : RED_FILL;
       const text = isMin ? GREEN_TEXT : RED_TEXT;
       row.push({
@@ -6233,24 +6429,20 @@ async function exportPDF(){
         styles:{ halign:'right', textColor:text, fontStyle:'bold', fillColor:fill }
       });
     });
-    // Kolom "Terendah" → hijau
     row.push({
       content: r.min !== null ? fmtRp(r.min) : '—',
       styles:{ halign:'right', textColor:GREEN_TEXT, fontStyle:'bold', fillColor:GREEN_FILL }
     });
-    // Kolom "Tertinggi" → merah
     row.push({
       content: r.max !== null ? fmtRp(r.max) : '—',
       styles:{ halign:'right', textColor:RED_TEXT, fontStyle:'bold', fillColor:RED_FILL }
     });
-    // Kolom "Selisih" tetap biru (bukan harga barang)
     row.push({
       content: r.diff > 0 ? '+' + fmtRp(r.diff) : '—',
       styles:{ halign:'right', textColor: r.diff > 0 ? [37,99,235] : [148,163,184], fontStyle:'bold' }
     });
     return row;
   });
-  // ========== SELESAI PERUBAHAN WARNA ==========
 
   doc.autoTable({
     head: head1, body: body1, startY: y, theme: 'grid',
